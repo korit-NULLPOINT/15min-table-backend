@@ -1,4 +1,4 @@
-package com.korit._5mintablebackend;
+package com.nullpoint.fifteenmintable;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

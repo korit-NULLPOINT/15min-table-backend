@@ -6,7 +6,7 @@ target/
 
 ### STS ###
 .apt_generated
-.classpath
+.classpat
 .factorypath
 .project
 .settings
@@ -18,6 +18,7 @@ target/
 *.iws
 *.iml
 *.ipr
+application.properties
 
 ### NetBeans ###
 /nbproject/private/
