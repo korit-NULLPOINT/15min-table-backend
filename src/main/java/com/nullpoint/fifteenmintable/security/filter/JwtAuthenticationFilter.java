@@ -1,6 +1,7 @@
 package com.nullpoint.fifteenmintable.security.filter;
 
 
+import com.nullpoint.fifteenmintable.security.jwt.JwtUtils;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,7 +23,7 @@ public class JwtAuthenticationFilter implements Filter {
     private JwtUtils jwtUtils;
 
     @Autowired
-    private UserRepository userRepository;
+//    private UserRepository userRepository;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -36,35 +37,35 @@ public class JwtAuthenticationFilter implements Filter {
 
         String authorization = request.getHeader("Authorization");
 
-        if (jwtUtils.isBearer(authorization)) {
-            String accessToken = jwtUtils.removeBearer(authorization);
-
-            try {
-                Claims claims = jwtUtils.getClaims(accessToken);
-                String id = claims.getId();
-                Integer userId = Integer.parseInt(id);
-
-                Optional<User> foundUser = userRepository.getUserByUserId(userId);
-                foundUser.ifPresentOrElse((user) -> {
-                    PrincipalUser principalUser = PrincipalUser.builder()
-                            .userId(user.getUserId())
-                            .email(user.getEmail())
-                            .password(user.getPassword())
-                            .username(user.getUsername())
-                            .profileImg(user.getProfileImg())
-                            .status(user.getStatus())
-                            .userRoles(user.getUserRoles())
-                            .build();
-
-                    Authentication authentication = new UsernamePasswordAuthenticationToken(principalUser, "", principalUser.getAuthorities());
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }, () -> {
-                    throw new AuthenticationServiceException("인증 실패");
-                });
-            } catch (RuntimeException e) {
-                e.printStackTrace();
-            }
-        }
+//        if (jwtUtils.isBearer(authorization)) {
+//            String accessToken = jwtUtils.removeBearer(authorization);
+//
+//            try {
+//                Claims claims = jwtUtils.getClaims(accessToken);
+//                String id = claims.getId();
+//                Integer userId = Integer.parseInt(id);
+//
+//                Optional<User> foundUser = userRepository.getUserByUserId(userId);
+//                foundUser.ifPresentOrElse((user) -> {
+//                    PrincipalUser principalUser = PrincipalUser.builder()
+//                            .userId(user.getUserId())
+//                            .email(user.getEmail())
+//                            .password(user.getPassword())
+//                            .username(user.getUsername())
+//                            .profileImg(user.getProfileImg())
+//                            .status(user.getStatus())
+//                            .userRoles(user.getUserRoles())
+//                            .build();
+//
+//                    Authentication authentication = new UsernamePasswordAuthenticationToken(principalUser, "", principalUser.getAuthorities());
+//                    SecurityContextHolder.getContext().setAuthentication(authentication);
+//                }, () -> {
+//                    throw new AuthenticationServiceException("인증 실패");
+//                });
+//            } catch (RuntimeException e) {
+//                e.printStackTrace();
+//            }
+//        }
 
         filterChain.doFilter(servletRequest, servletResponse);
     }
