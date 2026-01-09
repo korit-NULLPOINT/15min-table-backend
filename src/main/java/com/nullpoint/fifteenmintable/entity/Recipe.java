@@ -28,9 +28,10 @@ public class Recipe {
     private LocalDateTime createDt;
     private LocalDateTime updateDt;
 
-    private List<Comment> commentList;
-    private List<RecipeRating> recipeRatingList;
-    private List<RecipeHashtag> recipeHashtagList;
+    private Board board;
     private MainCategory mainCategory;
     private SubCategory subCategory;
+    private List<RecipeRating> recipeRatingList;
+    private List<RecipeHashtag> recipeHashtagList;
+
 }

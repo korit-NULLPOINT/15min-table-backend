@@ -19,6 +19,5 @@ public class Board {
     private LocalDateTime createDt;
     private LocalDateTime updateDt;
 
-    private List<Recipe> recipeList;
     private BoardType boardType;
 }
