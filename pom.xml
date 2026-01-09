@@ -11,10 +11,10 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.korit</groupId>
-    <artifactId>15min-table-backend</artifactId>
+    <groupId>com.nullpoint.fifteenmintable</groupId>
+    <artifactId>fifteen-min-table-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>15min-table-backend</name>
+    <name>fifteen-min-table-backend</name>
     <description>15min-table-backend</description>
 
     <properties>
