@@ -1,6 +1,4 @@
 package com.nullpoint.fifteenmintable.service;
-
-
 import com.nullpoint.fifteenmintable.dto.ApiRespDto;
 import com.nullpoint.fifteenmintable.dto.auth.SigninReqDto;
 import com.nullpoint.fifteenmintable.dto.auth.SignupReqDto;
@@ -14,11 +12,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserAuthService {
-    
+public class AdminAuthService {
+
     @Autowired
     private JwtUtils jwtUtils;
 
@@ -50,7 +49,7 @@ public class UserAuthService {
 
         UserRole userRole = UserRole.builder()
                 .userId(optionalUser.get().getUserId())
-                .roleId(3)
+                .roleId(1)
                 .build();
 
         int result = userRoleRepository.addUserRole(userRole);
@@ -60,6 +59,7 @@ public class UserAuthService {
 
         return new ApiRespDto<>("success", "회원가입이 완료되었습니다.", optionalUser.get());
     }
+
     public ApiRespDto<?> signin(SigninReqDto signinReqDto) {
         Optional<User> foundUser = userRepository.getUserByEmail(signinReqDto.getEmail());
         if (foundUser.isEmpty()) {
@@ -70,8 +70,9 @@ public class UserAuthService {
             return new ApiRespDto<>("failed", "사용자 정보를 다시 확인해주세요.", null);
         }
 
-        if (!foundUser.get().isActive()) {
-            return new ApiRespDto<>("failed", "탈퇴처리된 계정입니다.", null);
+        List<UserRole> userRoles = foundUser.get().getUserRoles();
+        if (userRoles.stream().noneMatch(userRole -> userRole.getRoleId() == 1)) {
+            return new ApiRespDto<>("failed", "접근 권한이 없습니다.", null);
         }
 
         String accessToken = jwtUtils.generateAccessToken(foundUser.get().getUserId().toString());
@@ -79,14 +80,3 @@ public class UserAuthService {
         return new ApiRespDto<>("success", "로그인 성공", accessToken);
     }
 }
-
-
-
-
-
-
-
-
-
-
-

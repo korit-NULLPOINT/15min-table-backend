@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nullpoint.fifteenmintable.mapper.OAuth2UserMapper">
+    <resultMap id="OAuth2UserResultMap" type="com.nullpoint.fifteenmintable.entity.OAuth2User">
+        <id property="oauth2UserId" column="oauth2_user_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="provider" column="provider"/>
+        <result property="providerUserId" column="provider_user_id"/>
+        <result property="createDt" column="create_dt"/>
+    </resultMap>
+
+    <insert id="addOAuth2User">
+        insert into
+            oauth2_user_tb
+        values
+            (0, #{userId}, #{provider}, #{providerUserId}, now());
+    </insert>
+
+    <select id="getOAuth2UserByProviderAndProviderUserId" resultMap="OAuth2UserResultMap">
+        select
+            *
+        from
+            oauth2_user_tb
+        where
+            provider = #{provider}
+            and provider_user_id = #{providerUserId};
+    </select>
+
+</mapper>
+
+
+
+
+
+
+
+
