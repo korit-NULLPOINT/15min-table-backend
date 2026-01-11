@@ -6,14 +6,14 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class AddCommentDto {
-    private Integer recipeId;
+public class ModifyCommentReqDto {
+    private Integer commentId;
     private Integer userId;
     private String content;
 
     public Comment toEntity() {
         return Comment.builder()
-                .recipeId(recipeId)
+                .commentId(commentId)
                 .userId(userId)
                 .content(content)
                 .build();

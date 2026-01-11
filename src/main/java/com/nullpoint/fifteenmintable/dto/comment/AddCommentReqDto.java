@@ -1,4 +1,4 @@
-package com.nullpoint.fifteenmintable.dto;
+package com.nullpoint.fifteenmintable.dto.comment;
 
 import com.nullpoint.fifteenmintable.entity.Comment;
 import lombok.AllArgsConstructor;
