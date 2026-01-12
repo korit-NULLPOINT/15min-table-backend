@@ -1,8 +1,8 @@
 package com.nullpoint.fifteenmintable.service;
 
-import com.nullpoint.fifteenmintable.dto.AddRecipeReqDto;
+import com.nullpoint.fifteenmintable.dto.recipe.AddRecipeReqDto;
 import com.nullpoint.fifteenmintable.dto.ApiRespDto;
-import com.nullpoint.fifteenmintable.dto.ModifyRecipeReqDto;
+import com.nullpoint.fifteenmintable.dto.recipe.ModifyRecipeReqDto;
 import com.nullpoint.fifteenmintable.entity.Recipe;
 import com.nullpoint.fifteenmintable.entity.User;
 import com.nullpoint.fifteenmintable.repository.RecipeRepository;
@@ -122,11 +122,11 @@ public class RecipeService {
         
         Recipe recipe = modifyRecipeReqDto.toEntity();
 
-        if (recipe.getMainCategory() == null) {
+        if (recipe.getMainCategoryId() == null) {
             recipe.setMainCategoryId(foundRecipe.getMainCategoryId());
         }
 
-        if (recipe.getSubCategory() == null) {
+        if (recipe.getSubCategoryId() == null) {
             recipe.setSubCategoryId(foundRecipe.getSubCategoryId());
         }
 

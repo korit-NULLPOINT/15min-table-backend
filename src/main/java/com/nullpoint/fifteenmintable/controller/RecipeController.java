@@ -1,7 +1,7 @@
 package com.nullpoint.fifteenmintable.controller;
 
-import com.nullpoint.fifteenmintable.dto.AddRecipeReqDto;
-import com.nullpoint.fifteenmintable.dto.ModifyRecipeReqDto;
+import com.nullpoint.fifteenmintable.dto.recipe.AddRecipeReqDto;
+import com.nullpoint.fifteenmintable.dto.recipe.ModifyRecipeReqDto;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import com.nullpoint.fifteenmintable.service.RecipeService;
 import lombok.RequiredArgsConstructor;
