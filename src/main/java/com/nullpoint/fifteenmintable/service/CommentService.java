@@ -8,6 +8,7 @@ import com.nullpoint.fifteenmintable.entity.Comment;
 import com.nullpoint.fifteenmintable.entity.User;
 import com.nullpoint.fifteenmintable.repository.CommentRepository;
 import com.nullpoint.fifteenmintable.repository.UserRepository;
+import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +23,8 @@ public class CommentService {
     @Autowired
     private UserRepository userRepository;
 
-    public ApiRespDto<?> addComment(AddCommentReqDto addCommentReqDto) {
-        Optional<User> foundUser= userRepository.getUserByUserId(addCommentReqDto.getUserId());
+    public ApiRespDto<?> addComment(AddCommentReqDto addCommentReqDto, PrincipalUser principalUser) {
+        Optional<User> foundUser= userRepository.getUserByUserId(principalUser.getUserId());
 
         if (foundUser.isEmpty()) {
             return new ApiRespDto<>("failed", "존재 하지 않은 유저 입니다.", null);

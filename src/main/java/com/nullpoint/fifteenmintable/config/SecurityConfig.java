@@ -65,12 +65,11 @@ public class SecurityConfig {
             ).hasRole("ADMIN");
             auth.requestMatchers(
                     "/board/**"
-            ).hasAnyRole("ADMIN", "USER","TEMPORARY_USER");
+            ).hasAnyRole("ADMIN", "USER", "TEMP_USER");
             auth.requestMatchers(
                     "/user/auth/**",
-                    "/admin/auth/**",
-                    "/mail/verify",
-                    "/login/oauth2/**",
+                    "/mail/verify/**",
+                    "/login/outh2/**",
                     "/oauth2/**"
             ).permitAll();
             auth.anyRequest().authenticated();
@@ -78,7 +77,7 @@ public class SecurityConfig {
 
         http.oauth2Login(oauth2 ->
                 oauth2.userInfoEndpoint(userInfo ->
-                        userInfo.userService(oAuth2PrincipalService))
+                                userInfo.userService(oAuth2PrincipalService))
                         .successHandler(oAuth2SuccessHandler)
         );
 

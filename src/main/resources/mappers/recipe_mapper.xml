@@ -21,6 +21,8 @@
         <association property="board" resultMap="BoardResultMap"/>
         <association property="mainCategory" resultMap="MainCategoryResultMap"/>
         <association property="subCategory" resultMap="SubCategoryResultMap"/>
+        <collection property="recipeRatingList" resultMap="RecipeRatingResultMap"/>
+        <collection property="recipeHashtagList" resultMap="RecipeHashtagResultMap"/>
     </resultMap>
     <resultMap id="BoardResultMap" type="com.nullpoint.fifteenmintable.entity.Board">
         <id property="boardId" column="board_id"/>

@@ -53,10 +53,6 @@ public class UserRepository {
         return userMapper.getUserList();
     }
 
-    public int withdraw(Integer userId) {
-        return userMapper.withdraw(userId);
-    }
-
     public void deleteUser() {
         userMapper.deleteUser();
     }
