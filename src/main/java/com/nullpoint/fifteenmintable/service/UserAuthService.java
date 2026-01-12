@@ -24,6 +24,9 @@ public class UserAuthService {
     @Autowired
     private UserRoleRepository userRoleRepository;
 
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
 
     @Transactional(rollbackFor = Exception.class)
     public ApiRespDto<?> signup(SignupReqDto signupReqDto) {

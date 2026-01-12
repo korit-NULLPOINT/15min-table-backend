@@ -1,7 +1,11 @@
 package com.nullpoint.fifteenmintable.service;
 import com.nullpoint.fifteenmintable.dto.ApiRespDto;
+import com.nullpoint.fifteenmintable.entity.User;
+import com.nullpoint.fifteenmintable.entity.UserRole;
 import com.nullpoint.fifteenmintable.repository.UserRepository;
 import com.nullpoint.fifteenmintable.repository.UserRoleRepository;
+import com.nullpoint.fifteenmintable.security.jwt.JwtUtils;
+import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
