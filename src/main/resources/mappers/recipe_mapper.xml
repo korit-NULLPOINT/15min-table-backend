@@ -18,11 +18,11 @@
         <result property="viewCount" column="view_count"/>
         <result property="createDt" column="create_dt"/>
         <result property="updateDt" column="update_dt"/>
-        <collection property="recipeRatingList" resultMap="RecipeRatingResultMap"/>
-        <collection property="recipeHashtagList" resultMap="RecipeHashtagResultMap"/>
         <association property="board" resultMap="BoardResultMap"/>
         <association property="mainCategory" resultMap="MainCategoryResultMap"/>
         <association property="subCategory" resultMap="SubCategoryResultMap"/>
+        <collection property="recipeRatingList" resultMap="RecipeRatingResultMap"/>
+        <collection property="recipeHashtagList" resultMap="RecipeHashtagResultMap"/>
     </resultMap>
     <resultMap id="RecipeRatingResultMap" type="com.nullpoint.fifteenmintable.entity.RecipeRating">
         <id property="recipeRatingId" column="recipe_rating_id"/>
