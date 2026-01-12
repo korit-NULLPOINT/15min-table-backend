@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nullpoint.fifteenmintable.mapper.RecipeRatingMapper">
+    <resultMap id="RecipeRatingResultMap" type="com.nullpoint.fifteenmintable.entity.RecipeRating">
+        <id property="recipeRatingId" column="recipe_rating_id" />
+        <result property="recipeId" column="recipe_id" />
+        <result property="userId" column="user_id" />
+        <result property="rating" column="rating" />
+        <result property="createDt" column="create_dt" />
+        <result property="updateDt" column="update_dt" />
+    </resultMap>
+
+    <insert id="insertRating" useGeneratedKeys="true" keyProperty="recipeRatingId">
+        insert into
+            recipe_rating_tb
+        values
+            (0, #{recipeId}, #{userId}, #{rating}, now(), null)
+    </insert>
+
+    <update id="updateRating">
+        update
+            recipe_rating_tb
+        set
+            rating = #{rating},
+            update_dt = now()
+        where
+            recipe_id = #{recipeId}
+            and user_id = #{userId}
+    </update>
+
+    <delete id="deleteRating">
+        delete from
+            recipe_rating_tb
+        where
+            recipe_id = #{recipeId}
+            and user_id = #{userId}
+    </delete>
+
+    <select id="getRatingByRecipeIdAndUserId" resultMap="RecipeRatingResultMap">
+        select
+            recipe_rating_id,
+            recipe_id,
+            user_id,
+            rating,
+            create_dt,
+            update_dt
+        from
+            recipe_rating_tb
+        where
+            recipe_id = #{recipeId}
+            and user_id = #{userId}
+    </select>
+
+    <select id="getRatingSummaryByRecipeId" resultType="com.nullpoint.fifteenmintable.dto.rating.RatingSummaryDto">
+        select
+            avg(rating) as avgRating,
+            count(*) as countRating
+        from recipe_rating_tb
+            where recipe_id = #{recipeId}
+    </select>
+</mapper>
