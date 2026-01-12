@@ -13,7 +13,7 @@ public interface RecipeRatingMapper {
     Optional<List<RecipeRating>> findAll();
     Optional<List<RecipeRating>> findByRecipeId(Integer recipeId);
     Optional<List<RecipeRating>> findByUserId(Integer userId);
-    Optional<List<RecipeRating>> findByRaring(Integer rating);
+    Optional<List<RecipeRating>> findByRating(Integer rating);
 
     int updateRecipeRating(RecipeRating recipeRating);
 
