@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RatingSummaryDto {
+public class RatingSummaryRespDto {
     private Double avgRating;
     private Integer countRating;
 }

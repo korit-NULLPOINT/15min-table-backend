@@ -24,8 +24,6 @@ public class CommentService {
 
     @Autowired
     private CommentRepository commentRepository;
-    @Autowired
-    private UserRepository userRepository;
 
     public ApiRespDto<?> addComment(AddCommentReqDto addCommentReqDto, PrincipalUser principalUser) {
 

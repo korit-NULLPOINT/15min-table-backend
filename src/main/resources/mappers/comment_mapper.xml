@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.nullpoint.fifteenmintable.mapper.CommentMapper">
-    <resultMap id="CommentResultMap" type="com.nullpoint.fifteenmintable.entity.Comment">
+    <resultMap id="CommentRespDto" type="com.nullpoint.fifteenmintable.entity.Comment">
         <id property="commentId" column="comment_id"/>
         <result property="recipeId" column="recipe_id"/>
         <result property="userId" column="user_id"/>
@@ -19,7 +19,7 @@
             (0, #{commentId}, #{userId}, #{content}, now(), null);
     </insert>
 
-    <select id="getCommentByCommentId" resultMap="CommentResultMap">
+    <select id="getCommentByCommentId" resultMap="CommentRespDto">
         select
             *
         from
@@ -28,14 +28,14 @@
             comment_id = #{commentId};
     </select>
 
-    <select id="getCommentList" resultMap="CommentResultMap">
+    <select id="getCommentList" resultMap="CommentRespDto">
         select
             *
         from
             comment_tb;
     </select>
 
-    <select id="getCommentListByUserId" resultMap="CommentResultMap">
+    <select id="getCommentListByUserId" resultMap="CommentRespDto">
         select
             *
         from
