@@ -13,7 +13,7 @@ public interface BoardMapper {
     Optional<List<Board>> findAll();
     Optional<List<Board>> findByBoardTypeId(Integer boardTypeId);
     Optional<Board> findByTitle(String title);
-    Optional<Board> findByBoardId();
+    Optional<Board> findByBoardId(Integer boardId);
 
     int updateBoard(Board board);
 

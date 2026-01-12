@@ -15,5 +15,4 @@ public interface CommentMapper {
     Optional<CommentRespDto> getCommentByCommentId(Integer commentId);
     List<CommentRespDto> getCommentList();
     List<CommentRespDto> getCommentListByUserId(Integer userId);
-
 }
