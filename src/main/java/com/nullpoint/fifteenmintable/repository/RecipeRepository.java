@@ -1,6 +1,5 @@
 package com.nullpoint.fifteenmintable.repository;
 
-import com.nullpoint.fifteenmintable.entity.Board;
 import com.nullpoint.fifteenmintable.entity.Recipe;
 import com.nullpoint.fifteenmintable.mapper.RecipeMapper;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +13,11 @@ import java.util.Optional;
 public class RecipeRepository {
     private final RecipeMapper recipeMapper;
 
-    public int createRecipe(Board board) {
-        return recipeMapper.createRecipe(board);
+    public int createRecipe(Recipe recipe) {
+        return recipeMapper.createRecipe(recipe);
     }
 
-    public Optional<List<Recipe>> findAll() {
+    public List<Recipe> findAll() {
         return recipeMapper.findAll();
     }
 
