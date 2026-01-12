@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class RecipeRatingService {
+
     @Autowired
     private RecipeRatingRepository recipeRatingRepository;
 
@@ -81,5 +82,4 @@ public class RecipeRatingService {
 
         return new ApiRespDto<>("success", "평점 요약 조회 완료", summary);
     }
-
 }

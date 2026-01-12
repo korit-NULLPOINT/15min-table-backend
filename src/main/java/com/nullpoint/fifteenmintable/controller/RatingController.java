@@ -23,9 +23,9 @@ public class RatingController {
         return ResponseEntity.ok(recipeRatingService.upsertRating(upsertRatingReqDto, principalUser));
     }
 
-    @PostMapping("/delete")
+    @PostMapping("/delete/{recipeId}")
     public ResponseEntity<?> deleteRating(
-            @RequestBody Integer recipeId,
+            @PathVariable Integer recipeId,
             @AuthenticationPrincipal PrincipalUser principalUser
     ) {
         return ResponseEntity.ok(recipeRatingService.deleteRating(recipeId, principalUser));
