@@ -6,6 +6,5 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class DeleteCommentReqDto {
-    private Integer recipeId;
-    private Integer userId;
+    private Integer commentId;
 }
