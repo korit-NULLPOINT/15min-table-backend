@@ -1,7 +1,7 @@
 package com.nullpoint.fifteenmintable.config;
-
-
 import com.nullpoint.fifteenmintable.security.filter.JwtAuthenticationFilter;
+import com.nullpoint.fifteenmintable.security.handler.OAuth2SuccessHandler;
+import com.nullpoint.fifteenmintable.service.OAuth2PrincipalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +14,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import jakarta.servlet.http.HttpServletResponse;
+
 
 @Configuration
 public class SecurityConfig {
@@ -21,11 +23,11 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-//    @Autowired
-//    private OAuth2PrincipalService oAuth2PrincipalService;
-//
-//    @Autowired
-//    private OAuth2SuccessHandler oAuth2SuccessHandler;
+    @Autowired
+    private OAuth2PrincipalService oAuth2PrincipalService;
+
+    @Autowired
+    private OAuth2SuccessHandler oAuth2SuccessHandler;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -63,7 +65,7 @@ public class SecurityConfig {
             ).hasRole("ADMIN");
             auth.requestMatchers(
                     "/board/**"
-            ).hasAnyRole("ADMIN", "USER", "TEMPORARY_USER");
+            ).hasAnyRole("ADMIN", "USER","TEMPORARY_USER");
             auth.requestMatchers(
                     "/user/auth/**",
                     "/admin/auth/**",
@@ -74,11 +76,11 @@ public class SecurityConfig {
             auth.anyRequest().authenticated();
         });
 
-//        http.oauth2Login(oauth2 ->
-//                oauth2.userInfoEndpoint(userInfo ->
-//                        userInfo.userService(oAuth2PrincipalService))
-//                        .successHandler(oAuth2SuccessHandler)
-//        );
+        http.oauth2Login(oauth2 ->
+                oauth2.userInfoEndpoint(userInfo ->
+                        userInfo.userService(oAuth2PrincipalService))
+                        .successHandler(oAuth2SuccessHandler)
+        );
 
         return http.build();
     }

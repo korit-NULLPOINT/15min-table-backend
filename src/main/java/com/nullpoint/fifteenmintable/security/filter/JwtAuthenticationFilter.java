@@ -1,6 +1,4 @@
 package com.nullpoint.fifteenmintable.security.filter;
-
-
 import com.nullpoint.fifteenmintable.entity.User;
 import com.nullpoint.fifteenmintable.repository.UserRepository;
 import com.nullpoint.fifteenmintable.security.jwt.JwtUtils;

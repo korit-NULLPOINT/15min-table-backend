@@ -1,6 +1,5 @@
 package com.nullpoint.fifteenmintable.controller.user;
-
-
+import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import com.nullpoint.fifteenmintable.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +20,10 @@ public class MailController {
     @Autowired
     private MailService mailService;
 
+    @PostMapping("/send")
+    public ResponseEntity<?> sendMail(@AuthenticationPrincipal PrincipalUser principalUser) {
+        return ResponseEntity.ok(mailService.sendMail(principalUser));
+    }
 
     @GetMapping("/verify")
     public String verify(Model model, @RequestParam String token) {
