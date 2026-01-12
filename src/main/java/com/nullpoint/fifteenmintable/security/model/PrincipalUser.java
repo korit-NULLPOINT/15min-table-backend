@@ -1,6 +1,7 @@
 package com.nullpoint.fifteenmintable.security.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.nullpoint.fifteenmintable.entity.UserRole;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,13 +22,11 @@ public class PrincipalUser implements UserDetails {
     private String username;
     private String profileImg;
     private String status;
-//    private List<UserRole> userRoles;
-//
+    private List<UserRole> userRoles;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-
-//                userRoles.stream().map(userRole -> new SimpleGrantedAuthority(userRole.getRole().getRoleName()))
-//                .collect(Collectors.toList());
+        return userRoles.stream().map(userRole -> new SimpleGrantedAuthority(userRole.getRole().getRoleName()))
+                .collect(Collectors.toList());
     }
 }
