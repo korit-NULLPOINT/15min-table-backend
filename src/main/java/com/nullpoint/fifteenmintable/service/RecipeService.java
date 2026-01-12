@@ -5,7 +5,6 @@ import com.nullpoint.fifteenmintable.dto.ApiRespDto;
 import com.nullpoint.fifteenmintable.dto.ModifyRecipeReqDto;
 import com.nullpoint.fifteenmintable.entity.Recipe;
 import com.nullpoint.fifteenmintable.entity.User;
-import com.nullpoint.fifteenmintable.mapper.RecipeMapper;
 import com.nullpoint.fifteenmintable.repository.RecipeRepository;
 import com.nullpoint.fifteenmintable.repository.UserRepository;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
@@ -29,6 +28,7 @@ public class RecipeService {
 
         Recipe recipe = addRecipeReqDto.toEntity();
         recipe.setUserId(principalUser.getUserId());
+        recipe.setBoardId(1);
 
         int result = recipeRepository.createRecipe(recipe);
 
