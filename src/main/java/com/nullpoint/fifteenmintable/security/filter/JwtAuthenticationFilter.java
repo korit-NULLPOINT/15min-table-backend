@@ -27,10 +27,15 @@ public class JwtAuthenticationFilter implements Filter {
     private UserRepository userRepository;
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
+    public void doFilter(
+            ServletRequest servletRequest,
+            ServletResponse servletResponse,
+            FilterChain filterChain
+    ) throws IOException, ServletException {
+        HttpServletRequest request = (HttpServletRequest)  servletRequest;
 
         List<String> methods = List.of("POST", "GET", "PUT", "PATCH", "DELETE");
+
         if (!methods.contains(request.getMethod())) {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
@@ -53,16 +58,18 @@ public class JwtAuthenticationFilter implements Filter {
                             .email(user.getEmail())
                             .password(user.getPassword())
                             .username(user.getUsername())
-                            .profileImg(user.getProfileImg())
-                            .status(user.getStatus())
+                            .profileImgUrl(user.getProfileImgUrl())
+
                             .userRoles(user.getUserRoles())
                             .build();
 
                     Authentication authentication = new UsernamePasswordAuthenticationToken(principalUser, "", principalUser.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authentication);
+
                 }, () -> {
                     throw new AuthenticationServiceException("인증 실패");
                 });
+
             } catch (RuntimeException e) {
                 e.printStackTrace();
             }

@@ -54,12 +54,14 @@ public class UserAuthService {
                 .build();
 
         int result = userRoleRepository.addUserRole(userRole);
+
         if (result != 1) {
             throw new RuntimeException("회원 권한 추가에 실패했습니다.");
         }
 
         return new ApiRespDto<>("success", "회원가입이 완료되었습니다.", optionalUser.get());
     }
+
     public ApiRespDto<?> signin(SigninReqDto signinReqDto) {
         Optional<User> foundUser = userRepository.getUserByEmail(signinReqDto.getEmail());
         if (foundUser.isEmpty()) {
@@ -68,10 +70,6 @@ public class UserAuthService {
 
         if (!bCryptPasswordEncoder.matches(signinReqDto.getPassword(), foundUser.get().getPassword())) {
             return new ApiRespDto<>("failed", "사용자 정보를 다시 확인해주세요.", null);
-        }
-
-        if (!foundUser.get().isActive()) {
-            return new ApiRespDto<>("failed", "탈퇴처리된 계정입니다.", null);
         }
 
         String accessToken = jwtUtils.generateAccessToken(foundUser.get().getUserId().toString());

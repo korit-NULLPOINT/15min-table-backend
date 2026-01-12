@@ -36,9 +36,4 @@ public class UserAccountController {
     public ResponseEntity<?> changeProfileImg(@RequestBody ChangeProfileImgReqDto profileImgReqDto, @AuthenticationPrincipal PrincipalUser principalUser) {
         return ResponseEntity.ok(userAccountService.changeProfileImg(profileImgReqDto, principalUser));
     }
-
-    @PostMapping("/withdraw")
-    public ResponseEntity<?> withdraw(@AuthenticationPrincipal PrincipalUser principalUser) {
-        return ResponseEntity.ok(userAccountService.withdraw(principalUser));
-    }
 }
