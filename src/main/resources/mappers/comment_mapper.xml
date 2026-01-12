@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nullpoint.fifteenmintable.mapper.UserMapper">
+    <resultMap id="CommentResultMap" type="com.nullpoint.fifteenmintable.entity.Comment">
+        <id property="commentId" column="comment_id"/>
+        <result property="recipeId" column="recipe_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="content" column="content"/>
+        <result property="createDt" column="create_dt"/>
+        <result property="updateDt" column="update_dt"/>
+    </resultMap>
+
+    <insert id="addComment" useGeneratedKeys="true" keyProperty="comment_id">
+        insert into
+            comment_tb
+        values
+            (0, #{commentId}, #{userId}, #{content}, now(), null);
+    </insert>
+
+    <select id="getCommentByCommentId" resultMap="CommentResultMap">
+        select
+            *
+        from
+            comment_tb
+        where
+            comment_id = #{commentId};
+    </select>
+
+    <select id="getCommentList" resultMap="CommentResultMap">
+        select
+            *
+        from
+            comment_tb;
+    </select>
+
+    <select id="getCommentByUserId" resultMap="CommentResultMap">
+        select
+            *
+        from
+            comment_tb
+        where
+            user_id = #{userId};
+    </select>
+
+    <update id="modifyComment">
+        update
+            comment_tb
+        set
+            content = #{content},
+            update_dt = now()
+        where
+            comment_id = #{commentId};
+    </update>
+
+    <delete id="deleteComment">
+        delete from
+            comment_tb
+        where
+            comment_id = #{commentId};
+    </delete>
+</mapper>

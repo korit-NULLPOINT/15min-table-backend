@@ -27,19 +27,11 @@ public class JwtAuthenticationFilter implements Filter {
     private UserRepository userRepository;
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
-            throws IOException, ServletException {
-
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
-        String path = request.getRequestURI();
 
-        // 🔥 auth / oauth 경로는 JWT 검사 자체 스킵
-        if (path.startsWith("/user/auth/")
-                || path.startsWith("/admin/auth/")
-                || path.startsWith("/oauth2/")
-                || path.startsWith("/login/oauth2/")
-                || path.equals("/mail/verify")) {
-
+        List<String> methods = List.of("POST", "GET", "PUT", "PATCH", "DELETE");
+        if (!methods.contains(request.getMethod())) {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
@@ -47,33 +39,32 @@ public class JwtAuthenticationFilter implements Filter {
         String authorization = request.getHeader("Authorization");
 
         if (jwtUtils.isBearer(authorization)) {
+            String accessToken = jwtUtils.removeBearer(authorization);
+
             try {
-                String accessToken = jwtUtils.removeBearer(authorization);
                 Claims claims = jwtUtils.getClaims(accessToken);
+                String id = claims.getId();
+                Integer userId = Integer.parseInt(id);
 
-                Integer userId = Integer.parseInt(claims.getId());
-                User user = userRepository.getUserByUserId(userId)
-                        .orElseThrow();
+                Optional<User> foundUser = userRepository.getUserByUserId(userId);
+                foundUser.ifPresentOrElse((user) -> {
+                    PrincipalUser principalUser = PrincipalUser.builder()
+                            .userId(user.getUserId())
+                            .email(user.getEmail())
+                            .password(user.getPassword())
+                            .username(user.getUsername())
+                            .profileImg(user.getProfileImg())
+                            .status(user.getStatus())
+                            .userRoles(user.getUserRoles())
+                            .build();
 
-                PrincipalUser principalUser = PrincipalUser.builder()
-                        .userId(user.getUserId())
-                        .email(user.getEmail())
-                        .password(user.getPassword())
-                        .username(user.getUsername())
-                        .profileImg(user.getProfileImg())
-                        .status(user.getStatus())
-                        .userRoles(user.getUserRoles())
-                        .build();
-
-                Authentication authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                principalUser, null, principalUser.getAuthorities());
-
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            } catch (Exception e) {
-                // ❗ 여기서 SecurityContext 비우고 그냥 통과
-                SecurityContextHolder.clearContext();
+                    Authentication authentication = new UsernamePasswordAuthenticationToken(principalUser, "", principalUser.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }, () -> {
+                    throw new AuthenticationServiceException("인증 실패");
+                });
+            } catch (RuntimeException e) {
+                e.printStackTrace();
             }
         }
 
