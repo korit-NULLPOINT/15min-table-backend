@@ -1,4 +1,4 @@
-package com.nullpoint.fifteenmintable.dto;
+package com.nullpoint.fifteenmintable.dto.recipe;
 
 import com.nullpoint.fifteenmintable.entity.Recipe;
 import lombok.AllArgsConstructor;
