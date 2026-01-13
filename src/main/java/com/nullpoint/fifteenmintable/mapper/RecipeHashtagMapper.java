@@ -10,12 +10,10 @@ import java.util.Optional;
 @Mapper
 public interface RecipeHashtagMapper {
     int createRecipeHashtag(RecipeHashtag recipeHashtag);
+    int deleteAllByRecipeId(Integer recipeId);
+    int deleteByRecipeIdAndHashtagId(Integer recipeId, Integer hashtagId);
+    Optional<RecipeHashtag> getByRecipeHashtagId(Integer recipeHashtagId);
+    List<RecipeHashtag> getByRecipeId(Integer recipeId);
+    List<RecipeHashtag> getByHashtagId(Integer hashtagId);
 
-    List<RecipeHashtag> findAll();
-    Optional<RecipeHashtag> findByRecipeHashtagId(Integer recipeHashtagId);
-    Optional<List<RecipeHashtag>> findByRecipeId(Integer recipeId);
-    Optional<List<RecipeHashtag>> findByHashtagId(Integer hashtagId);
-
-
-    int deleteRecipeHashtag(Integer recipeHashtagId);
 }

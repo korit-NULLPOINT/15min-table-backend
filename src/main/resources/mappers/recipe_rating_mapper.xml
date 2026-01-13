@@ -3,63 +3,61 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.nullpoint.fifteenmintable.mapper.RecipeRatingMapper">
-    <resultMap id="RecipeRatingResultMap" type="com.nullpoint.fifteenmintable.entity.RecipeRating">
-        <id property="recipeRatingId" column="recipe_rating_id"/>
-        <result property="recipeId" column="recipe_id"/>
-        <result property="userId" column="user_id"/>
-        <result property="rating" column="rating"/>
-        <result property="createDt" column="create_dt"/>
-        <result property="updateDt" column="update_dt"/>
+    <resultMap id="RecipeRatingRespDto" type="com.nullpoint.fifteenmintable.entity.RecipeRating">
+        <id property="recipeRatingId" column="recipe_rating_id" />
+        <result property="recipeId" column="recipe_id" />
+        <result property="userId" column="user_id" />
+        <result property="rating" column="rating" />
+        <result property="createDt" column="create_dt" />
+        <result property="updateDt" column="update_dt" />
     </resultMap>
-    <insert id="createRecipeRating" useGeneratedKeys="true" keyProperty="recipeRatingId">
+
+    <insert id="insertRating" useGeneratedKeys="true" keyProperty="recipeRatingId">
         insert into
             recipe_rating_tb
         values
-            (0, #{recipeId}, #{userId}, #{rating}, now(), null);
+            (0, #{recipeId}, #{userId}, #{rating}, now(), null)
     </insert>
-    <select id="findAll" resultMap="RecipeRatingResultMap">
-        select
-            *
-        from
-            recipe_rating_tb;
-    </select>
-    <select id="findByRecipeId" resultMap="RecipeRatingResultMap">
-        select
-            *
-        from
-            recipe_rating_tb
-        where
-            recipe_id = #{recipeId};
-    </select>
-    <select id="findByUserId" resultMap="RecipeRatingResultMap">
-        select
-            *
-        from
-            recipe_rating_tb
-        where
-            user_id = #{userId};
-    </select>
-    <select id="findByRating" resultMap="RecipeRatingResultMap">
-        select
-            *
-        from
-            recipe_rating_tb
-        where
-            rating = #{rating};
-    </select>
-    <update id="updateRecipeRating">
+
+    <update id="updateRating">
         update
             recipe_rating_tb
         set
             rating = #{rating},
             update_dt = now()
         where
-            recipe_rating_id = #{recipeRatingId};
+            recipe_id = #{recipeId}
+            and user_id = #{userId}
     </update>
-    <delete id="deleteRecipeRating">
+
+    <delete id="deleteRating">
         delete from
             recipe_rating_tb
         where
-            recipe_rating_id = #{recipeRatingId};
+            recipe_id = #{recipeId}
+            and user_id = #{userId}
     </delete>
+
+    <select id="getRatingByRecipeIdAndUserId" resultMap="RecipeRatingRespDto">
+        select
+            recipe_rating_id,
+            recipe_id,
+            user_id,
+            rating,
+            create_dt,
+            update_dt
+        from
+            recipe_rating_tb
+        where
+            recipe_id = #{recipeId}
+            and user_id = #{userId}
+    </select>
+
+    <select id="getRatingSummaryByRecipeId" resultType="com.nullpoint.fifteenmintable.dto.rating.RatingSummaryRespDto">
+        select
+            avg(rating) as avgRating,
+            count(*) as countRating
+        from recipe_rating_tb
+            where recipe_id = #{recipeId}
+    </select>
 </mapper>

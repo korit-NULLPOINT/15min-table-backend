@@ -45,9 +45,9 @@
     </resultMap>
     <insert id="createRecipe" useGeneratedKeys="true" keyProperty="recipeId">
         insert into
-            recipe_tb
+        recipe_tb
         values
-            (0, #{boardId}, #{mainCategoryId}, #{subCategoryId}, #{userId}, #{title}, #{intro}, #{thumbnailImgUrl}, #{ingredients}, #{ingredientImgUrl}, #{steps}, 0, now(), null);
+        (0, #{boardId}, #{mainCategoryId}, #{subCategoryId}, #{userId}, #{title}, #{intro}, #{thumbnailImgUrl}, #{ingredients}, #{ingredientImgUrl}, #{steps}, 0, now(), null);
     </insert>
 
     <select id="findAll" resultMap="RecipeResultMap">
@@ -119,7 +119,7 @@
             left outer join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
             left outer join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
         where
-            rt.recipe_id = #{recipeId};
+        rt.recipe_id = #{recipeId};
     </select>
     <select id="findByUserId" resultMap="RecipeResultMap">
         select
@@ -155,7 +155,7 @@
             left outer join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
             left outer join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
         where
-            rt.user_id = #{userId};
+        rt.user_id = #{userId};
     </select>
     <select id="findByMainCategoryId" resultMap="RecipeResultMap">
         select
@@ -191,7 +191,7 @@
             left outer join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
             left outer join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
         where
-            rt.main_category_id = #{mainCategoryId};
+        rt.main_category_id = #{mainCategoryId};
     </select>
     <select id="findBySubCategoryId" resultMap="RecipeResultMap">
         select
@@ -227,7 +227,7 @@
             left outer join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
             left outer join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
         where
-            rt.sub_category_id = #{subCategoryId};
+        rt.sub_category_id = #{subCategoryId};
     </select>
     <select id="findByKeyword" resultMap="RecipeResultMap">
         select
@@ -271,24 +271,24 @@
     </select>
     <update id="updateRecipe">
         update
-            recipe_tb
+        recipe_tb
         set
-            main_category_id = #{mainCategoryId},
-            sub_category_id = #{subCategoryId},
-            title = #{title},
-            intro = #{intro},
-            thumbnail_img_url = #{thumbnailImgUrl},
-            ingredients = #{ingredients},
-            ingredient_img_url = #{ingredientImgUrl},
-            steps = #{steps},
-            update_dt = now()
+        main_category_id = #{mainCategoryId},
+        sub_category_id = #{subCategoryId},
+        title = #{title},
+        intro = #{intro},
+        thumbnail_img_url = #{thumbnailImgUrl},
+        ingredients = #{ingredients},
+        ingredient_img_url = #{ingredientImgUrl},
+        steps = #{steps},
+        update_dt = now()
         where
-            recipe_id = #{recipeId}
+        recipe_id = #{recipeId}
     </update>
     <delete id="deleteRecipe">
         delete from
-            recipe_tb
+        recipe_tb
         where
-            recipe_id = #{recipeId};
+        recipe_id = #{recipeId};
     </delete>
 </mapper>

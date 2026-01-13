@@ -116,11 +116,11 @@ public class RecipeService {
         }
 
         Recipe foundRecipe = foundRecipeOptional.get();
-        
+
         if(!foundRecipe.getUserId().equals(principalUser.getUserId())) {
             return new ApiRespDto<>("failed", "권한이 없습니다.", null);
         }
-        
+
         Recipe recipe = modifyRecipeReqDto.toEntity();
 
         System.out.println(">>>>> 레시피아이디 : " + recipe.getRecipeId());
@@ -197,4 +197,3 @@ public class RecipeService {
         return new ApiRespDto<>("success", "레시피 삭제에 성공했습니다.",null);
     }
 }
-
