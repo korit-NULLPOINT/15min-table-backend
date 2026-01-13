@@ -2,14 +2,19 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.nullpoint.fifteenmintable.mapper.BoardMapper">
+
     <resultMap id="BoardResultMap" type="com.nullpoint.fifteenmintable.entity.Board">
         <id property="boardId" column="board_id"/>
         <result property="title" column="title"/>
-        <result property="boardTypeId" column="board_type_id"/>
         <result property="createDt" column="create_dt"/>
         <result property="updateDt" column="update_dt"/>
-        <association property="boardType" resultMap="BoardTypeResultMap"/>
+        <association
+                property="boardType"
+                javaType="com.nullpoint.fifteenmintable.entity.BoardType"
+                column="board_type_id"
+                resultMap="BoardTypeResultMap"/>
     </resultMap>
 
     <resultMap id="BoardTypeResultMap" type="com.nullpoint.fifteenmintable.entity.BoardType">
@@ -18,71 +23,82 @@
         <result property="boardTypeNameKor" column="board_type_name_kor"/>
     </resultMap>
 
-    <insert id="createBoard" useGeneratedKeys="true" keyProperty="boardId">
-        insert into
-            board_tb
-        values
-            (0, #{title}, #{boardTypeId}, now(), null);
+    <insert id="createBoard"
+            useGeneratedKeys="true"
+            keyProperty="boardId">
+        INSERT INTO board_tb (
+        title,
+        board_type_id,
+        create_dt
+        )
+        VALUES (
+        #{title},
+        #{boardType.boardTypeId},
+        NOW()
+        )
     </insert>
 
     <select id="findAll" resultMap="BoardResultMap">
-        select
-            bt.*,
-            btt.*
-        from
-            board_tb bt
-            join board_type_tb btt (btt.board_type_id = bt.board_type_id);
+        SELECT
+        bt.*,
+        btt.*
+        FROM
+        board_tb bt
+        JOIN board_type_tb btt
+        ON btt.board_type_id = bt.board_type_id
     </select>
 
     <select id="findByTitle" resultMap="BoardResultMap">
-        select
-            bt.*,
-            btt.*
-        from
-            board_tb bt
-            join board_type_tb btt (btt.board_type_id = bt.board_type_id)
-        where
-            bt.title = #{title};
+        SELECT
+        bt.*,
+        btt.*
+        FROM
+        board_tb bt
+        JOIN board_type_tb btt
+        ON btt.board_type_id = bt.board_type_id
+        WHERE
+        bt.title = #{title}
     </select>
-
     <select id="findByBoardTypeId" resultMap="BoardResultMap">
-        select
-            bt.*,
-            btt.*
-        from
-            board_tb bt
-            join board_type_tb btt (btt.board_type_id = bt.board_type_id)
-        where
-            bt.board_type_id = #{boardTypeId};
+        SELECT
+        bt.*,
+        btt.*
+        FROM
+        board_tb bt
+        JOIN board_type_tb btt
+        ON btt.board_type_id = bt.board_type_id
+        WHERE
+        bt.board_type_id = #{boardTypeId}
     </select>
 
     <select id="findByBoardId" resultMap="BoardResultMap">
-        select
-            bt.*,
-            btt.*
-        from
-            board_tb bt
-            join board_type_tb btt (btt.board_type_id = bt.board_type_id)
-        where
-            bt.board_id = #{boardId};
+        SELECT
+        bt.*,
+        btt.*
+        FROM
+        board_tb bt
+        JOIN board_type_tb btt
+        ON btt.board_type_id = bt.board_type_id
+        WHERE
+        bt.board_id = #{boardId}
     </select>
 
     <update id="updateBoard">
-        update
-            board_tb
-        set
-            title = #{title},
-            board_type_id = #{boardTypeId},
-            update_dt = now()
-        where
-            board_id = #{boardId};
+        UPDATE
+        board_tb
+        SET
+        title = #{title},
+        board_type_id = #{boardType.boardTypeId},
+        update_dt = NOW()
+        WHERE
+        board_id = #{boardId}
     </update>
 
     <delete id="deleteBoard">
-        delete from
-            board_tb
-        where
-            board_id = #{boardId};
+        DELETE FROM
+        board_tb
+        WHERE
+        board_id = #{boardId}
     </delete>
 
 </mapper>

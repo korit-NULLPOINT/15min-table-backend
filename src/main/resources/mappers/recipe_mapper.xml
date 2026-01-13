@@ -9,7 +9,7 @@
         <result property="mainCategoryId" column="main_category_id"/>
         <result property="subCategoryId" column="sub_category_id"/>
         <result property="userId" column="user_id"/>
-        <result property="title" column="title"/>
+        <result property="title" column="recipe_title"/>
         <result property="intro" column="intro"/>
         <result property="thumbnailImgUrl" column="thumbnail_img_url"/>
         <result property="ingredients" column="ingredients"/>
@@ -29,7 +29,7 @@
 
     <resultMap id="BoardResultMap" type="com.nullpoint.fifteenmintable.entity.Board">
         <id property="boardId" column="board_id"/>
-        <result property="title" column="title"/>
+        <result property="title" column="board_title"/>
         <result property="boardTypeId" column="board_type_id"/>
         <result property="createDt" column="create_dt"/>
         <result property="updateDt" column="update_dt"/>
@@ -44,7 +44,7 @@
 
     <resultMap id="MainCategoryResultMap" type="com.nullpoint.fifteenmintable.entity.MainCategory">
         <id property="mainCategoryId" column="main_category_id"/>
-        <result property="name" column="name"/>
+        <result property="name" column="main_cate_name"/>
     </resultMap>
 
     <resultMap id="SubCategoryResultMap" type="com.nullpoint.fifteenmintable.entity.SubCategory">

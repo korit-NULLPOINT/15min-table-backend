@@ -1,6 +1,5 @@
 package com.nullpoint.fifteenmintable.mapper;
 
-import com.nullpoint.fifteenmintable.entity.Board;
 import com.nullpoint.fifteenmintable.entity.Recipe;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -9,9 +8,9 @@ import java.util.Optional;
 
 @Mapper
 public interface RecipeMapper {
-    int createRecipe(Board board);
+    int createRecipe(Recipe recipe);
 
-    Optional<List<Recipe>> findAll();
+    List<Recipe> findAll();
     Optional<Recipe> findByRecipeId(Integer recipeId);
     Optional<List<Recipe>> findByUserId(Integer userId);
     Optional<List<Recipe>> findByMainCategoryId(Integer mainCategoryId);

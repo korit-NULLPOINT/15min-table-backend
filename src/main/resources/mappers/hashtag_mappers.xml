@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nullpoint.fifteenmintable.mapper.HashtagMapper">
+    <resultMap id="HashtagResultMap" type="com.nullpoint.fifteenmintable.entity.Hashtag">
+        <id property="hashtagId" column="hashtag_id"/>
+        <result property="name" column="name"/>
+        <result property="createDt" column="create_dt"/>
+    </resultMap>
+    <insert id="createHashtag" useGeneratedKeys="true" keyProperty="hashtagId">
+        insert into
+            hashtag_tb
+        values
+            (0, #{name}, now());
+    </insert>
+    <select id="findAll" resultMap="HashtagResultMap">
+        select
+            *
+        from
+            hashtag_tb;
+    </select>
+    <select id="findByHashtagId" resultMap="HashtagResultMap">
+        select
+            *
+        from
+            hashtag_tb
+        where
+            hashtag_id = #{hashtagId};
+    </select>
+    <select id="findByKeyword" resultMap="HashtagResultMap">
+        select
+            *
+        from
+            hashtag_tb
+        where
+            name like concat("%", #{keyword}, "%");
+    </select>
+    <delete id="deleteHashtag">
+        delete from
+            hashtag_tb
+        where
+            hashtag_id = #{hashtagId};
+    </delete>
+</mapper>
