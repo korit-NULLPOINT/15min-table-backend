@@ -14,16 +14,8 @@ public class CommentRepository {
     @Autowired
     private CommentMapper commentMapper;
 
-    public Optional<Comment> addComment(Comment comment) {
-        try {
-            int result = commentMapper.addComment(comment);
-            if (result != 1) {
-                throw new RuntimeException("댓글 추가 실패");
-            }
-        } catch (RuntimeException e) {
-            return Optional.empty();
-        }
-        return Optional.of(comment);
+    public int addComment(Comment comment) {
+        return commentMapper.addComment(comment);
     }
 
     public  Optional<CommentRespDto> getCommentByCommentId(Integer commentId) {

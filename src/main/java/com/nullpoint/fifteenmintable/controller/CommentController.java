@@ -17,10 +17,13 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
-//    @PostMapping("/add")
-//    public ResponseEntity<?> addComment(@RequestBody AddCommentReqDto addCommentReqDto, @AuthenticationPrincipal PrincipalUser principalUser); {
-//        return ResponseEntity.ok(commentService.addComment(addCommentReqDto, principalUser));
-//    }
+    @PostMapping("/add")
+    public ResponseEntity<?> addComment(
+            @RequestBody AddCommentReqDto addCommentReqDto,
+            @AuthenticationPrincipal PrincipalUser principalUser
+    ) {
+        return ResponseEntity.ok(commentService.addComment(addCommentReqDto, principalUser));
+    }
 
     @GetMapping("/list")
     public ResponseEntity<?> getCommentList() {
@@ -38,12 +41,18 @@ public class CommentController {
     }
 
     @PostMapping("/modify")
-    public ResponseEntity<?> modifyComment(@RequestBody ModifyCommentReqDto modifyCommentReqDto) {
-        return ResponseEntity.ok(commentService.modifyComment(modifyCommentReqDto));
+    public ResponseEntity<?> modifyComment(
+            @RequestBody ModifyCommentReqDto modifyCommentReqDto,
+            @AuthenticationPrincipal PrincipalUser principalUser
+    ) {
+        return ResponseEntity.ok(commentService.modifyComment(modifyCommentReqDto, principalUser));
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<?> deleteComment(@RequestBody DeleteCommentReqDto deleteCommentReqDto) {
-        return ResponseEntity.ok(null);
+    public ResponseEntity<?> deleteComment(
+            @RequestBody DeleteCommentReqDto deleteCommentReqDto,
+            @AuthenticationPrincipal PrincipalUser principalUser
+    ) {
+        return ResponseEntity.ok(commentService.deleteComment(deleteCommentReqDto, principalUser));
     }
 }

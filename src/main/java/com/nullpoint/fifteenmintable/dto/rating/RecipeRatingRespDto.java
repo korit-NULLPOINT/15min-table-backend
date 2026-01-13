@@ -1,23 +1,19 @@
-package com.nullpoint.fifteenmintable.entity;
+package com.nullpoint.fifteenmintable.dto.rating;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Comment {
-    private Integer commentId;
+public class RecipeRatingRespDto {
+    private Integer recipeRatingId;
     private Integer recipeId;
     private Integer userId;
-    private String content;
+    private Integer rating;
     private LocalDateTime createDt;
     private LocalDateTime updateDt;
 }
-
-
