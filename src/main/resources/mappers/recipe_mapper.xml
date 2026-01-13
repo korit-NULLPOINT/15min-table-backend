@@ -52,31 +52,31 @@
 
     <select id="findAll" resultMap="RecipeResultMap">
         select
-        rt.recipe_id,
-        rt.board_id,
-        rt.main_category_id,
-        rt.sub_category_id,
-        rt.user_id,
-        rt.title as recipe_title,
-        rt.intro,
-        rt.thumbnail_img_url,
-        rt.ingredients,
-        rt.ingredient_img_url,
-        rt.steps,
-        rt.view_count,
-        rt.create_dt as recipe_create_dt,
-        rt.update_dt as recipe_update_dt,
+            rt.recipe_id,
+            rt.board_id,
+            rt.main_category_id,
+            rt.sub_category_id,
+            rt.user_id,
+            rt.title as recipe_title,
+            rt.intro,
+            rt.thumbnail_img_url,
+            rt.ingredients,
+            rt.ingredient_img_url,
+            rt.steps,
+            rt.view_count,
+            rt.create_dt as recipe_create_dt,
+            rt.update_dt as recipe_update_dt,
 
-        bt.title as board_title,
-        bt.board_type_id,
-        bt.create_dt as board_create_dt,
-        bt.update_dt as board_update_dt,
+            bt.title as board_title,
+            bt.board_type_id,
+            bt.create_dt as board_create_dt,
+            bt.update_dt as board_update_dt,
 
-        btt.board_type_name,
-        btt.board_type_name_kor,
+            btt.board_type_name,
+            btt.board_type_name_kor,
 
-        mct.name as main_cate_name,
-        sct.name as sub_cate_name
+            mct.name as main_cate_name,
+            sct.name as sub_cate_name
         from
         recipe_tb rt
         join board_tb bt on (rt.board_id = bt.board_id)
@@ -87,185 +87,185 @@
     </select>
     <select id="findByRecipeId" resultMap="RecipeResultMap">
         select
-        rt.recipe_id,
-        rt.board_id,
-        rt.main_category_id,
-        rt.sub_category_id,
-        rt.user_id,
-        rt.title as recipe_title,
-        rt.intro,
-        rt.thumbnail_img_url,
-        rt.ingredients,
-        rt.ingredient_img_url,
-        rt.steps,
-        rt.view_count,
-        rt.create_dt as recipe_create_dt,
-        rt.update_dt as recipe_update_dt,
+            rt.recipe_id,
+            rt.board_id,
+            rt.main_category_id,
+            rt.sub_category_id,
+            rt.user_id,
+            rt.title as recipe_title,
+            rt.intro,
+            rt.thumbnail_img_url,
+            rt.ingredients,
+            rt.ingredient_img_url,
+            rt.steps,
+            rt.view_count,
+            rt.create_dt as recipe_create_dt,
+            rt.update_dt as recipe_update_dt,
 
-        bt.title as board_title,
-        bt.board_type_id,
-        bt.create_dt as board_create_dt,
-        bt.update_dt as board_update_dt,
+            bt.title as board_title,
+            bt.board_type_id,
+            bt.create_dt as board_create_dt,
+            bt.update_dt as board_update_dt,
 
-        btt.board_type_name,
-        btt.board_type_name_kor,
+            btt.board_type_name,
+            btt.board_type_name_kor,
 
-        mct.name as main_cate_name,
-        sct.name as sub_cate_name
+            mct.name as main_cate_name,
+            sct.name as sub_cate_name
         from
-        recipe_tb rt
-        join board_tb bt on (rt.board_id = bt.board_id)
-        join board_type_tb btt on (btt.board_type_id = bt.board_type_id)
-        join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
-        join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
+            recipe_tb rt
+            join board_tb bt on (rt.board_id = bt.board_id)
+            join board_type_tb btt on (btt.board_type_id = bt.board_type_id)
+            join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
+            join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
         where
         rt.recipe_id = #{recipeId};
     </select>
     <select id="findByUserId" resultMap="RecipeResultMap">
         select
-        rt.recipe_id,
-        rt.board_id,
-        rt.main_category_id,
-        rt.sub_category_id,
-        rt.user_id,
-        rt.title as recipe_title,
-        rt.intro,
-        rt.thumbnail_img_url,
-        rt.ingredients,
-        rt.ingredient_img_url,
-        rt.steps,
-        rt.view_count,
-        rt.create_dt as recipe_create_dt,
-        rt.update_dt as recipe_update_dt,
+            rt.recipe_id,
+            rt.board_id,
+            rt.main_category_id,
+            rt.sub_category_id,
+            rt.user_id,
+            rt.title as recipe_title,
+            rt.intro,
+            rt.thumbnail_img_url,
+            rt.ingredients,
+            rt.ingredient_img_url,
+            rt.steps,
+            rt.view_count,
+            rt.create_dt as recipe_create_dt,
+            rt.update_dt as recipe_update_dt,
 
-        bt.title as board_title,
-        bt.board_type_id,
-        bt.create_dt as board_create_dt,
-        bt.update_dt as board_update_dt,
+            bt.title as board_title,
+            bt.board_type_id,
+            bt.create_dt as board_create_dt,
+            bt.update_dt as board_update_dt,
 
-        btt.board_type_name,
-        btt.board_type_name_kor,
+            btt.board_type_name,
+            btt.board_type_name_kor,
 
-        mct.name as main_cate_name,
-        sct.name as sub_cate_name
+            mct.name as main_cate_name,
+            sct.name as sub_cate_name
         from
-        recipe_tb rt
-        join board_tb bt on (rt.board_id = bt.board_id)
-        join board_type_tb btt on (btt.board_type_id = bt.board_type_id)
-        join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
-        join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
+            recipe_tb rt
+            join board_tb bt on (rt.board_id = bt.board_id)
+            join board_type_tb btt on (btt.board_type_id = bt.board_type_id)
+            join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
+            join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
         where
         rt.user_id = #{userId};
     </select>
     <select id="findByMainCategoryId" resultMap="RecipeResultMap">
         select
-        rt.recipe_id,
-        rt.board_id,
-        rt.main_category_id,
-        rt.sub_category_id,
-        rt.user_id,
-        rt.title as recipe_title,
-        rt.intro,
-        rt.thumbnail_img_url,
-        rt.ingredients,
-        rt.ingredient_img_url,
-        rt.steps,
-        rt.view_count,
-        rt.create_dt as recipe_create_dt,
-        rt.update_dt as recipe_update_dt,
+            rt.recipe_id,
+            rt.board_id,
+            rt.main_category_id,
+            rt.sub_category_id,
+            rt.user_id,
+            rt.title as recipe_title,
+            rt.intro,
+            rt.thumbnail_img_url,
+            rt.ingredients,
+            rt.ingredient_img_url,
+            rt.steps,
+            rt.view_count,
+            rt.create_dt as recipe_create_dt,
+            rt.update_dt as recipe_update_dt,
 
-        bt.title as board_title,
-        bt.board_type_id,
-        bt.create_dt as board_create_dt,
-        bt.update_dt as board_update_dt,
+            bt.title as board_title,
+            bt.board_type_id,
+            bt.create_dt as board_create_dt,
+            bt.update_dt as board_update_dt,
 
-        btt.board_type_name,
-        btt.board_type_name_kor,
+            btt.board_type_name,
+            btt.board_type_name_kor,
 
-        mct.name as main_cate_name,
-        sct.name as sub_cate_name
+            mct.name as main_cate_name,
+            sct.name as sub_cate_name
         from
-        recipe_tb rt
-        join board_tb bt on (rt.board_id = bt.board_id)
-        join board_type_tb btt on (btt.board_type_id = bt.board_type_id)
-        join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
-        join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
+            recipe_tb rt
+            join board_tb bt on (rt.board_id = bt.board_id)
+            join board_type_tb btt on (btt.board_type_id = bt.board_type_id)
+            join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
+            join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
         where
         rt.main_category_id = #{mainCategoryId};
     </select>
     <select id="findBySubCategoryId" resultMap="RecipeResultMap">
         select
-        rt.recipe_id,
-        rt.board_id,
-        rt.main_category_id,
-        rt.sub_category_id,
-        rt.user_id,
-        rt.title as recipe_title,
-        rt.intro,
-        rt.thumbnail_img_url,
-        rt.ingredients,
-        rt.ingredient_img_url,
-        rt.steps,
-        rt.view_count,
-        rt.create_dt as recipe_create_dt,
-        rt.update_dt as recipe_update_dt,
+            rt.recipe_id,
+            rt.board_id,
+            rt.main_category_id,
+            rt.sub_category_id,
+            rt.user_id,
+            rt.title as recipe_title,
+            rt.intro,
+            rt.thumbnail_img_url,
+            rt.ingredients,
+            rt.ingredient_img_url,
+            rt.steps,
+            rt.view_count,
+            rt.create_dt as recipe_create_dt,
+            rt.update_dt as recipe_update_dt,
 
-        bt.title as board_title,
-        bt.board_type_id,
-        bt.create_dt as board_create_dt,
-        bt.update_dt as board_update_dt,
+            bt.title as board_title,
+            bt.board_type_id,
+            bt.create_dt as board_create_dt,
+            bt.update_dt as board_update_dt,
 
-        btt.board_type_name,
-        btt.board_type_name_kor,
+            btt.board_type_name,
+            btt.board_type_name_kor,
 
-        mct.name as main_cate_name,
-        sct.name as sub_cate_name
+            mct.name as main_cate_name,
+            sct.name as sub_cate_name
         from
-        recipe_tb rt
-        join board_tb bt on (rt.board_id = bt.board_id)
-        join board_type_tb btt on (btt.board_type_id = bt.board_type_id)
-        join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
-        join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
+            recipe_tb rt
+            join board_tb bt on (rt.board_id = bt.board_id)
+            join board_type_tb btt on (btt.board_type_id = bt.board_type_id)
+            join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
+            join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
         where
         rt.sub_category_id = #{subCategoryId};
     </select>
     <select id="findByKeyword" resultMap="RecipeResultMap">
         select
-        rt.recipe_id,
-        rt.board_id,
-        rt.main_category_id,
-        rt.sub_category_id,
-        rt.user_id,
-        rt.title as recipe_title,
-        rt.intro,
-        rt.thumbnail_img_url,
-        rt.ingredients,
-        rt.ingredient_img_url,
-        rt.steps,
-        rt.view_count,
-        rt.create_dt as recipe_create_dt,
-        rt.update_dt as recipe_update_dt,
+            rt.recipe_id,
+            rt.board_id,
+            rt.main_category_id,
+            rt.sub_category_id,
+            rt.user_id,
+            rt.title as recipe_title,
+            rt.intro,
+            rt.thumbnail_img_url,
+            rt.ingredients,
+            rt.ingredient_img_url,
+            rt.steps,
+            rt.view_count,
+            rt.create_dt as recipe_create_dt,
+            rt.update_dt as recipe_update_dt,
 
-        bt.title as board_title,
-        bt.board_type_id,
-        bt.create_dt as board_create_dt,
-        bt.update_dt as board_update_dt,
+            bt.title as board_title,
+            bt.board_type_id,
+            bt.create_dt as board_create_dt,
+            bt.update_dt as board_update_dt,
 
-        btt.board_type_name,
-        btt.board_type_name_kor,
+            btt.board_type_name,
+            btt.board_type_name_kor,
 
-        mct.name as main_cate_name,
-        sct.name as sub_cate_name
+            mct.name as main_cate_name,
+            sct.name as sub_cate_name
         from
-        recipe_tb rt
-        join board_tb bt on (rt.board_id = bt.board_id)
-        join board_type_tb btt on (btt.board_type_id = bt.board_type_id)
-        join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
-        join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
+            recipe_tb rt
+            join board_tb bt on (rt.board_id = bt.board_id)
+            join board_type_tb btt on (btt.board_type_id = bt.board_type_id)
+            join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
+            join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
         where
-        rt.title like concat("%", #{keyword}, "%")
-        or rt.intro like concat("%", #{keyword}, "%")
-        or rt.steps like concat("%", #{keyword}, "%")
+            rt.title like concat("%", #{keyword}, "%")
+            or rt.intro like concat("%", #{keyword}, "%")
+            or rt.steps like concat("%", #{keyword}, "%")
         order by
         bt.create_dt desc;
     </select>

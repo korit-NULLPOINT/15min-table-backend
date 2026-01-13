@@ -20,7 +20,8 @@ public class PrincipalUser implements UserDetails {
     @JsonIgnore
     private String password;
     private String username;
-    private String profileImgUrl;
+    private String profileImg;
+    private String status;
     private List<UserRole> userRoles;
 
     @Override

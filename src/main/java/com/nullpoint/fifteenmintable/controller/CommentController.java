@@ -1,13 +1,10 @@
 package com.nullpoint.fifteenmintable.controller;
 
 import com.nullpoint.fifteenmintable.dto.comment.AddCommentReqDto;
-import com.nullpoint.fifteenmintable.dto.comment.DeleteCommentReqDto;
 import com.nullpoint.fifteenmintable.dto.comment.ModifyCommentReqDto;
-import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import com.nullpoint.fifteenmintable.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,11 +15,8 @@ public class CommentController {
     private CommentService commentService;
 
     @PostMapping("/add")
-    public ResponseEntity<?> addComment(
-            @RequestBody AddCommentReqDto addCommentReqDto,
-            @AuthenticationPrincipal PrincipalUser principalUser
-    ) {
-        return ResponseEntity.ok(commentService.addComment(addCommentReqDto, principalUser));
+    public ResponseEntity<?> addComment(@RequestBody AddCommentReqDto addCommentReqDto) {
+        return ResponseEntity.ok(commentService.addComment(addCommentReqDto));
     }
 
     @GetMapping("/list")
@@ -41,18 +35,7 @@ public class CommentController {
     }
 
     @PostMapping("/modify")
-    public ResponseEntity<?> modifyComment(
-            @RequestBody ModifyCommentReqDto modifyCommentReqDto,
-            @AuthenticationPrincipal PrincipalUser principalUser
-    ) {
-        return ResponseEntity.ok(commentService.modifyComment(modifyCommentReqDto, principalUser));
-    }
-
-    @PostMapping("/delete")
-    public ResponseEntity<?> deleteComment(
-            @RequestBody DeleteCommentReqDto deleteCommentReqDto,
-            @AuthenticationPrincipal PrincipalUser principalUser
-    ) {
-        return ResponseEntity.ok(commentService.deleteComment(deleteCommentReqDto, principalUser));
+    public ResponseEntity<?> modifyComment(@RequestBody ModifyCommentReqDto modifyCommentReqDto) {
+        return ResponseEntity.ok(commentService.modifyComment(modifyCommentReqDto));
     }
 }

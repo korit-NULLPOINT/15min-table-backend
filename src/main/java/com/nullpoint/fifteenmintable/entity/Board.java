@@ -15,7 +15,9 @@ import java.util.List;
 public class Board {
     private Integer boardId;
     private String title;
-    private BoardType boardType;
+    private Integer boardTypeId;
     private LocalDateTime createDt;
     private LocalDateTime updateDt;
+
+    private BoardType boardType;
 }
