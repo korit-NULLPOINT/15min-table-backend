@@ -14,11 +14,10 @@
 
     <insert id="addUserRole">
         insert into
-            user_role_tb (user_id, role_id, create_dt, update_dt)
+            user_role_tb
         values
-            (#{userId}, #{roleId}, now(), null)
+            (0, #{userId}, #{roleId}, now(), null);
     </insert>
-
 
     <update id="updateUserRole">
         update

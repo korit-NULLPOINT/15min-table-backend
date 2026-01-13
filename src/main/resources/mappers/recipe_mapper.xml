@@ -16,66 +16,33 @@
         <result property="ingredientImgUrl" column="ingredient_img_url"/>
         <result property="steps" column="steps"/>
         <result property="viewCount" column="view_count"/>
-        <result property="createDt" column="create_dt"/>
-        <result property="updateDt" column="update_dt"/>
-
-        <association property="board" resultMap="BoardResultMap" columnPrefix="bt_"/>
-        <association property="mainCategory" resultMap="MainCategoryResultMap" columnPrefix="mct_"/>
-        <association property="subCategory" resultMap="SubCategoryResultMap" columnPrefix="sct_"/>
-
-        <collection property="recipeRatingList" resultMap="RecipeRatingResultMap" columnPrefix="rrt_"/>
-        <collection property="recipeHashtagList" resultMap="RecipeHashtagResultMap" columnPrefix="rht_"/>
+        <result property="createDt" column="recipe_create_dt"/>
+        <result property="updateDt" column="recipe_update_dt"/>
+        <association property="board" resultMap="BoardResultMap"/>
+        <association property="mainCategory" resultMap="MainCategoryResultMap"/>
+        <association property="subCategory" resultMap="SubCategoryResultMap"/>
     </resultMap>
-
     <resultMap id="BoardResultMap" type="com.nullpoint.fifteenmintable.entity.Board">
         <id property="boardId" column="board_id"/>
         <result property="title" column="board_title"/>
         <result property="boardTypeId" column="board_type_id"/>
-        <result property="createDt" column="create_dt"/>
-        <result property="updateDt" column="update_dt"/>
-        <association property="boardType" resultMap="BoardTypeResultMap" columnPrefix="btt_"/>
+        <result property="createDt" column="board_create_dt"/>
+        <result property="updateDt" column="board_update_dt"/>
+        <association property="boardType" resultMap="BoardTypeResultMap"/>
     </resultMap>
-
     <resultMap id="BoardTypeResultMap" type="com.nullpoint.fifteenmintable.entity.BoardType">
         <id property="boardTypeId" column="board_type_id"/>
         <result property="boardTypeName" column="board_type_name"/>
         <result property="boardTypeNameKor" column="board_type_name_kor"/>
     </resultMap>
-
     <resultMap id="MainCategoryResultMap" type="com.nullpoint.fifteenmintable.entity.MainCategory">
         <id property="mainCategoryId" column="main_category_id"/>
         <result property="name" column="main_cate_name"/>
     </resultMap>
-
     <resultMap id="SubCategoryResultMap" type="com.nullpoint.fifteenmintable.entity.SubCategory">
-        <id property="subCategoryId" column="sub_category_id"/>
-        <result property="name" column="name"/>
+        <id property="subCategoryId" column="main_category_id"/>
+        <result property="name" column="sub_cate_name"/>
     </resultMap>
-
-    <resultMap id="RecipeRatingResultMap" type="com.nullpoint.fifteenmintable.entity.RecipeRating">
-        <id property="recipeRatingId" column="recipe_rating_id"/>
-        <result property="recipeId" column="recipe_id"/>
-        <result property="userId" column="user_id"/>
-        <result property="rating" column="rating"/>
-        <result property="createDt" column="create_dt"/>
-        <result property="updateDt" column="update_dt"/>
-    </resultMap>
-
-    <resultMap id="RecipeHashtagResultMap" type="com.nullpoint.fifteenmintable.entity.RecipeHashtag">
-        <id property="recipeHashtagId" column="recipe_hashtag_id"/>
-        <result property="recipeId" column="recipe_id"/>
-        <result property="hashtagId" column="hashtag_id"/>
-        <result property="createDt" column="create_dt"/>
-        <association property="hashtag" resultMap="HashtagResultMap" columnPrefix="ht_"/>
-    </resultMap>
-
-    <resultMap id="HashtagResultMap" type="com.nullpoint.fifteenmintable.entity.Hashtag">
-        <id property="hashtagId" column="hashtag_id"/>
-        <result property="name" column="name"/>
-        <result property="createDt" column="create_dt"/>
-    </resultMap>
-
-
     <insert id="createRecipe" useGeneratedKeys="true" keyProperty="recipeId">
         insert into
             recipe_tb
@@ -85,52 +52,31 @@
 
     <select id="findAll" resultMap="RecipeResultMap">
         select
-            -- ✅ recipe (prefix 없음)
             rt.recipe_id,
             rt.board_id,
             rt.main_category_id,
             rt.sub_category_id,
             rt.user_id,
-            rt.title,
+            rt.title as recipe_title,
             rt.intro,
             rt.thumbnail_img_url,
             rt.ingredients,
             rt.ingredient_img_url,
             rt.steps,
             rt.view_count,
-            rt.create_dt,
-            rt.update_dt,
+            rt.create_dt as recipe_create_dt,
+            rt.update_dt as recipe_update_dt,
 
-            -- ✅ board (bt_)
-            bt.board_id        as bt_board_id,
-            bt.title           as bt_title,
-            bt.board_type_id   as bt_board_type_id,
-            bt.create_dt       as bt_create_dt,
-            bt.update_dt       as bt_update_dt,
+            bt.title as board_title,
+            bt.board_type_id,
+            bt.create_dt as board_create_dt,
+            bt.update_dt as board_update_dt,
 
-            -- ✅ board_type (btt_)
-            btt.board_type_id      as btt_board_type_id,
-            btt.board_type_name    as btt_board_type_name,
-            btt.board_type_name_kor as btt_board_type_name_kor,
+            btt.board_type_name,
+            btt.board_type_name_kor,
 
-            -- ✅ rating (rrt_) (없을 수도 있으니 LEFT JOIN 추천)
-            rrt.recipe_rating_id as rrt_recipe_rating_id,
-            rrt.recipe_id        as rrt_recipe_id,
-            rrt.user_id          as rrt_user_id,
-            rrt.rating           as rrt_rating,
-            rrt.create_dt        as rrt_create_dt,
-            rrt.update_dt        as rrt_update_dt,
-
-            -- ✅ recipe_hashtag (rht_)
-            rht.recipe_hashtag_id as rht_recipe_hashtag_id,
-            rht.recipe_id         as rht_recipe_id,
-            rht.hashtag_id        as rht_hashtag_id,
-            rht.create_dt         as rht_create_dt,
-
-            -- ✅ hashtag (ht_)
-            ht.hashtag_id  as ht_hashtag_id,
-            ht.name        as ht_name,
-            ht.create_dt   as ht_create_dt
+            mct.name as main_cate_name,
+            sct.name as sub_cate_name
         from
             recipe_tb rt
             join board_tb bt on (rt.board_id = bt.board_id)
@@ -138,279 +84,188 @@
             join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
             join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
 
-        left join recipe_rating_tb rrt on (rrt.recipe_id = rt.recipe_id)
-        left join recipe_hashtag_tb rht on (rht.recipe_id = rt.recipe_id)
-        left join hashtag_tb ht on (ht.hashtag_id = rht.hashtag_id);
     </select>
     <select id="findByRecipeId" resultMap="RecipeResultMap">
         select
-            rt.*,
-            bt.*,
-            btt.*,
-            mct.*,
-            sct.*,
-            rrt.*,
-            rht.*,
-            ht.*
+            rt.recipe_id,
+            rt.board_id,
+            rt.main_category_id,
+            rt.sub_category_id,
+            rt.user_id,
+            rt.title as recipe_title,
+            rt.intro,
+            rt.thumbnail_img_url,
+            rt.ingredients,
+            rt.ingredient_img_url,
+            rt.steps,
+            rt.view_count,
+            rt.create_dt as recipe_create_dt,
+            rt.update_dt as recipe_update_dt,
+
+            bt.title as board_title,
+            bt.board_type_id,
+            bt.create_dt as board_create_dt,
+            bt.update_dt as board_update_dt,
+
+            btt.board_type_name,
+            btt.board_type_name_kor,
+
+            mct.name as main_cate_name,
+            sct.name as sub_cate_name
         from
             recipe_tb rt
             join board_tb bt on (rt.board_id = bt.board_id)
             join board_type_tb btt on (btt.board_type_id = bt.board_type_id)
             join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
             join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
-
-            left join recipe_rating_tb rrt on (rrt.recipe_id = rt.recipe_id)
-            left join recipe_hashtag_tb rht on (rht.recipe_id = rt.recipe_id)
-            left join hashtag_tb ht on (ht.hashtag_id = rht.hashtag_id)
         where
             rt.recipe_id = #{recipeId};
     </select>
     <select id="findByUserId" resultMap="RecipeResultMap">
         select
-            -- ✅ recipe (prefix 없음)
             rt.recipe_id,
             rt.board_id,
             rt.main_category_id,
             rt.sub_category_id,
             rt.user_id,
-            rt.title,
+            rt.title as recipe_title,
             rt.intro,
             rt.thumbnail_img_url,
             rt.ingredients,
             rt.ingredient_img_url,
             rt.steps,
             rt.view_count,
-            rt.create_dt,
-            rt.update_dt,
+            rt.create_dt as recipe_create_dt,
+            rt.update_dt as recipe_update_dt,
 
-            -- ✅ board (bt_)
-            bt.board_id        as bt_board_id,
-            bt.title           as bt_title,
-            bt.board_type_id   as bt_board_type_id,
-            bt.create_dt       as bt_create_dt,
-            bt.update_dt       as bt_update_dt,
+            bt.title as board_title,
+            bt.board_type_id,
+            bt.create_dt as board_create_dt,
+            bt.update_dt as board_update_dt,
 
-            -- ✅ board_type (btt_)
-            btt.board_type_id      as btt_board_type_id,
-            btt.board_type_name    as btt_board_type_name,
-            btt.board_type_name_kor as btt_board_type_name_kor,
+            btt.board_type_name,
+            btt.board_type_name_kor,
 
-            -- ✅ rating (rrt_) (없을 수도 있으니 LEFT JOIN 추천)
-            rrt.recipe_rating_id as rrt_recipe_rating_id,
-            rrt.recipe_id        as rrt_recipe_id,
-            rrt.user_id          as rrt_user_id,
-            rrt.rating           as rrt_rating,
-            rrt.create_dt        as rrt_create_dt,
-            rrt.update_dt        as rrt_update_dt,
-
-            -- ✅ recipe_hashtag (rht_)
-            rht.recipe_hashtag_id as rht_recipe_hashtag_id,
-            rht.recipe_id         as rht_recipe_id,
-            rht.hashtag_id        as rht_hashtag_id,
-            rht.create_dt         as rht_create_dt,
-
-            -- ✅ hashtag (ht_)
-            ht.hashtag_id  as ht_hashtag_id,
-            ht.name        as ht_name,
-            ht.create_dt   as ht_create_dt
+            mct.name as main_cate_name,
+            sct.name as sub_cate_name
         from
             recipe_tb rt
             join board_tb bt on (rt.board_id = bt.board_id)
             join board_type_tb btt on (btt.board_type_id = bt.board_type_id)
             join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
             join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
-
-            left join recipe_rating_tb rrt on (rrt.recipe_id = rt.recipe_id)
-            left join recipe_hashtag_tb rht on (rht.recipe_id = rt.recipe_id)
-            left join hashtag_tb ht on (ht.hashtag_id = rht.hashtag_id)
         where
             rt.user_id = #{userId};
     </select>
     <select id="findByMainCategoryId" resultMap="RecipeResultMap">
         select
-            -- ✅ recipe (prefix 없음)
             rt.recipe_id,
             rt.board_id,
             rt.main_category_id,
             rt.sub_category_id,
             rt.user_id,
-            rt.title,
+            rt.title as recipe_title,
             rt.intro,
             rt.thumbnail_img_url,
             rt.ingredients,
             rt.ingredient_img_url,
             rt.steps,
             rt.view_count,
-            rt.create_dt,
-            rt.update_dt,
+            rt.create_dt as recipe_create_dt,
+            rt.update_dt as recipe_update_dt,
 
-            -- ✅ board (bt_)
-            bt.board_id        as bt_board_id,
-            bt.title           as bt_title,
-            bt.board_type_id   as bt_board_type_id,
-            bt.create_dt       as bt_create_dt,
-            bt.update_dt       as bt_update_dt,
+            bt.title as board_title,
+            bt.board_type_id,
+            bt.create_dt as board_create_dt,
+            bt.update_dt as board_update_dt,
 
-            -- ✅ board_type (btt_)
-            btt.board_type_id      as btt_board_type_id,
-            btt.board_type_name    as btt_board_type_name,
-            btt.board_type_name_kor as btt_board_type_name_kor,
+            btt.board_type_name,
+            btt.board_type_name_kor,
 
-            -- ✅ rating (rrt_) (없을 수도 있으니 LEFT JOIN 추천)
-            rrt.recipe_rating_id as rrt_recipe_rating_id,
-            rrt.recipe_id        as rrt_recipe_id,
-            rrt.user_id          as rrt_user_id,
-            rrt.rating           as rrt_rating,
-            rrt.create_dt        as rrt_create_dt,
-            rrt.update_dt        as rrt_update_dt,
-
-            -- ✅ recipe_hashtag (rht_)
-            rht.recipe_hashtag_id as rht_recipe_hashtag_id,
-            rht.recipe_id         as rht_recipe_id,
-            rht.hashtag_id        as rht_hashtag_id,
-            rht.create_dt         as rht_create_dt,
-
-            -- ✅ hashtag (ht_)
-            ht.hashtag_id  as ht_hashtag_id,
-            ht.name        as ht_name,
-            ht.create_dt   as ht_create_dt
+            mct.name as main_cate_name,
+            sct.name as sub_cate_name
         from
             recipe_tb rt
             join board_tb bt on (rt.board_id = bt.board_id)
             join board_type_tb btt on (btt.board_type_id = bt.board_type_id)
             join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
             join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
-
-            left join recipe_rating_tb rrt on (rrt.recipe_id = rt.recipe_id)
-            left join recipe_hashtag_tb rht on (rht.recipe_id = rt.recipe_id)
-            left join hashtag_tb ht on (ht.hashtag_id = rht.hashtag_id)
         where
             rt.main_category_id = #{mainCategoryId};
     </select>
     <select id="findBySubCategoryId" resultMap="RecipeResultMap">
         select
-            -- ✅ recipe (prefix 없음)
             rt.recipe_id,
             rt.board_id,
             rt.main_category_id,
             rt.sub_category_id,
             rt.user_id,
-            rt.title,
+            rt.title as recipe_title,
             rt.intro,
             rt.thumbnail_img_url,
             rt.ingredients,
             rt.ingredient_img_url,
             rt.steps,
             rt.view_count,
-            rt.create_dt,
-            rt.update_dt,
+            rt.create_dt as recipe_create_dt,
+            rt.update_dt as recipe_update_dt,
 
-            -- ✅ board (bt_)
-            bt.board_id        as bt_board_id,
-            bt.title           as bt_title,
-            bt.board_type_id   as bt_board_type_id,
-            bt.create_dt       as bt_create_dt,
-            bt.update_dt       as bt_update_dt,
+            bt.title as board_title,
+            bt.board_type_id,
+            bt.create_dt as board_create_dt,
+            bt.update_dt as board_update_dt,
 
-            -- ✅ board_type (btt_)
-            btt.board_type_id      as btt_board_type_id,
-            btt.board_type_name    as btt_board_type_name,
-            btt.board_type_name_kor as btt_board_type_name_kor,
+            btt.board_type_name,
+            btt.board_type_name_kor,
 
-            -- ✅ rating (rrt_) (없을 수도 있으니 LEFT JOIN 추천)
-            rrt.recipe_rating_id as rrt_recipe_rating_id,
-            rrt.recipe_id        as rrt_recipe_id,
-            rrt.user_id          as rrt_user_id,
-            rrt.rating           as rrt_rating,
-            rrt.create_dt        as rrt_create_dt,
-            rrt.update_dt        as rrt_update_dt,
-
-            -- ✅ recipe_hashtag (rht_)
-            rht.recipe_hashtag_id as rht_recipe_hashtag_id,
-            rht.recipe_id         as rht_recipe_id,
-            rht.hashtag_id        as rht_hashtag_id,
-            rht.create_dt         as rht_create_dt,
-
-            -- ✅ hashtag (ht_)
-            ht.hashtag_id  as ht_hashtag_id,
-            ht.name        as ht_name,
-            ht.create_dt   as ht_create_dt
+            mct.name as main_cate_name,
+            sct.name as sub_cate_name
         from
             recipe_tb rt
             join board_tb bt on (rt.board_id = bt.board_id)
             join board_type_tb btt on (btt.board_type_id = bt.board_type_id)
             join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
             join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
-
-            left join recipe_rating_tb rrt on (rrt.recipe_id = rt.recipe_id)
-            left join recipe_hashtag_tb rht on (rht.recipe_id = rt.recipe_id)
-            left join hashtag_tb ht on (ht.hashtag_id = rht.hashtag_id)
         where
             rt.sub_category_id = #{subCategoryId};
     </select>
     <select id="findByKeyword" resultMap="RecipeResultMap">
-            select
-            -- ✅ recipe (prefix 없음)
+        select
             rt.recipe_id,
             rt.board_id,
             rt.main_category_id,
             rt.sub_category_id,
             rt.user_id,
-            rt.title,
+            rt.title as recipe_title,
             rt.intro,
             rt.thumbnail_img_url,
             rt.ingredients,
             rt.ingredient_img_url,
             rt.steps,
             rt.view_count,
-            rt.create_dt,
-            rt.update_dt,
+            rt.create_dt as recipe_create_dt,
+            rt.update_dt as recipe_update_dt,
 
-            -- ✅ board (bt_)
-            bt.board_id        as bt_board_id,
-            bt.title           as bt_title,
-            bt.board_type_id   as bt_board_type_id,
-            bt.create_dt       as bt_create_dt,
-            bt.update_dt       as bt_update_dt,
+            bt.title as board_title,
+            bt.board_type_id,
+            bt.create_dt as board_create_dt,
+            bt.update_dt as board_update_dt,
 
-            -- ✅ board_type (btt_)
-            btt.board_type_id      as btt_board_type_id,
-            btt.board_type_name    as btt_board_type_name,
-            btt.board_type_name_kor as btt_board_type_name_kor,
+            btt.board_type_name,
+            btt.board_type_name_kor,
 
-            -- ✅ rating (rrt_) (없을 수도 있으니 LEFT JOIN 추천)
-            rrt.recipe_rating_id as rrt_recipe_rating_id,
-            rrt.recipe_id        as rrt_recipe_id,
-            rrt.user_id          as rrt_user_id,
-            rrt.rating           as rrt_rating,
-            rrt.create_dt        as rrt_create_dt,
-            rrt.update_dt        as rrt_update_dt,
-
-            -- ✅ recipe_hashtag (rht_)
-            rht.recipe_hashtag_id as rht_recipe_hashtag_id,
-            rht.recipe_id         as rht_recipe_id,
-            rht.hashtag_id        as rht_hashtag_id,
-            rht.create_dt         as rht_create_dt,
-
-            -- ✅ hashtag (ht_)
-            ht.hashtag_id  as ht_hashtag_id,
-            ht.name        as ht_name,
-            ht.create_dt   as ht_create_dt
+            mct.name as main_cate_name,
+            sct.name as sub_cate_name
         from
             recipe_tb rt
             join board_tb bt on (rt.board_id = bt.board_id)
             join board_type_tb btt on (btt.board_type_id = bt.board_type_id)
             join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
             join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
-
-            join recipe_rating_tb rrt on (rrt.recipe_id = rt.recipe_id)
-            join recipe_hashtag_tb rht on (rht.recipe_id = rt.recipe_id)
-            join hashtag_tb ht on (ht.hashtag_id = rht.hashtag_id)
         where
             rt.title like concat("%", #{keyword}, "%")
             or rt.intro like concat("%", #{keyword}, "%")
             or rt.steps like concat("%", #{keyword}, "%")
-            or ht.name like concat("%", #{keyword}, "%")
         order by
             bt.create_dt desc;
     </select>

@@ -75,6 +75,10 @@ public class OAuth2AuthService {
             return new ApiRespDto<>("failed", "사용자 정보를 다시 확인해주세요.", null);
         }
 
+        if (!foundUser.get().isActive()) {
+            return new ApiRespDto<>("failed", "탈퇴처리된 계정입니다.", null);
+        }
+
         int result = oAuth2UserRepository.addOAuth2User(oAuth2MergeReqDto.toEntity(foundUser.get().getUserId()));
         if (result != 1) {
             return new ApiRespDto<>("failed", "회원 연동에 문제가 발생했습니다.", null);
