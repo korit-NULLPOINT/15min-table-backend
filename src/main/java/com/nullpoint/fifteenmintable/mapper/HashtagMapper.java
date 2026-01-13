@@ -11,9 +11,7 @@ public interface HashtagMapper {
     int createHashtag(Hashtag hashtag);
     int deleteHashtag(Integer hashtagId);
     Optional<Hashtag> getByHashtagId(Integer hashtagId);
+    Optional<Hashtag> getByName(String name);
     List<Hashtag> getHashtagList();
     List<Hashtag> getByKeyword(String keyword);
-    List<Hashtag> getHashtagsByRecipeId(Integer recipeId);
-
-
 }

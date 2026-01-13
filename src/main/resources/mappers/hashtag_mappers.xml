@@ -8,19 +8,29 @@
         <result property="name" column="name"/>
         <result property="createDt" column="create_dt"/>
     </resultMap>
+
     <insert id="createHashtag" useGeneratedKeys="true" keyProperty="hashtagId">
         insert into
             hashtag_tb
         values
             (0, #{name}, now());
     </insert>
-    <select id="findAll" resultMap="HashtagResultMap">
+
+    <delete id="deleteHashtag">
+        delete from
+            hashtag_tb
+        where
+            hashtag_id = #{hashtagId};
+    </delete>
+
+    <select id="getHashtagList" resultMap="HashtagResultMap">
         select
             *
         from
             hashtag_tb;
     </select>
-    <select id="findByHashtagId" resultMap="HashtagResultMap">
+
+    <select id="getByHashtagId" resultMap="HashtagResultMap">
         select
             *
         from
@@ -28,7 +38,17 @@
         where
             hashtag_id = #{hashtagId};
     </select>
-    <select id="findByKeyword" resultMap="HashtagResultMap">
+
+    <select id="getByName" resultMap="HashtagResultMap">
+        select
+            *
+        from
+            hashtag_tb
+        where
+            name = #{name};
+    </select>
+
+    <select id="getByKeyword" resultMap="HashtagResultMap">
         select
             *
         from
@@ -36,10 +56,4 @@
         where
             name like concat("%", #{keyword}, "%");
     </select>
-    <delete id="deleteHashtag">
-        delete from
-            hashtag_tb
-        where
-            hashtag_id = #{hashtagId};
-    </delete>
 </mapper>
