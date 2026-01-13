@@ -12,10 +12,10 @@ public interface RecipeMapper {
 
     List<Recipe> findAll();
     Optional<Recipe> findByRecipeId(Integer recipeId);
-    Optional<List<Recipe>> findByUserId(Integer userId);
-    Optional<List<Recipe>> findByMainCategoryId(Integer mainCategoryId);
-    Optional<List<Recipe>> findBySubCategoryId(Integer subCategoryId);
-    Optional<List<Recipe>> findByKeyword(String keyword);
+    List<Recipe> findByUserId(Integer userId);
+    List<Recipe> findByMainCategoryId(Integer mainCategoryId);
+    List<Recipe> findBySubCategoryId(Integer subCategoryId);
+    List<Recipe> findByKeyword(String keyword);
 
     int updateRecipe(Recipe recipe);
 

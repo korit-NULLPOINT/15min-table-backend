@@ -18,23 +18,23 @@
         <result property="viewCount" column="view_count"/>
         <result property="createDt" column="recipe_create_dt"/>
         <result property="updateDt" column="recipe_update_dt"/>
-        <association property="board" resultMap="BoardResultMap"/>
+<!--        <association property="board" resultMap="BoardResultMap"/>-->
         <association property="mainCategory" resultMap="MainCategoryResultMap"/>
         <association property="subCategory" resultMap="SubCategoryResultMap"/>
     </resultMap>
-    <resultMap id="BoardResultMap" type="com.nullpoint.fifteenmintable.entity.Board">
-        <id property="boardId" column="board_id"/>
-        <result property="title" column="board_title"/>
-        <result property="boardTypeId" column="board_type_id"/>
-        <result property="createDt" column="board_create_dt"/>
-        <result property="updateDt" column="board_update_dt"/>
-        <association property="boardType" resultMap="BoardTypeResultMap"/>
-    </resultMap>
-    <resultMap id="BoardTypeResultMap" type="com.nullpoint.fifteenmintable.entity.BoardType">
-        <id property="boardTypeId" column="board_type_id"/>
-        <result property="boardTypeName" column="board_type_name"/>
-        <result property="boardTypeNameKor" column="board_type_name_kor"/>
-    </resultMap>
+<!--    <resultMap id="BoardResultMap" type="com.nullpoint.fifteenmintable.entity.Board">-->
+<!--        <id property="boardId" column="board_id"/>-->
+<!--        <result property="title" column="board_title"/>-->
+<!--        <result property="boardTypeId" column="board_type_id"/>-->
+<!--        <result property="createDt" column="board_create_dt"/>-->
+<!--        <result property="updateDt" column="board_update_dt"/>-->
+<!--        <association property="boardType" resultMap="BoardTypeResultMap"/>-->
+<!--    </resultMap>-->
+<!--    <resultMap id="BoardTypeResultMap" type="com.nullpoint.fifteenmintable.entity.BoardType">-->
+<!--        <id property="boardTypeId" column="board_type_id"/>-->
+<!--        <result property="boardTypeName" column="board_type_name"/>-->
+<!--        <result property="boardTypeNameKor" column="board_type_name_kor"/>-->
+<!--    </resultMap>-->
     <resultMap id="MainCategoryResultMap" type="com.nullpoint.fifteenmintable.entity.MainCategory">
         <id property="mainCategoryId" column="main_category_id"/>
         <result property="name" column="main_cate_name"/>
@@ -67,22 +67,22 @@
             rt.create_dt as recipe_create_dt,
             rt.update_dt as recipe_update_dt,
 
-            bt.title as board_title,
-            bt.board_type_id,
-            bt.create_dt as board_create_dt,
-            bt.update_dt as board_update_dt,
+<!--            bt.title as board_title,-->
+<!--            bt.board_type_id,-->
+<!--            bt.create_dt as board_create_dt,-->
+<!--            bt.update_dt as board_update_dt,-->
 
-            btt.board_type_name,
-            btt.board_type_name_kor,
+<!--            btt.board_type_name,-->
+<!--            btt.board_type_name_kor,-->
 
             mct.name as main_cate_name,
             sct.name as sub_cate_name
         from
             recipe_tb rt
-            join board_tb bt on (rt.board_id = bt.board_id)
-            join board_type_tb btt on (btt.board_type_id = bt.board_type_id)
-            join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
-            join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
+<!--            join board_tb bt on (rt.board_id = bt.board_id)-->
+<!--            join board_type_tb btt on (btt.board_type_id = bt.board_type_id)-->
+            left outer join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
+            left outer join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id);
 
     </select>
     <select id="findByRecipeId" resultMap="RecipeResultMap">
@@ -102,22 +102,22 @@
             rt.create_dt as recipe_create_dt,
             rt.update_dt as recipe_update_dt,
 
-            bt.title as board_title,
-            bt.board_type_id,
-            bt.create_dt as board_create_dt,
-            bt.update_dt as board_update_dt,
+<!--            bt.title as board_title,-->
+<!--            bt.board_type_id,-->
+<!--            bt.create_dt as board_create_dt,-->
+<!--            bt.update_dt as board_update_dt,-->
 
-            btt.board_type_name,
-            btt.board_type_name_kor,
+<!--            btt.board_type_name,-->
+<!--            btt.board_type_name_kor,-->
 
             mct.name as main_cate_name,
             sct.name as sub_cate_name
         from
             recipe_tb rt
-            join board_tb bt on (rt.board_id = bt.board_id)
-            join board_type_tb btt on (btt.board_type_id = bt.board_type_id)
-            join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
-            join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
+<!--            join board_tb bt on (rt.board_id = bt.board_id)-->
+<!--            join board_type_tb btt on (btt.board_type_id = bt.board_type_id)-->
+            left outer join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
+            left outer join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
         where
             rt.recipe_id = #{recipeId};
     </select>
@@ -138,22 +138,22 @@
             rt.create_dt as recipe_create_dt,
             rt.update_dt as recipe_update_dt,
 
-            bt.title as board_title,
-            bt.board_type_id,
-            bt.create_dt as board_create_dt,
-            bt.update_dt as board_update_dt,
+<!--            bt.title as board_title,-->
+<!--            bt.board_type_id,-->
+<!--            bt.create_dt as board_create_dt,-->
+<!--            bt.update_dt as board_update_dt,-->
 
-            btt.board_type_name,
-            btt.board_type_name_kor,
+<!--            btt.board_type_name,-->
+<!--            btt.board_type_name_kor,-->
 
             mct.name as main_cate_name,
             sct.name as sub_cate_name
         from
             recipe_tb rt
-            join board_tb bt on (rt.board_id = bt.board_id)
-            join board_type_tb btt on (btt.board_type_id = bt.board_type_id)
-            join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
-            join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
+<!--            join board_tb bt on (rt.board_id = bt.board_id)-->
+<!--            join board_type_tb btt on (btt.board_type_id = bt.board_type_id)-->
+            left outer join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
+            left outer join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
         where
             rt.user_id = #{userId};
     </select>
@@ -174,22 +174,22 @@
             rt.create_dt as recipe_create_dt,
             rt.update_dt as recipe_update_dt,
 
-            bt.title as board_title,
-            bt.board_type_id,
-            bt.create_dt as board_create_dt,
-            bt.update_dt as board_update_dt,
+<!--            bt.title as board_title,-->
+<!--            bt.board_type_id,-->
+<!--            bt.create_dt as board_create_dt,-->
+<!--            bt.update_dt as board_update_dt,-->
 
-            btt.board_type_name,
-            btt.board_type_name_kor,
+<!--            btt.board_type_name,-->
+<!--            btt.board_type_name_kor,-->
 
             mct.name as main_cate_name,
             sct.name as sub_cate_name
         from
             recipe_tb rt
-            join board_tb bt on (rt.board_id = bt.board_id)
-            join board_type_tb btt on (btt.board_type_id = bt.board_type_id)
-            join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
-            join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
+<!--            join board_tb bt on (rt.board_id = bt.board_id)-->
+<!--            join board_type_tb btt on (btt.board_type_id = bt.board_type_id)-->
+            left outer join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
+            left outer join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
         where
             rt.main_category_id = #{mainCategoryId};
     </select>
@@ -210,22 +210,22 @@
             rt.create_dt as recipe_create_dt,
             rt.update_dt as recipe_update_dt,
 
-            bt.title as board_title,
-            bt.board_type_id,
-            bt.create_dt as board_create_dt,
-            bt.update_dt as board_update_dt,
+<!--            bt.title as board_title,-->
+<!--            bt.board_type_id,-->
+<!--            bt.create_dt as board_create_dt,-->
+<!--            bt.update_dt as board_update_dt,-->
 
-            btt.board_type_name,
-            btt.board_type_name_kor,
+<!--            btt.board_type_name,-->
+<!--            btt.board_type_name_kor,-->
 
             mct.name as main_cate_name,
             sct.name as sub_cate_name
         from
             recipe_tb rt
-            join board_tb bt on (rt.board_id = bt.board_id)
-            join board_type_tb btt on (btt.board_type_id = bt.board_type_id)
-            join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
-            join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
+<!--            join board_tb bt on (rt.board_id = bt.board_id)-->
+<!--            join board_type_tb btt on (btt.board_type_id = bt.board_type_id)-->
+            left outer join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
+            left outer join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
         where
             rt.sub_category_id = #{subCategoryId};
     </select>
@@ -246,28 +246,28 @@
             rt.create_dt as recipe_create_dt,
             rt.update_dt as recipe_update_dt,
 
-            bt.title as board_title,
-            bt.board_type_id,
-            bt.create_dt as board_create_dt,
-            bt.update_dt as board_update_dt,
+<!--            bt.title as board_title,-->
+<!--            bt.board_type_id,-->
+<!--            bt.create_dt as board_create_dt,-->
+<!--            bt.update_dt as board_update_dt,-->
 
-            btt.board_type_name,
-            btt.board_type_name_kor,
+<!--            btt.board_type_name,-->
+<!--            btt.board_type_name_kor,-->
 
             mct.name as main_cate_name,
             sct.name as sub_cate_name
         from
             recipe_tb rt
-            join board_tb bt on (rt.board_id = bt.board_id)
-            join board_type_tb btt on (btt.board_type_id = bt.board_type_id)
-            join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
-            join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
+<!--            join board_tb bt on (rt.board_id = bt.board_id)-->
+<!--            join board_type_tb btt on (btt.board_type_id = bt.board_type_id)-->
+            left outer join main_category_tb mct on (mct.main_category_id = rt.main_category_id)
+            left outer join sub_category_tb sct on (sct.sub_category_id = rt.sub_category_id)
         where
             rt.title like concat("%", #{keyword}, "%")
             or rt.intro like concat("%", #{keyword}, "%")
             or rt.steps like concat("%", #{keyword}, "%")
         order by
-            bt.create_dt desc;
+            recipe_create_dt desc;
     </select>
     <update id="updateRecipe">
         update
