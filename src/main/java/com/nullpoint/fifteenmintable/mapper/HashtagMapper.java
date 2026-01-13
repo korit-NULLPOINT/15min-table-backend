@@ -9,10 +9,11 @@ import java.util.Optional;
 @Mapper
 public interface HashtagMapper {
     int createHashtag(Hashtag hashtag);
-
-    List<Hashtag> findAll();
-    Optional<Hashtag> findByHashtagId(Integer hashtagId);
-    Optional<List<Hashtag>> findByKeyword(String keyword);
-
     int deleteHashtag(Integer hashtagId);
+    Optional<Hashtag> getByHashtagId(Integer hashtagId);
+    List<Hashtag> getHashtagList();
+    List<Hashtag> getByKeyword(String keyword);
+    List<Hashtag> getHashtagsByRecipeId(Integer recipeId);
+
+
 }

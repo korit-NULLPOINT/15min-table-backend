@@ -3,12 +3,53 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.nullpoint.fifteenmintable.mapper.RecipeBookmarkMapper">
-    <resultMap id="RecipeBookmarkRespDto" type="com.nullpoint.fifteenmintable.entity.RecipeBookmark">
-        <id property="recipeBookmarkId" column="" />
+    <resultMap id="RecipeBookmark" type="com.nullpoint.fifteenmintable.entity.RecipeBookmark">
+        <id property="recipeBookmarkId" column="recipe_bookmark_id" />
         <result property="recipeId" column="recipe_id" />
         <result property="userId" column="user_id" />
         <result property="createDt" column="create_dt" />
     </resultMap>
+
+    <resultMap id="BookmarkRespDto" type="com.nullpoint.fifteenmintable.dto.bookmark.BookmarkRespDto">
+        <id property="recipeId" column="recipe_id" />
+        <result property="createDt" column="create_dt" />
+    </resultMap>
     
-    <insert id=""
+    <insert id="addBookmark" useGeneratedKeys="true" keyProperty="recipeBookmarkId">
+        insert into
+            recipe_bookmark_tb
+        values
+            (0, #{userId}, #{recipeId}, now());
+    </insert>
+
+    <delete id="deleteBookmark">
+        delete from
+            recipe_bookmark_tb
+        where
+            recipe_id = #{recipeId} and
+            user_id = #{userId};
+    </delete>
+
+    <select id="existsByRecipeIdAndUserId" resultType="boolean">
+        SELECT EXISTS(
+        SELECT
+            1
+        FROM
+            recipe_bookmark_tb
+        WHERE
+            recipe_id = #{recipeId} AND user_id = #{userId}
+        );
+    </select>
+
+    <select id="getBookmarkListByUserId" resultMap="BookmarkRespDto">
+        select
+            recipe_id,
+            create_dt
+        from
+            recipe_bookmark_tb
+        where
+            user_id = #{userId}
+        order by
+            create_dt desc;
+    </select>
 </mapper>

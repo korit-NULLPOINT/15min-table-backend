@@ -5,13 +5,12 @@ import com.nullpoint.fifteenmintable.entity.RecipeBookmark;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
-import java.util.Optional;
 
 @Mapper
 public interface RecipeBookmarkMapper {
+
     int addBookmark(RecipeBookmark recipeBookmark);
     int deleteBookmark(Integer recipeId, Integer userId);
-    Optional<BookmarkRespDto> getBookmarkByUserId(Integer recipeId, Integer userId);
-    Optional<BookmarkRespDto> getBookmarkByRecipeId(Integer recipeId);
+    boolean existsByRecipeIdAndUserId(Integer recipeId, Integer userId);
     List<BookmarkRespDto> getBookmarkListByUserId(Integer userId);
 }

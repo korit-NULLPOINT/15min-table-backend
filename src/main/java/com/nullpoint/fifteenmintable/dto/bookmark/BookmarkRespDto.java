@@ -10,8 +10,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookmarkRespDto {
-    private Integer recipeBookmarkId;
-    private Integer userId;
     private Integer recipeId;
     private LocalDateTime createDt;
 }
