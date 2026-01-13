@@ -1,39 +1,44 @@
 package com.nullpoint.fifteenmintable.repository;
 
-import com.nullpoint.fifteenmintable.dto.rating.RatingSummaryRespDto;
-import com.nullpoint.fifteenmintable.dto.rating.RecipeRatingRespDto;
 import com.nullpoint.fifteenmintable.entity.RecipeRating;
 import com.nullpoint.fifteenmintable.mapper.RecipeRatingMapper;
-import org.apache.ibatis.annotations.Param;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
+@RequiredArgsConstructor
 public class RecipeRatingRepository {
+    private final RecipeRatingMapper recipeRatingMapper;
 
-    @Autowired
-    private RecipeRatingMapper recipeRatingMapper;
-
-    public int insertRating(RecipeRating recipeRating) {
-        return recipeRatingMapper.insertRating(recipeRating);
+    public int createRecipeRating(RecipeRating recipeRating) {
+        return recipeRatingMapper.createRecipeRating(recipeRating);
     }
 
-    public int updateRating(RecipeRating recipeRating) {
-        return recipeRatingMapper.updateRating(recipeRating);
+    public Optional<List<RecipeRating>> findAll() {
+        return recipeRatingMapper.findAll();
     }
 
-    public int deleteRating(Integer recipeId, Integer userId) {
-        return recipeRatingMapper.deleteRating(recipeId, userId);
+    public Optional<List<RecipeRating>> findByRecipeId(Integer recipeId) {
+        return recipeRatingMapper.findByRecipeId(recipeId);
     }
 
-    public Optional<RecipeRatingRespDto> getRatingByRecipeIdAndUserId(@Param("recipeId") Integer recipeId,
-                                                                      @Param("userId") Integer userId) {
-        return recipeRatingMapper.getRatingByRecipeIdAndUserId(recipeId, userId);
+    public Optional<List<RecipeRating>> findByUserId(Integer userId) {
+        return recipeRatingMapper.findByUserId(userId);
     }
 
-    public Optional<RatingSummaryRespDto> getRatingSummaryByRecipeId(Integer recipeId) {
-        return recipeRatingMapper.getRatingSummaryByRecipeId(recipeId);
+    public Optional<List<RecipeRating>> findByRating(Integer rating) {
+        return recipeRatingMapper.findByRating(rating);
     }
+
+    public int updateRecipeRating(RecipeRating recipeRating) {
+        return recipeRatingMapper.updateRecipeRating(recipeRating);
+    }
+
+    public int deleteRecipeRating(int recipeRatingId) {
+        return recipeRatingMapper.deleteRecipeRating(recipeRatingId);
+    }
+
 }

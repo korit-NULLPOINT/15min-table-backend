@@ -88,7 +88,7 @@ public class AccountService {
         }
 
         User user = optionalUser.get();
-        user.setProfileImgUrl(changeProfileImgReqDto.getProfileImg());
+        user.setProfileImg(changeProfileImgReqDto.getProfileImg());
 
         int result = userRepository.changeProfileImg(user);
         if (result != 1) {
@@ -97,6 +97,26 @@ public class AccountService {
 
         return new ApiRespDto<>("success", "사용자 프로필 이미지가 변경되었습니다.", null);
     }
+
+    public ApiRespDto<?> withdraw(PrincipalUser principalUser) {
+        Optional<User> foundUser = userRepository.getUserByUserId(principalUser.getUserId());
+        if (foundUser.isEmpty()) {
+            return new ApiRespDto<>("failed", "회원정보가 존재하지 않습니다.", null);
+        }
+
+        User user = foundUser.get();
+        if (!user.isActive()) {
+            return new ApiRespDto<>("failed", "이미 탈퇴 처리된 계정입니다.", null);
+        }
+
+        int result = userRepository.withdraw(user.getUserId());
+        if (result != 1) {
+            return new ApiRespDto<>("failed", "탈퇴처리에 실패했습니다.", null);
+        }
+
+        return new ApiRespDto<>("success", "탈퇴처리가 완료되었습니다. 90일 이후 회원정보가 완전히 삭제됩니다.", null);
+    }
+
 }
 
 

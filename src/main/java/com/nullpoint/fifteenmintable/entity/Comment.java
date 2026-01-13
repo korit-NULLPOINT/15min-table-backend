@@ -19,5 +19,3 @@ public class Comment {
     private LocalDateTime createDt;
     private LocalDateTime updateDt;
 }
-
-
