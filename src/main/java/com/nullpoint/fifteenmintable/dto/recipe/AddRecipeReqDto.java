@@ -27,6 +27,7 @@ public class AddRecipeReqDto {
                 .thumbnailImgUrl(thumbnailImgUrl)
                 .ingredients(ingredients)
                 .ingredientImgUrl(ingredientImgUrl)
+                .steps(steps)
                 .viewCount(0)
                 .build();
     }

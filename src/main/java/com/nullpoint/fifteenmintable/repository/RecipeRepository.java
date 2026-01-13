@@ -26,19 +26,19 @@ public class RecipeRepository {
     }
 
     public Optional<List<Recipe>> findByUserId(Integer userId) {
-        return recipeMapper.findByUserId(userId);
+        return Optional.of(recipeMapper.findByUserId(userId));
     }
 
     public Optional<List<Recipe>> findByMainCategoryId(Integer mainCategoryId) {
-        return recipeMapper.findByMainCategoryId(mainCategoryId);
+        return Optional.of(recipeMapper.findByMainCategoryId(mainCategoryId));
     }
 
     public Optional<List<Recipe>> findBySubCategoryId(Integer subCategoryId) {
-        return recipeMapper.findBySubCategoryId(subCategoryId);
+        return Optional.of(recipeMapper.findBySubCategoryId(subCategoryId));
     }
 
     public Optional<List<Recipe>> findByKeyword(String keyword) {
-        return recipeMapper.findByKeyword(keyword);
+        return Optional.of(recipeMapper.findByKeyword(keyword));
     }
 
     public int updateRecipe(Recipe recipe) {
