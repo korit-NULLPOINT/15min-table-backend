@@ -53,14 +53,15 @@ public class RecipeService {
     }
 
     public ApiRespDto<?> getRecipeListByUsername(String username) {
-        Optional<User> foundUser = userRepository.getUserByUsername(username);
+        Optional<User> foundUserOptional = userRepository.getUserByUsername(username);
 
-        if(foundUser.isEmpty()) {
+        if(foundUserOptional.isEmpty()) {
             return new ApiRespDto<>("failed", "해당 username이 존재하지 않습니다.", null);
         }
 
+        User foundUser = foundUserOptional.get();
         Optional<List<Recipe>> foundRecipeList
-                = recipeRepository.findByUserId(foundUser.get().getUserId());
+                = recipeRepository.findByUserId(foundUser.getUserId());
 
         if(foundRecipeList.isEmpty()) {
             return new ApiRespDto<>("failed", "해당 유저가 등록한 레시피가 존재하지 않습니다.", null);
@@ -121,6 +122,8 @@ public class RecipeService {
         }
 
         Recipe recipe = modifyRecipeReqDto.toEntity();
+
+        System.out.println(">>>>> 레시피아이디 : " + recipe.getRecipeId());
 
         if (recipe.getMainCategoryId() == null) {
             recipe.setMainCategoryId(foundRecipe.getMainCategoryId());

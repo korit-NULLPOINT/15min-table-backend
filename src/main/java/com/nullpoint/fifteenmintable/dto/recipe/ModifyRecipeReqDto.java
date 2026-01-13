@@ -18,6 +18,16 @@ public class ModifyRecipeReqDto {
     private String steps;
 
     public Recipe toEntity() {
-        return Recipe.builder().build();
+        return Recipe.builder()
+                .recipeId(recipeId)
+                .mainCategoryId(mainCategoryId)
+                .subCategoryId(subCategoryId)
+                .title(title)
+                .intro(intro)
+                .thumbnailImgUrl(thumbnailImgUrl)
+                .ingredients(ingredients)
+                .ingredientImgUrl(ingredientImgUrl)
+                .steps(steps)
+                .build();
     }
 }
