@@ -52,8 +52,6 @@
         delete from
             comment_tb
         where
-            comment_id = #{commentId}
-        order by
-            comment_id desc;
+            comment_id = #{commentId};
     </delete>
 </mapper>
