@@ -43,6 +43,7 @@ public class UserAuthService {
             return new ApiRespDto<>("failed", "이미 존재하는 사용자 이름 입니다.", null);
         }
 
+
         Optional<User> optionalUser = userRepository.addUser(signupReqDto.toEntity(bCryptPasswordEncoder));
         if (optionalUser.isEmpty()) {
             throw new RuntimeException("회원 추가에 실패했습니다.");
