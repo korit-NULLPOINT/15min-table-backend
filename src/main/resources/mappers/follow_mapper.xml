@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nullpoint.fifteenmintable.mapper.FollowMapper">
+    <resultMap id="FollowResultMap" type="com.nullpoint.fifteenmintable.entity.Follow">
+        <id property="followId" column="follow_id"/>
+        <result property="followerUserId" column="follower_user_id"/>
+        <result property="followingUserId" column="following_user_id"/>
+        <result property="createDt" column="create_dt"/>
+    </resultMap>
+
+    <resultMap id="FollowRespResultMap" type="com.nullpoint.fifteenmintable.dto.follow.FollowRespDto">
+        <id property="followId" column="follow_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="username" column="username"/>
+        <result property="profileImgUrl" column="profile_img_url"/>
+        <result property="createDt" column="create_dt"/>
+    </resultMap>
+
+    <insert id="addFollow" useGeneratedKeys="true" keyProperty="followId">
+        insert into
+            follow_tb
+        values
+            (0, #{followerUserId}, #{followingUserId}, now());
+    </insert>
+
+    <delete id="deleteFollow">
+        delete from
+            follow_tb
+        where
+            follower_user_id = #{followerUserId}
+            and following_user_id = #{followingUserId}
+    </delete>
+
+    <select id="getFollow" resultMap="FollowResultMap">
+        select
+            follow_id,
+            follower_user_id,
+            following_user_id,
+            create_dt
+        from
+            follow_tb
+        where
+            follower_user_id = #{followerUserId}
+            and following_user_id = #{followingUserId}
+        limit 1;
+    </select>
+
+    <!-- ========= EXISTS ========= -->
+    <select id="existsFollow" resultType="boolean">
+        select exists(
+        select
+            1
+        from
+            follow_tb
+        where
+            follower_user_id = #{followerUserId}
+            and following_user_id = #{followingUserId}
+        );
+    </select>
+
+    <!-- ========= 알림용: 팔로워 userId 목록 ========= -->
+    <select id="getFollowerUserIdListByFollowingUserId" resultType="int">
+        select
+            follower_user_id
+        from
+            follow_tb
+        where
+            following_user_id = #{followingUserId}
+    </select>
+
+    <!-- ========= 알림용/기타: 팔로잉 userId 목록 ========= -->
+    <select id="getFollowingUserIdListByFollowerUserId" resultType="int">
+        select
+            following_user_id
+        from
+            follow_tb
+        where
+            follower_user_id = #{followerUserId}
+    </select>
+
+    <!-- ========= 목록: 나를 팔로우하는 사람들 (followers) ========= -->
+    <!-- following_user_id = 나, 상대는 follower_user_id -->
+    <select id="getFollowersByUserId" resultMap="FollowRespResultMap">
+        select
+            ft.follow_id,
+            ut.user_id,
+            ut.username,
+            ut.profile_img_url,
+            ft.create_dt
+        from
+            follow_tb ft
+            inner join user_tb ut
+            on ut.user_id = ft.follower_user_id
+        where
+            ft.following_user_id = #{userId}
+        order by
+            ft.create_dt desc;
+    </select>
+
+    <!-- ========= 목록: 내가 팔로우하는 사람들 (following) ========= -->
+    <!-- follower_user_id = 나, 상대는 following_user_id -->
+    <select id="getFollowingsByUserId" resultMap="FollowRespResultMap">
+        select
+            ft.follow_id,
+            ut.user_id,
+            ut.username,
+            ut.profile_img_url,
+            ft.create_dt
+        from
+            follow_tb ft
+            inner join user_tb ut
+            on ut.user_id = ft.following_user_id
+        where
+            ft.follower_user_id = #{userId}
+        order by
+            ft.create_dt desc;
+    </select>
+</mapper>

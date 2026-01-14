@@ -88,7 +88,7 @@ public class AccountService {
         }
 
         User user = optionalUser.get();
-        user.setProfileImg(changeProfileImgReqDto.getProfileImg());
+        user.setProfileImgUrl(changeProfileImgReqDto.getProfileImg());
 
         int result = userRepository.changeProfileImg(user);
         if (result != 1) {

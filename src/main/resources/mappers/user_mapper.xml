@@ -9,7 +9,7 @@
         <result property="email" column="email"/>
         <result property="password" column="password"/>
         <result property="username" column="username"/>
-        <result property="profileImg" column="profile_img"/>
+        <result property="profileImgUrl" column="profile_img_url"/>
         <result property="createDt" column="create_dt"/>
         <result property="updateDt" column="update_dt"/>
         <result property="status" column="status"/>

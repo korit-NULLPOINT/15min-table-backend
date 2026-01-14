@@ -80,8 +80,8 @@ public class RecipeHashtagService {
             Hashtag hashtag = hashtagRepository.getByName(tagName)
                     .orElseGet(() -> {
                         Hashtag newTag = Hashtag.builder().name(tagName).build();
-                        int r = hashtagRepository.createHashtag(newTag);
-                        if (r != 1) throw new RuntimeException("해시태그 생성 실패");
+                        int result = hashtagRepository.createHashtag(newTag);
+                        if (result != 1) throw new RuntimeException("해시태그 생성 실패");
                         return newTag;
                     });
 
@@ -90,8 +90,8 @@ public class RecipeHashtagService {
                     .hashtagId(hashtag.getHashtagId())
                     .build();
 
-            int r = recipeHashtagRepository.createRecipeHashtag(link);
-            if (r != 1) throw new RuntimeException("레시피-해시태그 연결 생성 실패");
+            int result = recipeHashtagRepository.createRecipeHashtag(link);
+            if (result != 1) throw new RuntimeException("레시피-해시태그 연결 생성 실패");
         }
 
         // 4) 저장 후 최종 목록 반환(조인해서 hashtag까지 같이 내려옴)

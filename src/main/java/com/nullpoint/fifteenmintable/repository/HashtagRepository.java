@@ -1,7 +1,6 @@
 package com.nullpoint.fifteenmintable.repository;
 
 import com.nullpoint.fifteenmintable.entity.Hashtag;
-import com.nullpoint.fifteenmintable.entity.RecipeHashtag;
 import com.nullpoint.fifteenmintable.mapper.HashtagMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
