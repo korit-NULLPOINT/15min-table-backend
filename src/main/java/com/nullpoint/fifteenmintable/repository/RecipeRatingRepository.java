@@ -28,8 +28,7 @@ public class RecipeRatingRepository {
         return recipeRatingMapper.deleteRating(recipeId, userId);
     }
 
-    public Optional<RecipeRatingRespDto> getRatingByRecipeIdAndUserId(@Param("recipeId") Integer recipeId,
-                                                                      @Param("userId") Integer userId) {
+    public Optional<RecipeRatingRespDto> getRatingByRecipeIdAndUserId(Integer recipeId, Integer userId) {
         return recipeRatingMapper.getRatingByRecipeIdAndUserId(recipeId, userId);
     }
 

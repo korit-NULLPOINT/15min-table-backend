@@ -20,19 +20,20 @@ public class CommentService {
     @Autowired
     private CommentRepository commentRepository;
 
-    public ApiRespDto<?> addComment(AddCommentReqDto dto, PrincipalUser principalUser) {
+    public ApiRespDto<?> addComment(AddCommentReqDto addCommentReqDto, PrincipalUser principalUser) {
         if (principalUser == null) {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }
-        if (dto == null) throw new RuntimeException("요청 값이 비어있습니다.");
-        if (dto.getRecipeId() == null) throw new RuntimeException("recipeId는 필수입니다.");
-        if (dto.getContent() == null || dto.getContent().trim().isEmpty()) {
+
+        if (addCommentReqDto == null) throw new RuntimeException("요청 값이 비어있습니다.");
+        if (addCommentReqDto.getRecipeId() == null) throw new RuntimeException("recipeId는 필수입니다.");
+        if (addCommentReqDto.getContent() == null || addCommentReqDto.getContent().trim().isEmpty()) {
             throw new RuntimeException("댓글 내용은 필수입니다.");
         }
 
         Integer userId = principalUser.getUserId();
 
-        Comment comment = dto.toEntity(userId);
+        Comment comment = addCommentReqDto.toEntity(userId);
         int result = commentRepository.addComment(comment);
 
         if (result != 1) {

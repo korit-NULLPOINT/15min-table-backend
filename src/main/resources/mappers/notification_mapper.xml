@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nullpoint.fifteenmintable.mapper.NotificationMapper">
+    <resultMap id="NotificationResultMap" type="com.nullpoint.fifteenmintable.entity.Notification">
+        <id property="notificationId" column="notification_id"/>
+        <result property="receiverUserId" column="receiver_user_id"/>
+        <result property="actorUserId" column="actor_user_id"/>
+        <result property="notificationType" column="notification_type"/>
+        <result property="recipeId" column="recipe_id"/>
+        <result property="commentId" column="comment_id"/>
+        <result property="isRead" column="is_read"/>
+        <result property="createDt" column="create_dt"/>
+    </resultMap>
+    <resultMap id="NotificationRespResultMap" type="com.nullpoint.fifteenmintable.dto.notification.NotificationRespDto">
+        <id property="notificationId" column="notification_id"/>
+        <result property="actorUserId" column="actor_user_id"/>
+        <result property="actorUsername" column="actor_username"/>
+        <result property="notificationType" column="notification_type"/>
+        <result property="recipeId" column="recipe_id"/>
+        <result property="isRead" column="is_read"/>
+        <result property="createDt" column="create_dt"/>
+    </resultMap>
+
+    <insert id="createNotification" useGeneratedKeys="true" keyProperty="notificationId">
+        insert into
+            notification_tb
+        values
+            (0, #{receiverUserId}, #{actorUserId}, #{notificationType}, #{recipeId}, #{commentId}, 0, now())
+    </insert>
+
+    <!-- ========= READ (커서 + size) ========= -->
+    <!-- cursor가 null이면 최신부터, cursor가 있으면 notification_id < cursor 로 이어서 가져옴 -->
+    <select id="getNotifications" resultMap="NotificationRespResultMap">
+        select
+            nt.notification_id,
+            nt.actor_user_id,
+            ut.username as actor_username,
+            nt.notification_type,
+            nt.recipe_id,
+            nt.is_read,
+            nt.create_dt
+        from
+            notification_tb nt
+            inner join user_tb ut
+            on ut.user_id = nt.actor_user_id
+        where
+            nt.receiver_user_id = #{receiverUserId}
+        <if test="cursor != null">
+            and nt.notification_id &lt; #{cursor}
+        </if>
+        order by
+            nt.notification_id desc
+        limit
+            #{size}
+    </select>
+
+    <select id="getUnreadCount" resultType="int">
+        select
+            count(*)
+        from
+            notification_tb
+        where
+            receiver_user_id = #{receiverUserId}
+            and is_read = 0
+    </select>
+
+    <update id="markAsRead">
+        update
+            notification_tb
+        set
+            is_read = 1
+        where
+            notification_id = #{notificationId}
+            and receiver_user_id = #{receiverUserId}
+            and is_read = 0
+    </update>
+
+    <update id="markAllAsRead">
+        update
+            notification_tb
+        set
+            is_read = 1
+        where
+            receiver_user_id = #{receiverUserId}
+            and is_read = 0
+    </update>
+</mapper>
