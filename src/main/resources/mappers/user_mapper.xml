@@ -110,10 +110,10 @@
     </select>
 
     <insert id="addUser" useGeneratedKeys="true" keyProperty="userId">
-        insert into
-            user_tb
+        insert into user_tb
+            (email, password, username, profile_img_url, create_dt, update_dt, status, withdraw_dt, delete_dt)
         values
-            (0, #{email}, #{password}, #{username}, "https://firebasestorage.googleapis.com/v0/b/board-study-6c729.firebasestorage.app/o/profile-img%2F%E1%84%83%E1%85%A1%E1%84%8B%E1%85%AE%E1%86%AB%E1%84%85%E1%85%A9%E1%84%83%E1%85%B3.jpeg?alt=media&amp;token=3f9063b1-0773-49b7-8820-b2b6d63bea97", now(), null, "ACTIVE", null, null);
+            (#{email}, #{password}, #{username}, "https://firebasestorage.googleapis.com/v0/b/board-study-6c729.firebasestorage.app/o/profile-img%2F%E1%84%83%E1%85%A1%E1%84%8B%E1%85%AE%E1%86%AB%E1%84%85%E1%85%A9%E1%84%83%E1%85%B3.jpeg?alt=media&amp;token=3f9063b1-0773-49b7-8820-b2b6d63bea97", now(), null, "ACTIVE", null, null)
     </insert>
 
     <update id="changePassword">
@@ -140,7 +140,7 @@
         update
             user_tb
         set
-            profile_img = #{profileImg},
+            profile_img_url = #{profileImgUrl},
             update_dt = now()
         where
             user_id = #{userId};
