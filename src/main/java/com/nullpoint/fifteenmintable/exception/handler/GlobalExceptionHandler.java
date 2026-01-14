@@ -1,4 +1,4 @@
-package com.nullpoint.fifteenmintable.security.handler;
+package com.nullpoint.fifteenmintable.exception.handler;
 
 import com.nullpoint.fifteenmintable.dto.ApiRespDto;
 import com.nullpoint.fifteenmintable.exception.ForbiddenException;

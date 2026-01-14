@@ -3,6 +3,7 @@ package com.nullpoint.fifteenmintable.repository;
 import com.nullpoint.fifteenmintable.dto.bookmark.BookmarkRespDto;
 import com.nullpoint.fifteenmintable.entity.RecipeBookmark;
 import com.nullpoint.fifteenmintable.mapper.RecipeBookmarkMapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Repository
 public class RecipeBookmarkRepository {
+
     @Autowired
     private RecipeBookmarkMapper recipeBookmarkMapper;
 
@@ -17,11 +19,11 @@ public class RecipeBookmarkRepository {
         return recipeBookmarkMapper.addBookmark(recipeBookmark);
     }
 
-    public int deleteBookmark(Integer recipeId, Integer userId) {
+    public int deleteBookmark(@Param("recipeId") Integer recipeId, @Param("userId") Integer userId) {
         return recipeBookmarkMapper.deleteBookmark(recipeId, userId);
     }
 
-    public boolean existsByRecipeIdAndUserId(Integer recipeId, Integer userId) {
+    public boolean existsByRecipeIdAndUserId(@Param("recipeId") Integer recipeId, @Param("userId") Integer userId) {
         return recipeBookmarkMapper.existsByRecipeIdAndUserId(recipeId, userId);
     }
 

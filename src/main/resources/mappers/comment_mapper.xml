@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.nullpoint.fifteenmintable.mapper.CommentMapper">
-    <resultMap id="CommentResultMap" type="com.nullpoint.fifteenmintable.entity.Comment">
+    <resultMap id="CommentRespDtoResultMap" type="com.nullpoint.fifteenmintable.dto.comment.CommentRespDto">
         <id property="commentId" column="comment_id"/>
         <result property="recipeId" column="recipe_id"/>
         <result property="userId" column="user_id"/>
@@ -12,30 +12,25 @@
         <result property="updateDt" column="update_dt"/>
     </resultMap>
 
-    <insert id="addComment" useGeneratedKeys="true" keyProperty="comment_id">
+    <insert id="addComment" useGeneratedKeys="true" keyProperty="commentId">
         insert into
             comment_tb
         values
-            (0, #{commentId}, #{userId}, #{content}, now(), null);
+            (0, #{recipeId}, #{userId}, #{content}, now(), null);
     </insert>
 
-    <select id="getCommentByCommentId" resultMap="CommentResultMap">
+    <select id="getCommentListByRecipeId" resultMap="CommentRespDtoResultMap">
         select
             *
         from
             comment_tb
         where
-            comment_id = #{commentId};
+            recipe_id = #{recipeId}
+        order by
+            comment_id desc;
     </select>
 
-    <select id="getCommentList" resultMap="CommentResultMap">
-        select
-            *
-        from
-            comment_tb;
-    </select>
-
-    <select id="getCommentListByUserId" resultMap="CommentResultMap">
+    <select id="getCommentListByUserId" resultMap="CommentRespDtoResultMap">
         select
             *
         from
@@ -44,15 +39,14 @@
             user_id = #{userId};
     </select>
 
-    <update id="modifyComment">
-        update
+    <select id="getCommentByCommentId" resultMap="CommentRespDtoResultMap">
+        select
+            *
+        from
             comment_tb
-        set
-            content = #{content},
-            update_dt = now()
         where
             comment_id = #{commentId};
-    </update>
+    </select>
 
     <delete id="deleteComment">
         delete from

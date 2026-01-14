@@ -27,15 +27,15 @@ public class HashtagRepository {
         return hashtagMapper.getByHashtagId(hashtagId);
     }
 
+    public Optional<Hashtag> getByName(String name) {
+        return hashtagMapper.getByName(name);
+    }
+
     public List<Hashtag> getHashtagList() {
         return hashtagMapper.getHashtagList();
     }
 
     public  List<Hashtag> getByKeyword(String keyword) {
         return hashtagMapper.getByKeyword(keyword);
-    }
-
-    public List<Hashtag> getHashtagsByRecipeId(Integer recipeId) {
-        return hashtagMapper.getHashtagsByRecipeId(recipeId);
     }
 }

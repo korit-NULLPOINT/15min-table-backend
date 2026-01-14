@@ -10,9 +10,8 @@ import java.util.Optional;
 @Mapper
 public interface CommentMapper {
     int addComment(Comment comment);
-    int modifyComment(Comment comment);
     int deleteComment(Integer commentId);
     Optional<CommentRespDto> getCommentByCommentId(Integer commentId);
-    List<CommentRespDto> getCommentList();
+    List<CommentRespDto> getCommentListByRecipeId(Integer recipeId);
     List<CommentRespDto> getCommentListByUserId(Integer userId);
 }

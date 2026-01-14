@@ -3,19 +3,20 @@ package com.nullpoint.fifteenmintable.dto.comment;
 import com.nullpoint.fifteenmintable.entity.Comment;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class AddCommentReqDto {
     private Integer recipeId;
     private String content;
-    private Integer userId;
 
-    public Comment toEntity() {
+    public Comment toEntity(Integer userId) {
         return Comment.builder()
                 .recipeId(recipeId)
-                .content(content)
                 .userId(userId)
+                .content(content)
                 .build();
     }
 }

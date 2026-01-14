@@ -11,67 +11,73 @@
 
         <association property="hashtag" resultMap="HashtagResultMap"/>
     </resultMap>
+
     <resultMap id="HashtagResultMap" type="com.nullpoint.fifteenmintable.entity.Hashtag">
-        <id property="hashtagId" column="hashtag_id"/>
-        <result property="name" column="name"/>
-        <result property="createDt" column="create_dt"/>
+        <id property="hashtagId" column="ht_hashtag_id"/>
+        <result property="name" column="ht_name"/>
+        <result property="createDt" column="ht_create_dt"/>
     </resultMap>
+
     <insert id="createRecipeHashtag" useGeneratedKeys="true" keyProperty="recipeHashtagId">
         insert into
             recipe_hashtag_tb
         values
             (0, #{recipeId}, #{hashtagId}, now());
     </insert>
-    <select id="findAll" resultMap="RecipeHashtagResultMap">
+
+    <delete id="deleteAllByRecipeId">
+        delete from
+            recipe_hashtag_tb
+        where
+            recipe_id = #{recipeId};
+    </delete>
+
+    <delete id="deleteByRecipeIdAndHashtagId">
+        delete from
+            recipe_hashtag_tb
+        where
+            recipe_id = #{recipeId} and
+            hashtag_id = #{hashtagId};
+    </delete>
+
+    <select id="getByRecipeHashtagId" resultMap="RecipeHashtagResultMap">
         select
             rht.*,
-            ht.hashtag_id,
-            ht.name,
-            ht.create_dt as hashtag_create_dt
+            ht.hashtag_id as ht_hashtag_id,
+            ht.name as ht_name,
+            ht.create_dt as ht_create_dt
         from
             recipe_hashtag_tb rht
-            join hashtag_tb ht on (rht.hashtag_id = ht.hashtag_id);
-    </select>
-    <select id="findByRecipeHashtagId" resultMap="RecipeHashtagResultMap">
-        select
-            rht.*,
-            ht.hashtag_id,
-            ht.name,
-            ht.create_dt as hashtag_create_dt
-        from
-            recipe_hashtag_tb rht
-            join hashtag_tb ht on (rht.hashtag_id = ht.hashtag_id)
+            join hashtag_tb ht on (ht.hashtag_id = rht.hashtag_id)
         where
             rht.recipe_hashtag_id = #{recipeHashtagId};
     </select>
-    <select id="findByRecipeId" resultMap="RecipeHashtagResultMap">
+
+    <select id="getByRecipeId" resultMap="RecipeHashtagResultMap">
         select
             rht.*,
-            ht.hashtag_id,
-            ht.name,
-            ht.create_dt as hashtag_create_dt
+            ht.hashtag_id as ht_hashtag_id,
+            ht.name as ht_name,
+            ht.create_dt as ht_create_dt
         from
             recipe_hashtag_tb rht
             join hashtag_tb ht on (rht.hashtag_id = ht.hashtag_id)
         where
-            rht.recipe_id = #{recipeId};
+            rht.recipe_id = #{recipeId}
+        order by
+            rht.recipe_hashtag_id desc;
     </select>
-    <select id="findByHashtagId" resultMap="RecipeHashtagResultMap">
+
+    <select id="getByHashtagId" resultMap="RecipeHashtagResultMap">
         select
             rht.*,
-            ht.hashtag_id,
-            ht.name,
-            ht.create_dt as hashtag_create_dt
+            ht.hashtag_id as ht_hashtag_id,
+            ht.name as ht_name,
+            ht.create_dt as ht_create_dt
         from
             recipe_hashtag_tb rht
             join hashtag_tb ht on (rht.hashtag_id = ht.hashtag_id)
         where
             rht.hashtag_id = #{hashtagId};
     </select>
-    <delete id="deleteRecipeHashtag">
-        delete from
-            recipe_hashtag_tb
-        where
-            recipe_hashtag_id = #{recipeHashtagId};
-    </delete>
 </mapper>

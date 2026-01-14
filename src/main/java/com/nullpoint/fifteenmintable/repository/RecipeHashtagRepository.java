@@ -12,29 +12,29 @@ import java.util.Optional;
 public class RecipeHashtagRepository {
 
     @Autowired
-    private RecipeHashtagMapper hashtagMapper;
+    private RecipeHashtagMapper recipeHashtagMapper;
 
     public int createRecipeHashtag(RecipeHashtag recipeHashtag) {
-        return hashtagMapper.createRecipeHashtag(recipeHashtag);
+        return recipeHashtagMapper.createRecipeHashtag(recipeHashtag);
     }
 
     public int deleteAllByRecipeId(Integer recipeId) {
-        return hashtagMapper.deleteAllByRecipeId(recipeId);
+        return recipeHashtagMapper.deleteAllByRecipeId(recipeId);
     }
 
     public int deleteByRecipeIdAndHashtagId(Integer recipeId, Integer hashtagId) {
-        return hashtagMapper.deleteByRecipeIdAndHashtagId(recipeId, hashtagId);
+        return recipeHashtagMapper.deleteByRecipeIdAndHashtagId(recipeId, hashtagId);
     }
 
     public Optional<RecipeHashtag> getByRecipeHashtagId(Integer recipeHashtagId) {
-        return hashtagMapper.getByRecipeHashtagId(recipeHashtagId);
+        return recipeHashtagMapper.getByRecipeHashtagId(recipeHashtagId);
     }
 
     public List<RecipeHashtag> getByRecipeId(Integer recipeId) {
-        return hashtagMapper.getByRecipeId(recipeId);
+        return recipeHashtagMapper.getByRecipeId(recipeId);
     }
 
     public List<RecipeHashtag> getByHashtagId(Integer hashtagId) {
-        return hashtagMapper.getByHashtagId(hashtagId);
+        return recipeHashtagMapper.getByHashtagId(hashtagId);
     }
 }

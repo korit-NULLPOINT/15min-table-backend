@@ -40,7 +40,7 @@
         <result property="name" column="main_cate_name"/>
     </resultMap>
     <resultMap id="SubCategoryResultMap" type="com.nullpoint.fifteenmintable.entity.SubCategory">
-        <id property="subCategoryId" column="main_category_id"/>
+        <id property="subCategoryId" column="sub_category_id"/>
         <result property="name" column="sub_cate_name"/>
     </resultMap>
     <insert id="createRecipe" useGeneratedKeys="true" keyProperty="recipeId">

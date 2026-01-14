@@ -3,83 +3,89 @@ package com.nullpoint.fifteenmintable.service;
 import com.nullpoint.fifteenmintable.dto.ApiRespDto;
 import com.nullpoint.fifteenmintable.dto.comment.AddCommentReqDto;
 import com.nullpoint.fifteenmintable.dto.comment.CommentRespDto;
-import com.nullpoint.fifteenmintable.dto.comment.ModifyCommentReqDto;
 import com.nullpoint.fifteenmintable.entity.Comment;
-import com.nullpoint.fifteenmintable.entity.User;
+import com.nullpoint.fifteenmintable.exception.ForbiddenException;
+import com.nullpoint.fifteenmintable.exception.NotFoundException;
+import com.nullpoint.fifteenmintable.exception.UnauthenticatedException;
 import com.nullpoint.fifteenmintable.repository.CommentRepository;
-import com.nullpoint.fifteenmintable.repository.UserRepository;
+import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CommentService {
 
     @Autowired
     private CommentRepository commentRepository;
-    @Autowired
-    private UserRepository userRepository;
 
-    public ApiRespDto<?> addComment(AddCommentReqDto addCommentReqDto) {
-        Optional<User> foundUser= userRepository.getUserByUserId(addCommentReqDto.getUserId());
-
-        if (foundUser.isEmpty()) {
-            return new ApiRespDto<>("failed", "존재 하지 않은 유저 입니다.", null);
+    public ApiRespDto<?> addComment(AddCommentReqDto dto, PrincipalUser principalUser) {
+        if (principalUser == null) {
+            throw new UnauthenticatedException("로그인이 필요합니다.");
+        }
+        if (dto == null) throw new RuntimeException("요청 값이 비어있습니다.");
+        if (dto.getRecipeId() == null) throw new RuntimeException("recipeId는 필수입니다.");
+        if (dto.getContent() == null || dto.getContent().trim().isEmpty()) {
+            throw new RuntimeException("댓글 내용은 필수입니다.");
         }
 
-        Optional<Comment> optionalComment = commentRepository.addComment(addCommentReqDto.toEntity());
+        Integer userId = principalUser.getUserId();
 
-        return new ApiRespDto<>("success", "댓글 추가 완료", optionalComment.get());
-    }
-
-    public ApiRespDto<?> getCommentByCommentId(Integer commentId) {
-        Optional<CommentRespDto> foundComment = commentRepository.getCommentByCommentId(commentId);
-
-        if (foundComment.isEmpty()) {
-            return new ApiRespDto<>("failed", "존재 하지 않은 댓글 입니다.", null);
-        }
-
-        Optional<CommentRespDto> optionalComment = commentRepository.getCommentByCommentId(commentId);
-
-        return new ApiRespDto<>("success", "댓글 조회 완료", optionalComment.get());
-    }
-
-    public ApiRespDto<?> getCommentList() {
-
-        List<CommentRespDto> CommentList = commentRepository.getCommentList();
-
-        return new ApiRespDto<>("success", "댓글 조회 완료", CommentList);
-    }
-
-    public ApiRespDto<?> getCommentListByUserId(Integer userId) {
-
-        Optional<User> foundUser = userRepository.getUserByUserId(userId);
-
-        if (foundUser.isEmpty()) {
-            return new ApiRespDto<>("failed", "존재 하지 않은 유저 입니다.", null);
-        }
-
-        List<CommentRespDto> CommentList = commentRepository.getCommentListByUserId(userId);
-
-        return new ApiRespDto<>("success", "댓글 조회 완료", CommentList);
-    }
-
-    public ApiRespDto<?> modifyComment(ModifyCommentReqDto modifyCommentReqDto) {
-        Optional<CommentRespDto> foundComment = commentRepository.getCommentByCommentId(modifyCommentReqDto.getCommentId());
-        if (foundComment.isEmpty()) {
-            return new ApiRespDto<>("failed", "존재 하지 않은 댓글 입니다.", null);
-
-        }
-
-        int result = commentRepository.modifyComment(modifyCommentReqDto.toEntity());
+        Comment comment = dto.toEntity(userId);
+        int result = commentRepository.addComment(comment);
 
         if (result != 1) {
-            return new ApiRespDto<>("failed", "댓글 수정 중 오류 발생", null);
+            throw new RuntimeException("댓글 추가 실패");
         }
 
-        return new ApiRespDto<>("success", "댓글 수정 완료", modifyCommentReqDto);
+        return new ApiRespDto<>("success", "댓글 추가 완료", comment);
     }
 
+    public ApiRespDto<?> getCommentListByRecipeId(Integer recipeId) {
+        if (recipeId == null) throw new RuntimeException("recipeId는 필수입니다.");
+
+        List<CommentRespDto> list = commentRepository.getCommentListByRecipeId(recipeId);
+        return new ApiRespDto<>("success", "레시피 댓글 목록 조회 완료", list);
+    }
+
+    public ApiRespDto<?> getCommentListByUserId(PrincipalUser principalUser) {
+        if (principalUser == null) {
+            throw new UnauthenticatedException("로그인이 필요합니다.");
+        }
+
+        Integer userId = principalUser.getUserId();
+        List<CommentRespDto> list = commentRepository.getCommentListByUserId(userId);
+
+        return new ApiRespDto<>("success", "내 댓글 목록 조회 완료", list);
+    }
+
+    /**
+     * 단건조회로 작성자 확인 후 삭제
+     */
+    public ApiRespDto<?> deleteComment(Integer commentId, PrincipalUser principalUser) {
+        if (principalUser == null) {
+            throw new UnauthenticatedException("로그인이 필요합니다.");
+        }
+        if (commentId == null) throw new RuntimeException("commentId는 필수입니다.");
+
+        Integer userId = principalUser.getUserId();
+
+        // 1) 댓글 존재 확인 + 작성자 확인
+        CommentRespDto found = commentRepository.getCommentByCommentId(commentId)
+                .orElseThrow(() -> new NotFoundException("삭제할 댓글이 없습니다."));
+
+        // 2) 권한 체크
+        if (found.getUserId() == null || !found.getUserId().equals(userId)) {
+            throw new ForbiddenException("권한이 없습니다.");
+        }
+
+        // 3) 삭제
+        int result = commentRepository.deleteComment(commentId);
+        if (result != 1) {
+            throw new NotFoundException("삭제할 댓글이 없습니다.");
+        }
+
+        return new ApiRespDto<>("success", "댓글 삭제 완료", null);
+    }
 }
