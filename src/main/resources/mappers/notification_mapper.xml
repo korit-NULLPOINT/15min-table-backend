@@ -26,9 +26,9 @@
 
     <insert id="createNotification" useGeneratedKeys="true" keyProperty="notificationId">
         insert into
-            notification_tb
+            notification_tb (receiver_user_id, actor_user_id, notification_type, recipe_id, comment_id, is_read, create_dt)
         values
-            (0, #{receiverUserId}, #{actorUserId}, #{notificationType}, #{recipeId}, #{commentId}, 0, now())
+            (#{receiverUserId}, #{actorUserId}, #{notificationType}, #{recipeId}, #{commentId}, 0, now())
     </insert>
 
     <!-- ========= READ (커서 + size) ========= -->

@@ -40,7 +40,7 @@ public class NotificationController {
     /**
      * 단건 읽음 처리
      */
-    @PatchMapping("/{notificationId}/read")
+    @PostMapping("/{notificationId}/read")
     public ResponseEntity<?> markAsRead(
             @PathVariable Integer notificationId,
             @AuthenticationPrincipal PrincipalUser principalUser
@@ -51,7 +51,7 @@ public class NotificationController {
     /**
      * 모두 읽음 처리
      */
-    @PatchMapping("/read-all")
+    @PostMapping("/read-all")
     public ResponseEntity<?> markAllAsRead(
             @AuthenticationPrincipal PrincipalUser principalUser
     ) {

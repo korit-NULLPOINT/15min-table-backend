@@ -1,23 +1,29 @@
 package com.nullpoint.fifteenmintable.mapper;
 
+import com.nullpoint.fifteenmintable.dto.recipe.RecipeDetailRespDto;
+import com.nullpoint.fifteenmintable.dto.recipe.RecipeListRespDto;
 import com.nullpoint.fifteenmintable.entity.Recipe;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Optional;
 
 @Mapper
 public interface RecipeMapper {
-    int createRecipe(Recipe recipe);
 
-    List<Recipe> findAll();
-    Optional<Recipe> findByRecipeId(Integer recipeId);
-    List<Recipe> findByUserId(Integer userId);
-    List<Recipe> findByMainCategoryId(Integer mainCategoryId);
-    List<Recipe> findBySubCategoryId(Integer subCategoryId);
-    List<Recipe> findByKeyword(String keyword);
-
-    int updateRecipe(Recipe recipe);
-
-    int deleteRecipe(Integer recipeId);
+    int addRecipe(Recipe recipe);
+    List<RecipeListRespDto> getRecipeCardListByBoardId(
+            @Param("boardId") Integer boardId,
+            @Param("offset") Integer offset,
+            @Param("limit") Integer limit
+    );
+    Optional<RecipeDetailRespDto> getRecipeDetail(@Param("boardId") Integer boardId,
+                                                  @Param("recipeId") Integer recipeId);
+    int getRecipeCountByBoardId(@Param("boardId") Integer boardId);
+    Optional<Recipe> getRecipeEntityById(@Param("recipeId") Integer recipeId);
+    int increaseViewCount(@Param("recipeId") Integer recipeId);
+    int modifyRecipe(Recipe recipe);
+    int removeRecipe(@Param("recipeId") Integer recipeId,
+                     @Param("userId") Integer userId);
 }

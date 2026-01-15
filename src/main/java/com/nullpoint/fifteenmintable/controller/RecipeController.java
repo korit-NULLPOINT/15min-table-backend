@@ -4,65 +4,60 @@ import com.nullpoint.fifteenmintable.dto.recipe.AddRecipeReqDto;
 import com.nullpoint.fifteenmintable.dto.recipe.ModifyRecipeReqDto;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import com.nullpoint.fifteenmintable.service.RecipeService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/recipe")
-@RequiredArgsConstructor
+@RequestMapping("/board/{boardId}/recipes")
 public class RecipeController {
-    private final RecipeService recipeService;
+
+    @Autowired
+    private RecipeService recipeService;
 
     @PostMapping("/add")
-    public ResponseEntity<?> addRecipe
-            (@RequestBody AddRecipeReqDto addRecipeReqDto,
-             @AuthenticationPrincipal PrincipalUser principalUser) {
-        return ResponseEntity.ok(recipeService.addRecipe(addRecipeReqDto,principalUser));
+    public ResponseEntity<?> addRecipe(
+            @PathVariable Integer boardId,
+            @RequestBody AddRecipeReqDto addRecipeReqDto,
+            @AuthenticationPrincipal PrincipalUser principalUser
+    ) {
+        return ResponseEntity.ok(recipeService.addRecipe(boardId, addRecipeReqDto, principalUser));
     }
 
-    @GetMapping("/")
-    public ResponseEntity<?> getAll() {
-        return ResponseEntity.ok(recipeService.getAll());
+    @GetMapping("/list")
+    public ResponseEntity<?> getRecipeList(
+            @PathVariable Integer boardId,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size
+    ) {
+        return ResponseEntity.ok(recipeService.getRecipeListByBoardId(boardId, page, size));
     }
 
-    @GetMapping("/{recipeId}")
-    public ResponseEntity<?> getRecipeByRecipeId(@PathVariable Integer recipeId) {
-        return ResponseEntity.ok(recipeService.getRecipeByRecipeId(recipeId));
+    @GetMapping("/detail/{recipeId}")
+    public ResponseEntity<?> getRecipeDetail(
+            @PathVariable Integer boardId,
+            @PathVariable Integer recipeId
+    ) {
+        return ResponseEntity.ok(recipeService.getRecipeDetail(boardId, recipeId));
     }
 
-    @GetMapping("/username/{username}")
-    public ResponseEntity<?> getRecipeListByUsername(@PathVariable String username) {
-        return ResponseEntity.ok(recipeService.getRecipeListByUsername(username));
-    }
-
-    @GetMapping("/category/main/{mainCategoryId}")
-    public ResponseEntity<?> getRecipeListByMainCategoryId(@PathVariable Integer mainCategoryId) {
-        return ResponseEntity.ok(recipeService.getRecipeListByMainCategoryId(mainCategoryId));
-    }
-
-    @GetMapping("/category/sub/{subCategoryId}")
-    public ResponseEntity<?> getRecipeListBySubCategoryId(@PathVariable Integer subCategoryId) {
-        return ResponseEntity.ok(recipeService.getRecipeListBySubCategoryId(subCategoryId));
-    }
-
-    @GetMapping("/keyword/{keyword}")
-    public ResponseEntity<?> getRecipeListByKeyword(@PathVariable String keyword) {
-        return ResponseEntity.ok(recipeService.getRecipeListByKeyword(keyword));
-    }
-
-    @PostMapping("/modify")
-    public ResponseEntity<?> modifyRecipe
-            (@RequestBody ModifyRecipeReqDto modifyRecipeReqDto,
-             @AuthenticationPrincipal PrincipalUser principalUser) {
-        return ResponseEntity.ok(recipeService.modifyRecipe(modifyRecipeReqDto, principalUser));
-    }
-
-    @PostMapping("/remove/{recipeId}")
-    public ResponseEntity<?> removeRecipe(
+    @PutMapping("/modify/{recipeId}")
+    public ResponseEntity<?> modifyRecipe(
+            @PathVariable Integer boardId,
             @PathVariable Integer recipeId,
-            @AuthenticationPrincipal PrincipalUser principalUser) {
-        return  ResponseEntity.ok(recipeService.removeRecipe(recipeId,principalUser));
+            @RequestBody ModifyRecipeReqDto modifyRecipeReqDto,
+            @AuthenticationPrincipal PrincipalUser principalUser
+    ) {
+        return ResponseEntity.ok(recipeService.modifyRecipe(boardId, recipeId, modifyRecipeReqDto, principalUser));
+    }
+
+    @DeleteMapping("/remove/{recipeId}")
+    public ResponseEntity<?> removeRecipe(
+            @PathVariable Integer boardId,
+            @PathVariable Integer recipeId,
+            @AuthenticationPrincipal PrincipalUser principalUser
+    ) {
+        return ResponseEntity.ok(recipeService.removeRecipe(boardId, recipeId, principalUser));
     }
 }

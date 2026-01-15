@@ -1,6 +1,7 @@
 package com.nullpoint.fifteenmintable.exception.handler;
 
 import com.nullpoint.fifteenmintable.dto.ApiRespDto;
+import com.nullpoint.fifteenmintable.exception.BadRequestException;
 import com.nullpoint.fifteenmintable.exception.ForbiddenException;
 import com.nullpoint.fifteenmintable.exception.NotFoundException;
 import com.nullpoint.fifteenmintable.exception.UnauthenticatedException;
@@ -12,6 +13,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ApiRespDto<?>> handleBadRequest(BadRequestException e) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST) // 400
+                .body(new ApiRespDto<>("failed", e.getMessage(), null));
+    }
+
 
     @ExceptionHandler(UnauthenticatedException.class)
     public ResponseEntity<ApiRespDto<?>> handleUnauthenticated(UnauthenticatedException e) {

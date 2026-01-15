@@ -25,6 +25,8 @@ public class OAuth2AuthController {
     public ResponseEntity<?> merge(@RequestBody OAuth2MergeReqDto oAuth2MergeReqDto) {
         return ResponseEntity.ok(oAuth2AuthService.merge(oAuth2MergeReqDto));
     }
+
+    // http://localhost:8080/oauth2/authorization/[naver or google 택1] -> providerUserId 확인
 }
 
 

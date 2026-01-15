@@ -54,68 +54,43 @@ public class MailService {
     }
 
     public Map<String, Object> verify(String token) {
-        Claims claims;
-        Map<String, Object> resultMap;
-
         try {
-            claims = jwtUtils.getClaims(token);
+            Claims claims = jwtUtils.getClaims(token);
+
             if (!"VerifyToken".equals(claims.getSubject())) {
-                resultMap = Map.of(
-                        "status", "failed",
-                        "message", "잘못된 접근입니다."
-                );
+                return Map.of("status", "failed", "message", "잘못된 접근입니다.");
             }
 
-            String id = claims.getId();
-            Integer userId = Integer.parseInt(id);
-            Optional<User> foundUser = userRepository.getUserByUserId(userId);
-            if (foundUser.isEmpty()) {
-                resultMap = Map.of(
-                        "status", "failed",
-                        "message", "존재하지 않은 회원정보입니다."
-                );
-            }
+            Integer userId = Integer.parseInt(claims.getId());
 
-            List<UserRole> userRoles = foundUser.get().getUserRoles();
-            Optional<UserRole> foundUserRole = userRoles.stream()
-                    .filter(userRole1 -> userRole1.getRoleId() == 3)
+            User user = userRepository.getUserByUserId(userId)
+                    .orElseThrow(() -> new RuntimeException("존재하지 않은 회원정보입니다."));
+
+            Optional<UserRole> tempRoleOpt = user.getUserRoles().stream()
+                    .filter(ur -> ur.getRoleId() == 3)   // TEMP_USER
                     .findFirst();
 
-            if (foundUserRole.isEmpty()) {
-                resultMap = Map.of(
-                        "status", "failed",
-                        "message", "이미 인증이 완료된 계정입니다."
-                );
+            if (tempRoleOpt.isEmpty()) {
+                return Map.of("status", "failed", "message", "이미 인증이 완료된 계정입니다.");
             }
 
-            UserRole userRole = foundUserRole.get();
-            userRole.setRoleId(2);
+            UserRole userRole = tempRoleOpt.get();
+            userRole.setRoleId(2); // USER
 
             int result = userRoleRepository.updateUserRole(userRole);
             if (result != 1) {
-                resultMap = Map.of(
-                        "status", "failed",
-                        "message", "문제가 발생했습니다. 다시 시도해주세요."
-                );
+                return Map.of("status", "failed", "message", "문제가 발생했습니다. 다시 시도해주세요.");
             }
 
-            resultMap = Map.of(
-                    "status", "success",
-                    "message", "인증이 완료되었습니다."
-            );
+            return Map.of("status", "success", "message", "인증이 완료되었습니다.");
+
         } catch (ExpiredJwtException e) {
-            resultMap = Map.of(
-                    "status", "failed",
-                    "message", "인증시간이 만료된 요청입니다.\n인증 메일을 다시 요청하세요."
-            );
+            return Map.of("status", "failed", "message", "인증시간이 만료된 요청입니다.\n인증 메일을 다시 요청하세요.");
         } catch (Exception e) {
-            resultMap = Map.of(
-                    "status", "failed",
-                    "message", "잘못된 요청입니다.\n인증 메일을 다시 요청하세요."
-            );
+            return Map.of("status", "failed", "message", "잘못된 요청입니다.\n인증 메일을 다시 요청하세요.");
         }
-        return resultMap;
     }
+
 }
 
 

@@ -74,7 +74,6 @@ public class RecipeBookmarkService {
         }
 
         List<BookmarkRespDto> list = recipeBookmarkRepository.getBookmarkListByUserId(principalUser.getUserId());
-        // 값 없어도 빈 목록 보여주므로 404exception X
 
         return new ApiRespDto<>("success", "찜 목록 조회 완료", list);
     }

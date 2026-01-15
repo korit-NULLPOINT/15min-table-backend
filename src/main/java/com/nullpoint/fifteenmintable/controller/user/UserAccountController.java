@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserAccountController {
 
     @Autowired
-    private AccountService userAccountService;
+    private AccountService accountService;
 
     @GetMapping("/principal")
     public ResponseEntity<?> getPrincipal(@AuthenticationPrincipal PrincipalUser principalUser) {
@@ -23,22 +23,31 @@ public class UserAccountController {
     }
 
     @PostMapping("/change/password")
-    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordReqDto changePasswordReqDto, @AuthenticationPrincipal PrincipalUser principalUser) {
-        return ResponseEntity.ok(userAccountService.changePassword(changePasswordReqDto, principalUser));
+    public ResponseEntity<?> changePassword(
+            @RequestBody ChangePasswordReqDto changePasswordReqDto,
+            @AuthenticationPrincipal PrincipalUser principalUser
+    ) {
+        return ResponseEntity.ok(accountService.changePassword(changePasswordReqDto, principalUser));
     }
 
     @PostMapping("/change/username")
-    public ResponseEntity<?> changeUsername(@RequestBody ChangeUsernameReqDto changeUsernameReqDto, @AuthenticationPrincipal PrincipalUser principalUser) {
-        return ResponseEntity.ok(userAccountService.changeUsername(changeUsernameReqDto, principalUser));
+    public ResponseEntity<?> changeUsername(
+            @RequestBody ChangeUsernameReqDto changeUsernameReqDto,
+            @AuthenticationPrincipal PrincipalUser principalUser
+    ) {
+        return ResponseEntity.ok(accountService.changeUsername(changeUsernameReqDto, principalUser));
     }
 
     @PostMapping("/change/profileImg")
-    public ResponseEntity<?> changeProfileImg(@RequestBody ChangeProfileImgReqDto profileImgReqDto, @AuthenticationPrincipal PrincipalUser principalUser) {
-        return ResponseEntity.ok(userAccountService.changeProfileImg(profileImgReqDto, principalUser));
+    public ResponseEntity<?> changeProfileImg(
+            @RequestBody ChangeProfileImgReqDto profileImgReqDto,
+            @AuthenticationPrincipal PrincipalUser principalUser
+    ) {
+        return ResponseEntity.ok(accountService.changeProfileImg(profileImgReqDto, principalUser));
     }
 
     @PostMapping("/withdraw")
     public ResponseEntity<?> withdraw(@AuthenticationPrincipal PrincipalUser principalUser) {
-        return ResponseEntity.ok(userAccountService.withdraw(principalUser));
+        return ResponseEntity.ok(accountService.withdraw(principalUser));
     }
 }

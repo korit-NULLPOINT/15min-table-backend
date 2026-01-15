@@ -47,24 +47,29 @@ public class JwtAuthenticationFilter implements Filter {
                 Integer userId = Integer.parseInt(id);
 
                 Optional<User> foundUser = userRepository.getUserByUserId(userId);
-                foundUser.ifPresentOrElse((user) -> {
+                if (foundUser.isPresent()) {
+                    User user = foundUser.get();
+
                     PrincipalUser principalUser = PrincipalUser.builder()
                             .userId(user.getUserId())
                             .email(user.getEmail())
                             .password(user.getPassword())
                             .username(user.getUsername())
-                            .profileImg(user.getProfileImg())
+                            .profileImgUrl(user.getProfileImgUrl())
                             .status(user.getStatus())
                             .userRoles(user.getUserRoles())
                             .build();
 
-                    Authentication authentication = new UsernamePasswordAuthenticationToken(principalUser, "", principalUser.getAuthorities());
+                    Authentication authentication =
+                            new UsernamePasswordAuthenticationToken(
+                                    principalUser, null, principalUser.getAuthorities());
+
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-                }, () -> {
-                    throw new AuthenticationServiceException("인증 실패");
-                });
+                } else {
+                    SecurityContextHolder.clearContext();
+                }
             } catch (RuntimeException e) {
-                e.printStackTrace();
+                SecurityContextHolder.clearContext();
             }
         }
 

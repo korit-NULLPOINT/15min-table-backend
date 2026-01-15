@@ -1,199 +1,156 @@
 package com.nullpoint.fifteenmintable.service;
 
-import com.nullpoint.fifteenmintable.dto.recipe.AddRecipeReqDto;
+import com.nullpoint.fifteenmintable.dto.hashtag.HashtagRespDto;
+import com.nullpoint.fifteenmintable.dto.recipe.*;
 import com.nullpoint.fifteenmintable.dto.ApiRespDto;
-import com.nullpoint.fifteenmintable.dto.recipe.ModifyRecipeReqDto;
 import com.nullpoint.fifteenmintable.entity.Recipe;
-import com.nullpoint.fifteenmintable.entity.User;
+import com.nullpoint.fifteenmintable.exception.BadRequestException;
+import com.nullpoint.fifteenmintable.exception.ForbiddenException;
+import com.nullpoint.fifteenmintable.exception.NotFoundException;
+import com.nullpoint.fifteenmintable.exception.UnauthenticatedException;
+import com.nullpoint.fifteenmintable.mapper.RecipeHashtagMapper;
 import com.nullpoint.fifteenmintable.repository.RecipeRepository;
-import com.nullpoint.fifteenmintable.repository.UserRepository;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class RecipeService {
-    private final RecipeRepository recipeRepository;
-    private final UserRepository userRepository;
 
-    public ApiRespDto<?> addRecipe(AddRecipeReqDto addRecipeReqDto, PrincipalUser principalUser) {
-        if(principalUser == null) {
-            return new ApiRespDto<>("failed", "로그인 해주세요.", null);
+    @Autowired
+    private RecipeRepository recipeRepository;
+
+    @Autowired
+    private RecipeHashtagMapper recipeHashtagMapper;
+
+    public ApiRespDto<?> addRecipe(Integer boardId, AddRecipeReqDto addRecipeReqDto, PrincipalUser principalUser) {
+        if (principalUser == null) throw new UnauthenticatedException("로그인 해주세요.");
+        if (boardId == null) throw new BadRequestException("boardId는 필수입니다.");
+        if (addRecipeReqDto == null) throw new BadRequestException("요청 값이 비어있습니다.");
+
+        if (addRecipeReqDto.getTitle() == null || addRecipeReqDto.getTitle().trim().isEmpty()) {
+            throw new BadRequestException("제목은 필수입니다.");
+        }
+        if (addRecipeReqDto.getSteps() == null || addRecipeReqDto.getSteps().trim().isEmpty()) {
+            throw new BadRequestException("조리 과정은 필수입니다.");
         }
 
-        Recipe recipe = addRecipeReqDto.toEntity();
+        Recipe recipe = addRecipeReqDto.toEntity(boardId);
         recipe.setUserId(principalUser.getUserId());
-        recipe.setBoardId(1);
+        recipe.setViewCount(0);
 
-        int result = recipeRepository.createRecipe(recipe);
+        int result = recipeRepository.addRecipe(recipe);
+        if (result != 1) throw new RuntimeException("레시피 추가 실패");
 
-        if (result == 0) {
-            return new ApiRespDto<>("failed", "레시피 추가에 실패했습니다.", null);
-        }
-
-        return new ApiRespDto<>("success","레시피가 등록되었습니다.", null);
+        return new ApiRespDto<>("success", "레시피가 등록되었습니다.", recipe.getRecipeId());
     }
 
-    public ApiRespDto<?> getAll() {
-        return new ApiRespDto<>("success","레시피 전체 조회 완료", recipeRepository.findAll());
-    }
+    public ApiRespDto<?> getRecipeListByBoardId(Integer boardId, Integer page, Integer size) {
+        if (boardId == null) throw new BadRequestException("boardId는 필수입니다.");
 
-    public ApiRespDto<?> getRecipeByRecipeId(Integer recipeId) {
-        Optional<Recipe> foundRecipe = recipeRepository.findByRecipeId(recipeId);
-        if(foundRecipe.isEmpty()) {
-            return new ApiRespDto<>("failed", "해당 레시피가 존재하지 않습니다.", null);
-        }
+        int safePage = (page == null) ? 0 : Math.max(page, 0);
+        int safeSize = (size == null) ? 9 : Math.min(Math.max(size, 1), 50);
+        int offset = safePage * safeSize;
 
-        return new ApiRespDto<>("success", "게시물 조회에 성공했습니다.",foundRecipe.get());
-    }
+        /*
+        * page=0, size=20 → offset=0 → 0개 건너뛰고 20개 가져옴 (1~20번)
+        * page=1, size=20 → offset=20 → 20개 건너뛰고 20개 가져옴 (21~40번)
+        * page=2, size=20 → offset=40 → 41~60번
+        * */
 
-    public ApiRespDto<?> getRecipeListByUsername(String username) {
-        Optional<User> foundUserOptional = userRepository.getUserByUsername(username);
+        List<RecipeListRespDto> items =
+                recipeRepository.getRecipeCardListByBoardId(boardId, offset, safeSize);
 
-        if(foundUserOptional.isEmpty()) {
-            return new ApiRespDto<>("failed", "해당 username이 존재하지 않습니다.", null);
-        }
+        int totalCount = recipeRepository.getRecipeCountByBoardId(boardId);
 
-        User foundUser = foundUserOptional.get();
-        Optional<List<Recipe>> foundRecipeList
-                = recipeRepository.findByUserId(foundUser.getUserId());
+        RecipeListPageRespDto data = RecipeListPageRespDto.builder()
+                .items(items)
+                .totalCount(totalCount)
+                .page(safePage)
+                .size(safeSize)
+                .build();
 
-        if(foundRecipeList.isEmpty()) {
-            return new ApiRespDto<>("failed", "해당 유저가 등록한 레시피가 존재하지 않습니다.", null);
-        }
-
-        return new ApiRespDto<>("success", "게시물 조회에 성공했습니다.",foundRecipeList.get());
-    }
-
-    public ApiRespDto<?> getRecipeListByMainCategoryId(Integer mainCategoryId) {
-        Optional<List<Recipe>> foundRecipeList
-                = recipeRepository.findByMainCategoryId(mainCategoryId);
-
-        if(foundRecipeList.isEmpty()) {
-            return new ApiRespDto<>("failed", "해당 메인 카테고리의 레시피가 존재하지 않습니다.", null);
-        }
-
-        return new ApiRespDto<>("success", "게시물 조회에 성공했습니다.",foundRecipeList.get());
-    }
-
-    public ApiRespDto<?> getRecipeListBySubCategoryId(Integer subCategoryId) {
-        Optional<List<Recipe>> foundRecipeList
-                = recipeRepository.findBySubCategoryId(subCategoryId);
-
-        if(foundRecipeList.isEmpty()) {
-            return new ApiRespDto<>("failed", "해당 서브 카테고리의 레시피가 존재하지 않습니다.", null);
-        }
-
-        return new ApiRespDto<>("success", "게시물 조회에 성공했습니다.",foundRecipeList.get());
-    }
-
-    public ApiRespDto<?> getRecipeListByKeyword(String keyword) {
-        Optional<List<Recipe>> foundRecipeList
-                =recipeRepository.findByKeyword(keyword);
-
-        if(foundRecipeList.isEmpty()) {
-            return new ApiRespDto<>("failed", "해당 키워드의 레시피가 존재하지 않습니다.", null);
-        }
-
-        return new ApiRespDto<>("success", "게시물 조회에 성공했습니다.",foundRecipeList.get());
+        return new ApiRespDto<>("success", "레시피 목록 조회 완료", data);
     }
 
     @Transactional
-    public ApiRespDto<?> modifyRecipe(ModifyRecipeReqDto modifyRecipeReqDto, PrincipalUser principalUser) {
-        if(principalUser == null) {
-            return new ApiRespDto<>("failed", "로그인 해주세요.", null);
-        }
+    public ApiRespDto<?> getRecipeDetail(Integer boardId, Integer recipeId) {
+        if (boardId == null) throw new BadRequestException("boardId는 필수입니다.");
+        if (recipeId == null) throw new BadRequestException("recipeId는 필수입니다.");
 
-        Optional<Recipe> foundRecipeOptional = recipeRepository.findByRecipeId(modifyRecipeReqDto.getRecipeId());
+        recipeRepository.increaseViewCount(recipeId);
 
-        if(foundRecipeOptional.isEmpty()) {
-            return new ApiRespDto<>("failed", "해당 레시피가 존재하지 않습니다.", null);
-        }
+        RecipeDetailRespDto detail = recipeRepository.getRecipeDetail(boardId, recipeId)
+                .orElseThrow(() -> new NotFoundException("해당 레시피가 존재하지 않습니다."));
 
-        Recipe foundRecipe = foundRecipeOptional.get();
+        List<HashtagRespDto> hashtags = recipeHashtagMapper.getByRecipeId(recipeId);
+        detail.setHashtags(hashtags);
 
-        if(!foundRecipe.getUserId().equals(principalUser.getUserId())) {
-            return new ApiRespDto<>("failed", "권한이 없습니다.", null);
-        }
-
-        Recipe recipe = modifyRecipeReqDto.toEntity();
-
-        System.out.println(">>>>> 레시피아이디 : " + recipe.getRecipeId());
-
-        if (recipe.getMainCategoryId() == null) {
-            recipe.setMainCategoryId(foundRecipe.getMainCategoryId());
-        }
-
-        if (recipe.getSubCategoryId() == null) {
-            recipe.setSubCategoryId(foundRecipe.getSubCategoryId());
-        }
-
-        if (recipe.getTitle() == null) {
-            recipe.setTitle(foundRecipe.getTitle());
-        }
-
-        if (recipe.getIntro() == null) {
-            recipe.setIntro(foundRecipe.getIntro());
-        }
-
-        if (recipe.getThumbnailImgUrl() == null) {
-            recipe.setThumbnailImgUrl(foundRecipe.getThumbnailImgUrl());
-        }
-
-        if (recipe.getIngredients() == null) {
-            recipe.setIngredients(foundRecipe.getIngredients());
-        }
-
-        if (recipe.getIngredientImgUrl() == null) {
-            recipe.setIngredientImgUrl(foundRecipe.getIngredientImgUrl());
-        }
-
-        if (recipe.getSteps() == null) {
-            recipe.setSteps(foundRecipe.getSteps());
-        }
-
-        int result = recipeRepository.updateRecipe(recipe);
-
-        if(result == 0) {
-            return new ApiRespDto<>("failed", "레시피 수정에 실패했습니다.", null);
-        }
-
-        return new ApiRespDto<>("success", "레시피 수정에 성공했습니다.",null);
+        return new ApiRespDto<>("success", "게시물 조회에 성공했습니다.", detail);
     }
 
     @Transactional
-    public ApiRespDto<?> removeRecipe(Integer recipeId, PrincipalUser principalUser) {
-        if(principalUser == null) {
-            return new ApiRespDto<>("failed", "로그인 해주세요.", null);
+    public ApiRespDto<?> modifyRecipe(Integer boardId, Integer recipeId, ModifyRecipeReqDto modifyRecipeReqDto, PrincipalUser principalUser) {
+        if (principalUser == null) throw new UnauthenticatedException("로그인 해주세요.");
+        if (boardId == null) throw new BadRequestException("boardId는 필수입니다.");
+        if (recipeId == null) throw new BadRequestException("recipeId는 필수입니다.");
+        if (modifyRecipeReqDto == null) throw new BadRequestException("요청 값이 비어있습니다.");
+
+        if (modifyRecipeReqDto.getTitle() == null || modifyRecipeReqDto.getTitle().trim().isEmpty()) {
+            throw new BadRequestException("제목은 필수입니다.");
+        }
+        if (modifyRecipeReqDto.getSteps() == null || modifyRecipeReqDto.getSteps().trim().isEmpty()) {
+            throw new BadRequestException("조리 과정(steps)은 필수입니다.");
         }
 
-        Optional<Recipe> foundRecipe = recipeRepository.findByRecipeId(recipeId);
+        Recipe foundRecipe = recipeRepository.getRecipeEntityById(recipeId)
+                .orElseThrow(() -> new NotFoundException("해당 레시피가 존재하지 않습니다."));
 
-        if(foundRecipe.isEmpty()) {
-            return new ApiRespDto<>("failed", "해당 레시피가 존재하지 않습니다.", null);
+        if (!foundRecipe.getBoardId().equals(boardId)) {
+            throw new NotFoundException("해당 게시판의 레시피가 아닙니다.");
         }
 
-        boolean isOwner = foundRecipe.get().getUserId().equals(principalUser.getUserId());
-        boolean isAdmin = principalUser
-                .getUserRoles()
-                .stream()
-                .anyMatch(userRole -> userRole.getRoleId() == 1);
-
-        if(!isOwner && !isAdmin) {
-            return new ApiRespDto<>("failed", "권한이 없습니다.", null);
+        if (!foundRecipe.getUserId().equals(principalUser.getUserId())) {
+            throw new ForbiddenException("권한이 없습니다.");
         }
 
-        int result = recipeRepository.deleteRecipe(recipeId);
+        Recipe recipe = modifyRecipeReqDto.toEntity(recipeId);
+        recipe.setUserId(principalUser.getUserId());
 
-        if(result == 0) {
-            return new ApiRespDto<>("failed", "레시피 삭제에 실패했습니다.", null);
-        }
+        int result = recipeRepository.modifyRecipe(recipe);
+        if (result != 1) throw new RuntimeException("레시피 수정 실패");
 
-        return new ApiRespDto<>("success", "레시피 삭제에 성공했습니다.",null);
+        return new ApiRespDto<>("success", "레시피 수정에 성공했습니다.", null);
     }
+
+    @Transactional
+    public ApiRespDto<?> removeRecipe(Integer boardId, Integer recipeId, PrincipalUser principalUser) {
+        if (principalUser == null) throw new UnauthenticatedException("로그인 해주세요.");
+        if (boardId == null) throw new BadRequestException("boardId는 필수입니다.");
+        if (recipeId == null) throw new BadRequestException("recipeId는 필수입니다.");
+
+        Recipe foundRecipe = recipeRepository.getRecipeEntityById(recipeId)
+                .orElseThrow(() -> new NotFoundException("해당 레시피가 존재하지 않습니다."));
+
+        if (!foundRecipe.getBoardId().equals(boardId)) {
+            throw new NotFoundException("해당 게시판의 레시피가 아닙니다.");
+        }
+
+        boolean isOwner = foundRecipe.getUserId().equals(principalUser.getUserId());
+
+        if (!isOwner) {
+            throw new ForbiddenException("권한이 없습니다.");
+        }
+
+        int result = recipeRepository.removeRecipe(recipeId, principalUser.getUserId());
+        if (result != 1) throw new RuntimeException("레시피 삭제 실패");
+
+        return new ApiRespDto<>("success", "레시피 삭제에 성공했습니다.", null);
+    }
+
+
 }

@@ -11,11 +11,11 @@
         <result property="createDt" column="create_dt"/>
     </resultMap>
 
-    <insert id="addOAuth2User">
+    <insert id="addOAuth2User" useGeneratedKeys="true" keyProperty="oauth2UserId">
         insert into
-            oauth2_user_tb
+            oauth2_user_tb (user_id, provider, provider_user_id, create_dt)
         values
-            (0, #{userId}, #{provider}, #{providerUserId}, now());
+        (#{userId}, #{provider}, #{providerUserId}, now())
     </insert>
 
     <select id="getOAuth2UserByProviderAndProviderUserId" resultMap="OAuth2UserResultMap">

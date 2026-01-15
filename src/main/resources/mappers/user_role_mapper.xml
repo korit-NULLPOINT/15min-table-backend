@@ -12,11 +12,11 @@
         <result property="updateDt" column="update_dt"/>
     </resultMap>
 
-    <insert id="addUserRole">
+    <insert id="addUserRole" useGeneratedKeys="true" keyProperty="userRoleId">
         insert into
-            user_role_tb
+            user_role_tb (user_id, role_id, create_dt, update_dt)
         values
-            (0, #{userId}, #{roleId}, now(), null);
+            (#{userId}, #{roleId}, now(), null)
     </insert>
 
     <update id="updateUserRole">

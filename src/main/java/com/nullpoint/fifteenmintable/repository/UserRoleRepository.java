@@ -11,11 +11,7 @@ public class UserRoleRepository {
     private UserRoleMapper userRoleMapper;
 
     public int addUserRole(UserRole userRole) {
-        try {
-            return userRoleMapper.addUserRole(userRole);
-        } catch (Exception e) {
-            return 0;
-        }
+        return userRoleMapper.addUserRole(userRole);
     }
 
     public int updateUserRole(UserRole userRole) {
