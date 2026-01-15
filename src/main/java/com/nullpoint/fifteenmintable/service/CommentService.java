@@ -4,6 +4,7 @@ import com.nullpoint.fifteenmintable.dto.ApiRespDto;
 import com.nullpoint.fifteenmintable.dto.comment.AddCommentReqDto;
 import com.nullpoint.fifteenmintable.dto.comment.CommentRespDto;
 import com.nullpoint.fifteenmintable.entity.Comment;
+import com.nullpoint.fifteenmintable.exception.BadRequestException;
 import com.nullpoint.fifteenmintable.exception.ForbiddenException;
 import com.nullpoint.fifteenmintable.exception.NotFoundException;
 import com.nullpoint.fifteenmintable.exception.UnauthenticatedException;
@@ -25,10 +26,10 @@ public class CommentService {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }
 
-        if (addCommentReqDto == null) throw new RuntimeException("요청 값이 비어있습니다.");
-        if (addCommentReqDto.getRecipeId() == null) throw new RuntimeException("recipeId는 필수입니다.");
+        if (addCommentReqDto == null) throw new BadRequestException("요청 값이 비어있습니다.");
+        if (addCommentReqDto.getRecipeId() == null) throw new BadRequestException("recipeId는 필수입니다.");
         if (addCommentReqDto.getContent() == null || addCommentReqDto.getContent().trim().isEmpty()) {
-            throw new RuntimeException("댓글 내용은 필수입니다.");
+            throw new BadRequestException("댓글 내용은 필수입니다.");
         }
 
         Integer userId = principalUser.getUserId();
@@ -44,7 +45,7 @@ public class CommentService {
     }
 
     public ApiRespDto<?> getCommentListByRecipeId(Integer recipeId) {
-        if (recipeId == null) throw new RuntimeException("recipeId는 필수입니다.");
+        if (recipeId == null) throw new BadRequestException("recipeId는 필수입니다.");
 
         List<CommentRespDto> list = commentRepository.getCommentListByRecipeId(recipeId);
         return new ApiRespDto<>("success", "레시피 댓글 목록 조회 완료", list);
@@ -68,7 +69,7 @@ public class CommentService {
         if (principalUser == null) {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }
-        if (commentId == null) throw new RuntimeException("commentId는 필수입니다.");
+        if (commentId == null) throw new BadRequestException("commentId는 필수입니다.");
 
         Integer userId = principalUser.getUserId();
 
@@ -84,7 +85,7 @@ public class CommentService {
         // 3) 삭제
         int result = commentRepository.deleteComment(commentId);
         if (result != 1) {
-            throw new NotFoundException("삭제할 댓글이 없습니다.");
+            throw new RuntimeException("댓글 삭제 실패");
         }
 
         return new ApiRespDto<>("success", "댓글 삭제 완료", null);

@@ -11,9 +11,9 @@
 
     <insert id="createHashtag" useGeneratedKeys="true" keyProperty="hashtagId">
         insert into
-            hashtag_tb
+            hashtag_tb (name, create_dt)
         values
-            (0, #{name}, now());
+            (#{name}, now())
     </insert>
 
     <delete id="deleteHashtag">

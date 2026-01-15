@@ -21,9 +21,9 @@
 
     <insert id="addFollow" useGeneratedKeys="true" keyProperty="followId">
         insert into
-            follow_tb
+            follow_tb (follower_user_id, following_user_id, create_dt)
         values
-            (0, #{followerUserId}, #{followingUserId}, now());
+            (#{followerUserId}, #{followingUserId}, now())
     </insert>
 
     <delete id="deleteFollow">

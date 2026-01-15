@@ -17,9 +17,9 @@
     
     <insert id="addBookmark" useGeneratedKeys="true" keyProperty="recipeBookmarkId">
         insert into
-            recipe_bookmark_tb
+            recipe_bookmark_tb (recipe_id, user_id, create_dt)
         values
-            (0, #{userId}, #{recipeId}, now());
+            (#{recipeId}, #{userId}, now())
     </insert>
 
     <delete id="deleteBookmark">

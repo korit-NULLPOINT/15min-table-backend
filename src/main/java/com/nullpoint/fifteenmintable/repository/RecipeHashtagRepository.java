@@ -1,5 +1,6 @@
 package com.nullpoint.fifteenmintable.repository;
 
+import com.nullpoint.fifteenmintable.dto.hashtag.HashtagRespDto;
 import com.nullpoint.fifteenmintable.entity.RecipeHashtag;
 import com.nullpoint.fifteenmintable.mapper.RecipeHashtagMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class RecipeHashtagRepository {
         return recipeHashtagMapper.getByRecipeHashtagId(recipeHashtagId);
     }
 
-    public List<RecipeHashtag> getByRecipeId(Integer recipeId) {
+    public List<HashtagRespDto> getByRecipeId(Integer recipeId) {
         return recipeHashtagMapper.getByRecipeId(recipeId);
     }
 

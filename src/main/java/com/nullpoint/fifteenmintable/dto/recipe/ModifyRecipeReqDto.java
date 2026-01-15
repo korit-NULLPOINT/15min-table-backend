@@ -7,7 +7,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ModifyRecipeReqDto {
-    private Integer recipeId;
     private Integer mainCategoryId;
     private Integer subCategoryId;
     private String title;
@@ -17,7 +16,7 @@ public class ModifyRecipeReqDto {
     private String ingredientImgUrl;
     private String steps;
 
-    public Recipe toEntity() {
+    public Recipe toEntity(Integer recipeId) {
         return Recipe.builder()
                 .recipeId(recipeId)
                 .mainCategoryId(mainCategoryId)

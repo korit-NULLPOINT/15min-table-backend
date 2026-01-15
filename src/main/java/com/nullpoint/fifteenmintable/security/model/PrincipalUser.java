@@ -20,13 +20,18 @@ public class PrincipalUser implements UserDetails {
     @JsonIgnore
     private String password;
     private String username;
-    private String profileImg;
+    private String profileImgUrl;
     private String status;
     private List<UserRole> userRoles;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return userRoles.stream().map(userRole -> new SimpleGrantedAuthority(userRole.getRole().getRoleName()))
+        if (userRoles == null) return List.of();
+
+        return userRoles.stream()
+                .map(UserRole::getRole)
+                .filter(role -> role != null && role.getRoleName() != null)
+                .map(role -> new SimpleGrantedAuthority(role.getRoleName()))
                 .collect(Collectors.toList());
     }
 }

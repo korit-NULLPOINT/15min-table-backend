@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,7 +15,7 @@ public class RecipeHashtag {
     private Integer recipeHashtagId;
     private Integer recipeId;
     private Integer hashtagId;
-    private Integer createDt;
+    private LocalDateTime createDt;
 
     private Hashtag hashtag;
 }

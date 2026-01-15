@@ -31,19 +31,19 @@ public class RecipeHashtagService {
      * 레시피 해시태그 교체(전체 삭제 후 다시 삽입)
      */
     @Transactional
-    public ApiRespDto<?> saveRecipeHashtags(AddRecipeHashtagsReqDto dto, PrincipalUser principalUser) {
+    public ApiRespDto<?> saveRecipeHashtags(AddRecipeHashtagsReqDto addRecipeHashtagsReqDto, PrincipalUser principalUser) {
         if (principalUser == null) {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }
-        if (dto == null) {
+        if (addRecipeHashtagsReqDto == null) {
             throw new RuntimeException("요청 값이 비어있습니다.");
         }
-        if (dto.getRecipeId() == null) {
+        if (addRecipeHashtagsReqDto.getRecipeId() == null) {
             throw new RuntimeException("recipeId는 필수입니다.");
         }
 
-        Integer recipeId = dto.getRecipeId();
-        List<String> names = dto.getHashtagNames();
+        Integer recipeId = addRecipeHashtagsReqDto.getRecipeId();
+        List<String> names = addRecipeHashtagsReqDto.getHashtagNames();
 
         // 1) 레시피에 달린 기존 연결 전부 삭제 (0이어도 정상)
         recipeHashtagRepository.deleteAllByRecipeId(recipeId);
@@ -94,20 +94,8 @@ public class RecipeHashtagService {
             if (result != 1) throw new RuntimeException("레시피-해시태그 연결 생성 실패");
         }
 
-        // 4) 저장 후 최종 목록 반환(조인해서 hashtag까지 같이 내려옴)
-        List<RecipeHashtag> saved = recipeHashtagRepository.getByRecipeId(recipeId);
-
-        List<HashtagRespDto> resp = new ArrayList<>();
-        for (RecipeHashtag rh : saved) {
-            if (rh.getHashtag() != null) {
-                resp.add(new HashtagRespDto(
-                        rh.getHashtag().getHashtagId(),
-                        rh.getHashtag().getName()
-                ));
-            }
-        }
-
-        return new ApiRespDto<>("success", "해시태그 저장 완료", resp);
+        List<HashtagRespDto> hashtagRespDtos = recipeHashtagRepository.getByRecipeId(recipeId);
+        return new ApiRespDto<>("success", "해시태그 저장 완료", hashtagRespDtos);
     }
 
     /**
@@ -118,21 +106,8 @@ public class RecipeHashtagService {
             throw new RuntimeException("recipeId는 필수입니다.");
         }
 
-        List<RecipeHashtag> list = recipeHashtagRepository.getByRecipeId(recipeId);
-
-        // 해시태그가 없는 건 404로 볼지, 빈 배열로 볼지 정책 문제인데
-        // 일반적으로는 "빈 배열"이 더 자연스러움.
-        List<HashtagRespDto> resp = new ArrayList<>();
-        for (RecipeHashtag rh : list) {
-            if (rh.getHashtag() != null) {
-                resp.add(new HashtagRespDto(
-                        rh.getHashtag().getHashtagId(),
-                        rh.getHashtag().getName()
-                ));
-            }
-        }
-
-        return new ApiRespDto<>("success", "해시태그 조회 완료", resp);
+        List<HashtagRespDto> hashtagRespDtos = recipeHashtagRepository.getByRecipeId(recipeId);
+        return new ApiRespDto<>("success", "해시태그 조회 완료", hashtagRespDtos);
     }
 
     /**

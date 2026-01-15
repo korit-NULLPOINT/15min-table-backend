@@ -1,12 +1,14 @@
 package com.nullpoint.fifteenmintable.dto.oauth2;
+
 import com.nullpoint.fifteenmintable.entity.OAuth2User;
 import com.nullpoint.fifteenmintable.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class OAuth2SignupReqDto {
     private String email;
     private String password;
@@ -14,15 +16,15 @@ public class OAuth2SignupReqDto {
     private String provider;
     private String providerUserId;
 
-    public User toUserEntity(BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public User toUserEntity() {
         return User.builder()
                 .email(email)
-                .password(bCryptPasswordEncoder.encode(password))
+                .password(password)
                 .username(username)
                 .build();
     }
 
-    public OAuth2User toOAuth2UserEntity(int userId) {
+    public OAuth2User toOAuth2UserEntity(Integer userId) {
         return OAuth2User.builder()
                 .userId(userId)
                 .provider(provider)

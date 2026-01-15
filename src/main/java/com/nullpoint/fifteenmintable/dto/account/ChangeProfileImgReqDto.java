@@ -7,5 +7,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class ChangeProfileImgReqDto {
     private Integer userId;
-    private String profileImg;
+    private String profileImgUrl;
 }

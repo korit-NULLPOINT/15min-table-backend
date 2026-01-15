@@ -14,7 +14,7 @@
 
     <insert id="addComment" useGeneratedKeys="true" keyProperty="commentId">
         insert into
-            comment_tb
+            comment_tb(comment_id, recipe_id, user_id, content, create_dt, update_dt)
         values
             (0, #{recipeId}, #{userId}, #{content}, now(), null);
     </insert>

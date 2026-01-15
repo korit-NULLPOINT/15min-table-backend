@@ -20,9 +20,9 @@
 
     <insert id="createRecipeHashtag" useGeneratedKeys="true" keyProperty="recipeHashtagId">
         insert into
-            recipe_hashtag_tb
+            recipe_hashtag_tb (recipe_id, hashtag_id, create_dt)
         values
-            (0, #{recipeId}, #{hashtagId}, now());
+            (#{recipeId}, #{hashtagId}, now())
     </insert>
 
     <delete id="deleteAllByRecipeId">
@@ -53,7 +53,7 @@
             rht.recipe_hashtag_id = #{recipeHashtagId};
     </select>
 
-    <select id="getByRecipeId" resultMap="RecipeHashtagResultMap">
+    <select id="getByRecipeId" resultMap="RecipeHashtagResultMap" resultType="com.nullpoint.fifteenmintable.dto.hashtag.HashtagRespDto">
         select
             rht.*,
             ht.hashtag_id as ht_hashtag_id,

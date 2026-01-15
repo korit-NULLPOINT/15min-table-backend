@@ -14,15 +14,15 @@ public class BookmarkController {
     @Autowired
     private RecipeBookmarkService recipeBookmarkService;
 
-    @PostMapping("/add")
+    @PostMapping("/{recipeId}")
     public ResponseEntity<?> addBookmark(
-            @RequestBody Integer recipeId,
+            @PathVariable Integer recipeId,
             @AuthenticationPrincipal PrincipalUser principalUser
     ) {
         return ResponseEntity.ok(recipeBookmarkService.addBookmark(recipeId, principalUser));
     }
 
-    @PostMapping("/delete/{recipeId}")
+    @DeleteMapping("/{recipeId}")
     public ResponseEntity<?> deleteBookmark (
             @PathVariable Integer recipeId,
             @AuthenticationPrincipal PrincipalUser principalUser
@@ -30,7 +30,7 @@ public class BookmarkController {
         return ResponseEntity.ok(recipeBookmarkService.deleteBookmark(recipeId, principalUser));
     }
 
-    @GetMapping("/exist/{recipeId}")
+    @GetMapping("/{recipeId}")
     public ResponseEntity<?> existsByRecipeId (
             @PathVariable Integer recipeId,
             @AuthenticationPrincipal PrincipalUser principalUser
@@ -38,7 +38,7 @@ public class BookmarkController {
         return ResponseEntity.ok(recipeBookmarkService.existsByRecipeId(recipeId, principalUser));
     }
 
-    @GetMapping("/list/")
+    @GetMapping
     public ResponseEntity<?> getBookmarkListByUserId (@AuthenticationPrincipal PrincipalUser principalUser) {
         return ResponseEntity.ok(recipeBookmarkService.getBookmarkListByUserId(principalUser));
     }

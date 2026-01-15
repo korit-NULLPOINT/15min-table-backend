@@ -42,7 +42,7 @@ public class OAuth2PrincipalService extends DefaultOAuth2UserService {
                 "email", email
         );
 
-        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_TEMPORARY"));
+        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_TEMP_USER"));
         return new DefaultOAuth2User(authorities, newAttributes, "providerUserId");
     }
 }

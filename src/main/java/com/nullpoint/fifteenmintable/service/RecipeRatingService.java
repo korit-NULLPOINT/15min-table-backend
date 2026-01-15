@@ -5,6 +5,7 @@ import com.nullpoint.fifteenmintable.dto.rating.RatingSummaryRespDto;
 import com.nullpoint.fifteenmintable.dto.rating.RecipeRatingRespDto;
 import com.nullpoint.fifteenmintable.dto.rating.UpsertRatingReqDto;
 import com.nullpoint.fifteenmintable.entity.RecipeRating;
+import com.nullpoint.fifteenmintable.exception.BadRequestException;
 import com.nullpoint.fifteenmintable.exception.NotFoundException;
 import com.nullpoint.fifteenmintable.exception.UnauthenticatedException;
 import com.nullpoint.fifteenmintable.repository.RecipeRatingRepository;
@@ -19,14 +20,16 @@ public class RecipeRatingService {
     private RecipeRatingRepository recipeRatingRepository;
 
     public ApiRespDto<?> upsertRating(UpsertRatingReqDto upsertRatingReqDto, PrincipalUser principalUser) {
-        if (principalUser == null) {
-            throw new UnauthenticatedException("로그인 해주세요.");
-        }
+        if (principalUser == null) throw new UnauthenticatedException("로그인 해주세요.");
+
+        if (upsertRatingReqDto == null) throw new BadRequestException("요청 값이 비어있습니다.");
+
+        if (upsertRatingReqDto.getRecipeId() == null) throw new BadRequestException("recipeId는 필수입니다.");
 
         // 평점 범위 체크 (1~5)
         Integer rating = upsertRatingReqDto.getRating();
         if (rating == null || rating < 1 || rating > 5) {
-            throw new RuntimeException("평점은 1~5 사이여야 합니다."); // BadRequestException(400) 예외처리 추가 예정
+            throw new BadRequestException("평점은 1~5 사이여야 합니다.");
         }
 
         Integer userId = principalUser.getUserId();
@@ -43,7 +46,7 @@ public class RecipeRatingService {
         if (result != 1) throw new RuntimeException("평점 등록/수정 실패");
 
         RecipeRatingRespDto saved = recipeRatingRepository.getRatingByRecipeIdAndUserId(upsertRatingReqDto.getRecipeId(), userId)
-                .orElseThrow(() -> new NotFoundException("평점 저장 후 조회 실패"));
+                .orElseThrow(() -> new RuntimeException("평점 저장 후 조회 실패"));
 
         return new ApiRespDto<>("success", "평점 등록/수정 완료", saved);
     }
@@ -67,6 +70,8 @@ public class RecipeRatingService {
         if (principalUser == null) {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }
+
+        if (recipeId == null) throw new BadRequestException("recipeId는 필수입니다.");
 
         RecipeRatingRespDto myRating = recipeRatingRepository
                 .getRatingByRecipeIdAndUserId(recipeId, principalUser.getUserId())

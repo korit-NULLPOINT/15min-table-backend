@@ -1,5 +1,7 @@
 package com.nullpoint.fifteenmintable.repository;
 
+import com.nullpoint.fifteenmintable.dto.recipe.RecipeDetailRespDto;
+import com.nullpoint.fifteenmintable.dto.recipe.RecipeListRespDto;
 import com.nullpoint.fifteenmintable.entity.Recipe;
 import com.nullpoint.fifteenmintable.mapper.RecipeMapper;
 import lombok.RequiredArgsConstructor;
@@ -11,41 +13,38 @@ import java.util.Optional;
 @Repository
 @RequiredArgsConstructor
 public class RecipeRepository {
+
     private final RecipeMapper recipeMapper;
 
-    public int createRecipe(Recipe recipe) {
-        return recipeMapper.createRecipe(recipe);
+    public int addRecipe(Recipe recipe) {
+        return recipeMapper.addRecipe(recipe);
     }
 
-    public List<Recipe> findAll() {
-        return recipeMapper.findAll();
+    public List<RecipeListRespDto> getRecipeCardListByBoardId(Integer boardId, Integer offset, Integer limit) {
+        return recipeMapper.getRecipeCardListByBoardId(boardId, offset, limit);
     }
 
-    public Optional<Recipe> findByRecipeId(Integer recipeId) {
-        return recipeMapper.findByRecipeId(recipeId);
+    public int getRecipeCountByBoardId(Integer boardId) {
+        return recipeMapper.getRecipeCountByBoardId(boardId);
     }
 
-    public Optional<List<Recipe>> findByUserId(Integer userId) {
-        return Optional.of(recipeMapper.findByUserId(userId));
+    public Optional<RecipeDetailRespDto> getRecipeDetail(Integer boardId, Integer recipeId) {
+        return recipeMapper.getRecipeDetail(boardId, recipeId);
     }
 
-    public Optional<List<Recipe>> findByMainCategoryId(Integer mainCategoryId) {
-        return Optional.of(recipeMapper.findByMainCategoryId(mainCategoryId));
+    public Optional<Recipe> getRecipeEntityById(Integer recipeId) {
+        return recipeMapper.getRecipeEntityById(recipeId);
     }
 
-    public Optional<List<Recipe>> findBySubCategoryId(Integer subCategoryId) {
-        return Optional.of(recipeMapper.findBySubCategoryId(subCategoryId));
+    public int increaseViewCount(Integer recipeId) {
+        return recipeMapper.increaseViewCount(recipeId);
     }
 
-    public Optional<List<Recipe>> findByKeyword(String keyword) {
-        return Optional.of(recipeMapper.findByKeyword(keyword));
+    public int modifyRecipe(Recipe recipe) {
+        return recipeMapper.modifyRecipe(recipe);
     }
 
-    public int updateRecipe(Recipe recipe) {
-        return recipeMapper.updateRecipe(recipe);
-    }
-
-    public int deleteRecipe(Integer recipeId) {
-        return recipeMapper.deleteRecipe(recipeId);
+    public int removeRecipe(Integer recipeId, Integer userId) {
+        return recipeMapper.removeRecipe(recipeId, userId);
     }
 }
