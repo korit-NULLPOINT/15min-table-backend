@@ -38,7 +38,7 @@ public class BookmarkController {
         return ResponseEntity.ok(recipeBookmarkService.existsByRecipeId(recipeId, principalUser));
     }
 
-    @GetMapping
+    @GetMapping("/my")
     public ResponseEntity<?> getBookmarkListByUserId (@AuthenticationPrincipal PrincipalUser principalUser) {
         return ResponseEntity.ok(recipeBookmarkService.getBookmarkListByUserId(principalUser));
     }

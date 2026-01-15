@@ -61,11 +61,6 @@ public class FollowService {
             return new ApiRespDto<>("success", "이미 팔로우 중입니다.", null);
         }
 
-        int result = followRepository.addFollow(follow);
-        if (result != 1) {
-            throw new RuntimeException("팔로우 실패");
-        }
-
         return new ApiRespDto<>("success", "팔로우 완료", null);
     }
 

@@ -15,7 +15,7 @@ public class RecipeHashtagController {
     @Autowired
     private RecipeHashtagService recipeHashtagService;
 
-    // 레시피 해시태그 저장(교체: 기존 삭제 후 재삽입)
+    // 레시피 해시태그 저장(교체: 기존 삭제 후 재삽입) | hashtagNames: [] -> 빈 배열로 보내면 레시피에 연결 되어 있는 해시태그 전부 삭제
     @PostMapping("/add")
     public ResponseEntity<?> addRecipeHashtags(
             @RequestBody AddRecipeHashtagsReqDto addRecipeHashtagsReqDto,
