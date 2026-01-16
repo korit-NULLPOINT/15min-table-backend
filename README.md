@@ -35,7 +35,7 @@
 
 
 ## 👥 팀원 소개
-| ![심재원 (팀장)](https://github.com/user-attachments/assets/02485414-88d3-401f-b936-2330ea09e2c9) | ![배찬익](https://github.com/user-attachments/assets/bcb7a701-cf86-4200-be5e-b0ba547d2958) | ![홍해준](https://github.com/user-attachments/assets/bcb7a701-cf86-4200-be5e-b0ba547d2958) |
+| ![심재원 (팀장)](https://github.com/user-attachments/assets/02485414-88d3-401f-b936-2330ea09e2c9) | ![배찬익](https://chatgpt.com/backend-api/estuary/content?id=file_00000000e1c871fd91b83c9a98214944&ts=491262&p=fs&cid=1&sig=c2bd69b30876321a1f6b2cbd5cb28a54093f26c49f9929d687e0e1f5a2ec43b0&v=0) | ![홍해준](https://github.com/user-attachments/assets/bcb7a701-cf86-4200-be5e-b0ba547d2958) |
 |---|---|---|---|
 | 심재원 | 배찬익 | 홍해준 | 박명환 |
 | [@S-JaeWon](https://github.com/S-JaeWon)| [@dgf0020](https://github.com/dgf0020) | [@S-JaeWon](https://github.com/S-JaeWon) | 
