@@ -79,7 +79,11 @@ public class SecurityConfig {
                     "/user/auth/**",
                     "/mail/verify",
                     "/login/oauth2/**",
-                    "/oauth2/**"
+                    "/oauth2/**",
+                    /* 스웨거 api*/
+                    "/v3/api-docs/**",
+                    "/swagger-ui/**",
+                    "/swagger-ui.html"
             ).permitAll();
 
             // 1) 읽기(GET) 공개
