@@ -10,6 +10,7 @@ import com.nullpoint.fifteenmintable.repository.OAuth2UserRepository;
 import com.nullpoint.fifteenmintable.repository.UserRepository;
 import com.nullpoint.fifteenmintable.repository.UserRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,9 @@ public class OAuth2AuthService {
 
     @Autowired
     private OAuth2UserRepository oAuth2UserRepository;
+
+    @Value("${app.user.default-profile-img-url:}")
+    private String defaultProfileImgUrl;
 
     @Transactional
     public ApiRespDto<?> signup(OAuth2SignupReqDto oAuth2SignupReqDto) {
@@ -54,6 +58,13 @@ public class OAuth2AuthService {
 
         User user = oAuth2SignupReqDto.toUserEntity();
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+
+        if (isBlank(user.getProfileImgUrl())) {
+            if (isBlank(defaultProfileImgUrl)) {
+                throw new BadRequestException("기본 프로필 이미지 설정이 필요합니다.");
+            }
+            user.setProfileImgUrl(defaultProfileImgUrl);
+        }
 
         int resultUser = userRepository.addUser(user);
         if (resultUser != 1) throw new RuntimeException("회원 추가에 실패했습니다.");
