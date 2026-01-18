@@ -105,7 +105,9 @@ public class SecurityConfig {
                     "/board/**",
                     "/comment/**",
                     "/bookmark/**",
-                    "/rating/**"
+                    "/rating/**",
+                    "/recipe-hashtag/**",   // ✅ 레시피 해시태그 저장도 여기에(아래 설명)
+                    "/ai/**"
             ).hasAnyRole("ADMIN", "USER", "TEMP_USER");   // ✅ 나중에 TEMP_USER 빼면 됨
 
             auth.requestMatchers(HttpMethod.PUT,
