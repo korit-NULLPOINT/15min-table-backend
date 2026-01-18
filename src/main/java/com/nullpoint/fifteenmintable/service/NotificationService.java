@@ -24,6 +24,10 @@ public class NotificationService {
     @Autowired
     private FollowRepository followRepository;
 
+    @Autowired
+    private NotificationSseService notificationSseService;
+
+
     @Transactional
     public void createRecipePostNotifications(Integer recipeId, PrincipalUser principalUser) {
         if (principalUser == null) {
@@ -51,6 +55,17 @@ public class NotificationService {
                     .build();
 
             notificationRepository.createNotification(notification);
+
+            notificationSseService.pushToUser(
+                    receiverUserId,
+                    // payload는 Map으로 가도 되고 DTO 만들어도 됨
+                    java.util.Map.of(
+                            "notificationId", notification.getNotificationId(),
+                            "type", "RECIPE_POST",
+                            "recipeId", recipeId,
+                            "actorUserId", actorUserId
+                    )
+            );
         }
     }
 

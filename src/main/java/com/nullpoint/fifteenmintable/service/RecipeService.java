@@ -9,6 +9,7 @@ import com.nullpoint.fifteenmintable.exception.ForbiddenException;
 import com.nullpoint.fifteenmintable.exception.NotFoundException;
 import com.nullpoint.fifteenmintable.exception.UnauthenticatedException;
 import com.nullpoint.fifteenmintable.mapper.RecipeHashtagMapper;
+import com.nullpoint.fifteenmintable.repository.RecipeHashtagRepository;
 import com.nullpoint.fifteenmintable.repository.RecipeRepository;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,10 @@ public class RecipeService {
     private RecipeRepository recipeRepository;
 
     @Autowired
-    private RecipeHashtagMapper recipeHashtagMapper;
+    private RecipeHashtagRepository recipeHashtagRepository;
+
+    @Autowired
+    private NotificationService notificationService;
 
     public ApiRespDto<?> addRecipe(Integer boardId, AddRecipeReqDto addRecipeReqDto, PrincipalUser principalUser) {
         if (principalUser == null) throw new UnauthenticatedException("로그인 해주세요.");
@@ -45,6 +49,9 @@ public class RecipeService {
 
         int result = recipeRepository.addRecipe(recipe);
         if (result != 1) throw new RuntimeException("레시피 추가 실패");
+
+        // SSE 푸쉬
+        notificationService.createRecipePostNotifications(recipe.getRecipeId(), principalUser);
 
         return new ApiRespDto<>("success", "레시피가 등록되었습니다.", recipe.getRecipeId());
     }
@@ -87,7 +94,8 @@ public class RecipeService {
         RecipeDetailRespDto detail = recipeRepository.getRecipeDetail(boardId, recipeId)
                 .orElseThrow(() -> new NotFoundException("해당 레시피가 존재하지 않습니다."));
 
-        List<HashtagRespDto> hashtags = recipeHashtagMapper.getByRecipeId(recipeId);
+        List<HashtagRespDto> hashtags = recipeHashtagRepository.getByRecipeId(recipeId);
+
         detail.setHashtags(hashtags);
 
         return new ApiRespDto<>("success", "게시물 조회에 성공했습니다.", detail);
@@ -151,6 +159,4 @@ public class RecipeService {
 
         return new ApiRespDto<>("success", "레시피 삭제에 성공했습니다.", null);
     }
-
-
 }

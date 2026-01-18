@@ -94,6 +94,10 @@ public class SecurityConfig {
                     "/rating/*/summary"
             ).permitAll();
 
+            auth.requestMatchers(HttpMethod.GET,
+                    "/notifications/**"    // ✅ stream, list, unread-count 전부
+            ).hasAnyRole("ADMIN", "USER", "TEMP_USER");
+
             // 2) TEMP 전용(메일 인증/상태 확인 등)
             auth.requestMatchers(
                     "/mail/send",
@@ -105,7 +109,10 @@ public class SecurityConfig {
                     "/board/**",
                     "/comment/**",
                     "/bookmark/**",
-                    "/rating/**"
+                    "/rating/**",
+                    "/recipe-hashtag/**",
+                    "/notifications/**",
+                    "/ai/**"
             ).hasAnyRole("ADMIN", "USER", "TEMP_USER");   // ✅ 나중에 TEMP_USER 빼면 됨
 
             auth.requestMatchers(HttpMethod.PUT,
@@ -119,7 +126,7 @@ public class SecurityConfig {
             // 기타 보호
             auth.requestMatchers(
                     "/follow/**",
-                    "/notification/**",
+                    "/notifications/**",
                     "/user/account/**"
             ).hasAnyRole("ADMIN", "USER", "TEMP_USER");
 
