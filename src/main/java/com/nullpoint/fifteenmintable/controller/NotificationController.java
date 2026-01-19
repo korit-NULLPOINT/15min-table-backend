@@ -2,10 +2,13 @@ package com.nullpoint.fifteenmintable.controller;
 
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import com.nullpoint.fifteenmintable.service.NotificationService;
+import com.nullpoint.fifteenmintable.service.NotificationSseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @RequestMapping("/notifications")
@@ -13,6 +16,15 @@ public class NotificationController {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private NotificationSseService notificationSseService;
+
+    @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter stream(@AuthenticationPrincipal PrincipalUser principalUser) {
+        // 로그인 안 되면 시큐리티/엔트리포인트에서 컷
+        return notificationSseService.subscribe(principalUser.getUserId());
+    }
 
     /**
      * - 최초 모달: /notifications?size=5
