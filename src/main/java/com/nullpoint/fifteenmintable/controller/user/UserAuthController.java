@@ -1,4 +1,5 @@
 package com.nullpoint.fifteenmintable.controller.user;
+import com.nullpoint.fifteenmintable.dto.ApiRespDto;
 import com.nullpoint.fifteenmintable.dto.auth.SigninReqDto;
 import com.nullpoint.fifteenmintable.dto.auth.SignupReqDto;
 import com.nullpoint.fifteenmintable.service.UserAuthService;
@@ -17,12 +18,12 @@ public class UserAuthController {
     private UserAuthService userAuthService;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody SignupReqDto signupReqDto) {
+    public ResponseEntity<ApiRespDto<Void>> signup(@RequestBody SignupReqDto signupReqDto) {
         return ResponseEntity.ok(userAuthService.signup(signupReqDto));
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<?> signin(@RequestBody SigninReqDto signinReqDto) {
+    public ResponseEntity<ApiRespDto<String>> signin(@RequestBody SigninReqDto signinReqDto) {
         return ResponseEntity.ok(userAuthService.signin(signinReqDto));
     }
 }

@@ -1,12 +1,17 @@
 package com.nullpoint.fifteenmintable.controller;
 
+import com.nullpoint.fifteenmintable.dto.ApiRespDto;
 import com.nullpoint.fifteenmintable.dto.comment.AddCommentReqDto;
+import com.nullpoint.fifteenmintable.dto.comment.CommentRespDto;
+import com.nullpoint.fifteenmintable.entity.Comment;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import com.nullpoint.fifteenmintable.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/comment")
@@ -17,7 +22,7 @@ public class CommentController {
 
     // 댓글 작성
     @PostMapping("/add")
-    public ResponseEntity<?> addComment(
+    public ResponseEntity<ApiRespDto<Comment>> addComment(
             @RequestBody AddCommentReqDto addCommentReqDto,
             @AuthenticationPrincipal PrincipalUser principalUser
     ) {
@@ -26,13 +31,13 @@ public class CommentController {
 
     // 레시피별 댓글 목록
     @GetMapping("/list/{recipeId}")
-    public ResponseEntity<?> getCommentListByRecipeId(@PathVariable Integer recipeId) {
+    public ResponseEntity<ApiRespDto<List<CommentRespDto>>> getCommentListByRecipeId(@PathVariable Integer recipeId) {
         return ResponseEntity.ok(commentService.getCommentListByRecipeId(recipeId));
     }
 
     // 내 댓글 목록 (마이페이지 용)
     @GetMapping("/my/list")
-    public ResponseEntity<?> getMyCommentList(
+    public ResponseEntity<ApiRespDto<List<CommentRespDto>>> getMyCommentList(
             @AuthenticationPrincipal PrincipalUser principalUser
     ) {
         return ResponseEntity.ok(commentService.getCommentListByUserId(principalUser));
@@ -40,7 +45,7 @@ public class CommentController {
 
     // 댓글 삭제 (권한 체크는 서비스에서 commentId 단건조회로 처리)
     @PostMapping("/delete/{commentId}")
-    public ResponseEntity<?> deleteComment(
+    public ResponseEntity<ApiRespDto<Void>> deleteComment(
             @PathVariable Integer commentId,
             @AuthenticationPrincipal PrincipalUser principalUser
     ) {

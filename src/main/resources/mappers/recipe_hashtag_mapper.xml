@@ -55,17 +55,15 @@
 
     <select id="getByRecipeId" resultMap="RecipeHashtagResultMap" resultType="com.nullpoint.fifteenmintable.dto.hashtag.HashtagRespDto">
         select
-            rht.*,
-            ht.hashtag_id as ht_hashtag_id,
-            ht.name as ht_name,
-            ht.create_dt as ht_create_dt
+            ht.hashtag_id as hashtag_id,
+            ht.name as name
         from
             recipe_hashtag_tb rht
             join hashtag_tb ht on (rht.hashtag_id = ht.hashtag_id)
         where
             rht.recipe_id = #{recipeId}
         order by
-            rht.recipe_hashtag_id desc;
+            rht.recipe_hashtag_id desc
     </select>
 
     <select id="getByHashtagId" resultMap="RecipeHashtagResultMap">

@@ -24,8 +24,11 @@ public class FollowService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private NotificationService notificationService;
+
     @Transactional
-    public ApiRespDto<?> follow(Integer targetUserId, PrincipalUser principalUser) {
+    public ApiRespDto<Void> follow(Integer targetUserId, PrincipalUser principalUser) {
         if (principalUser == null) {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }
@@ -61,11 +64,14 @@ public class FollowService {
             return new ApiRespDto<>("success", "이미 팔로우 중입니다.", null);
         }
 
+        // SSE 알림 push
+        notificationService.createFollowNotification(targetUserId, principalUser);
+
         return new ApiRespDto<>("success", "팔로우 완료", null);
     }
 
     @Transactional
-    public ApiRespDto<?> unfollow(Integer targetUserId, PrincipalUser principalUser) {
+    public ApiRespDto<Void> unfollow(Integer targetUserId, PrincipalUser principalUser) {
         if (principalUser == null) {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }
@@ -85,7 +91,7 @@ public class FollowService {
         return new ApiRespDto<>("success", "언팔로우 완료", null);
     }
 
-    public ApiRespDto<?> getFollowers(PrincipalUser principalUser) {
+    public ApiRespDto<List<FollowRespDto>> getFollowers(PrincipalUser principalUser) {
         if (principalUser == null) {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }
@@ -95,7 +101,7 @@ public class FollowService {
         return new ApiRespDto<>("success", "팔로워 조회 완료", list);
     }
 
-    public ApiRespDto<?> getFollowings(PrincipalUser principalUser) {
+    public ApiRespDto<List<FollowRespDto>> getFollowings(PrincipalUser principalUser) {
         if (principalUser == null) {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }
@@ -105,7 +111,7 @@ public class FollowService {
         return new ApiRespDto<>("success", "팔로잉 조회 완료", list);
     }
 
-    public ApiRespDto<?> getFollowStatus(Integer targetUserId, PrincipalUser principalUser) {
+    public ApiRespDto<FollowStatusRespDto> getFollowStatus(Integer targetUserId, PrincipalUser principalUser) {
         if (principalUser == null) {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }

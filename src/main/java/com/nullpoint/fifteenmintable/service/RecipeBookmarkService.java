@@ -3,6 +3,7 @@ package com.nullpoint.fifteenmintable.service;
 import com.nullpoint.fifteenmintable.dto.ApiRespDto;
 import com.nullpoint.fifteenmintable.dto.bookmark.BookmarkRespDto;
 import com.nullpoint.fifteenmintable.entity.RecipeBookmark;
+import com.nullpoint.fifteenmintable.exception.BadRequestException;
 import com.nullpoint.fifteenmintable.exception.NotFoundException;
 import com.nullpoint.fifteenmintable.exception.UnauthenticatedException;
 import com.nullpoint.fifteenmintable.repository.RecipeBookmarkRepository;
@@ -18,7 +19,7 @@ public class RecipeBookmarkService {
     @Autowired
     private RecipeBookmarkRepository recipeBookmarkRepository;
 
-    public ApiRespDto<?> addBookmark(Integer recipeId, PrincipalUser principalUser) {
+    public ApiRespDto<Void> addBookmark(Integer recipeId, PrincipalUser principalUser) {
         if (principalUser == null) {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }
@@ -28,7 +29,7 @@ public class RecipeBookmarkService {
 
         boolean exists = recipeBookmarkRepository.existsByRecipeIdAndUserId(recipeId, userId);
         if (exists) {
-            throw new RuntimeException("이미 찜한 레시피입니다.");
+            throw new BadRequestException("이미 찜한 레시피입니다.");
         }
 
         RecipeBookmark recipeBookmark = RecipeBookmark.builder()
@@ -44,7 +45,7 @@ public class RecipeBookmarkService {
         return new ApiRespDto<>("success", "찜 추가 완료", null);
     }
 
-    public ApiRespDto<?> deleteBookmark(Integer recipeId, PrincipalUser principalUser) {
+    public ApiRespDto<Void> deleteBookmark(Integer recipeId, PrincipalUser principalUser) {
         if (principalUser == null) {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }
@@ -59,7 +60,7 @@ public class RecipeBookmarkService {
         return new ApiRespDto<>("success", "찜 삭제 완료", null);
     }
 
-    public ApiRespDto<?> existsByRecipeId(Integer recipeId, PrincipalUser principalUser) {
+    public ApiRespDto<Boolean> existsByRecipeId(Integer recipeId, PrincipalUser principalUser) {
         if (principalUser == null) {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }
@@ -68,7 +69,7 @@ public class RecipeBookmarkService {
         return new ApiRespDto<>("success", "찜 여부 조회 완료", exists);
     }
 
-    public ApiRespDto<?> getBookmarkListByUserId(PrincipalUser principalUser) {
+    public ApiRespDto<List<BookmarkRespDto>> getBookmarkListByUserId(PrincipalUser principalUser) {
         if (principalUser == null) {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }

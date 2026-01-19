@@ -18,12 +18,12 @@ public class UserAccountController {
     private AccountService accountService;
 
     @GetMapping("/principal")
-    public ResponseEntity<?> getPrincipal(@AuthenticationPrincipal PrincipalUser principalUser) {
+    public ResponseEntity<ApiRespDto<PrincipalUser>> getPrincipal(@AuthenticationPrincipal PrincipalUser principalUser) {
         return ResponseEntity.ok(new ApiRespDto<>("success", "회원 조회 완료", principalUser));
     }
 
     @PostMapping("/change/password")
-    public ResponseEntity<?> changePassword(
+    public ResponseEntity<ApiRespDto<Void>> changePassword(
             @RequestBody ChangePasswordReqDto changePasswordReqDto,
             @AuthenticationPrincipal PrincipalUser principalUser
     ) {
@@ -31,7 +31,7 @@ public class UserAccountController {
     }
 
     @PostMapping("/change/username")
-    public ResponseEntity<?> changeUsername(
+    public ResponseEntity<ApiRespDto<Void>> changeUsername(
             @RequestBody ChangeUsernameReqDto changeUsernameReqDto,
             @AuthenticationPrincipal PrincipalUser principalUser
     ) {
@@ -39,7 +39,7 @@ public class UserAccountController {
     }
 
     @PostMapping("/change/profileImg")
-    public ResponseEntity<?> changeProfileImg(
+    public ResponseEntity<ApiRespDto<Void>> changeProfileImg(
             @RequestBody ChangeProfileImgReqDto profileImgReqDto,
             @AuthenticationPrincipal PrincipalUser principalUser
     ) {
@@ -47,7 +47,7 @@ public class UserAccountController {
     }
 
     @PostMapping("/withdraw")
-    public ResponseEntity<?> withdraw(@AuthenticationPrincipal PrincipalUser principalUser) {
+    public ResponseEntity<ApiRespDto<Void>> withdraw(@AuthenticationPrincipal PrincipalUser principalUser) {
         return ResponseEntity.ok(accountService.withdraw(principalUser));
     }
 }

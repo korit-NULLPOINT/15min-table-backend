@@ -37,7 +37,7 @@ public class UserAuthService {
     private String defaultProfileImgUrl;
 
     @Transactional
-    public ApiRespDto<?> signup(SignupReqDto signupReqDto) {
+    public ApiRespDto<Void> signup(SignupReqDto signupReqDto) {
         if (signupReqDto == null) {
             throw new BadRequestException("요청 값이 비어있습니다.");
         }
@@ -80,7 +80,7 @@ public class UserAuthService {
         return new ApiRespDto<>("success", "회원가입이 완료되었습니다.", null);
     }
 
-    public ApiRespDto<?> signin(SigninReqDto signinReqDto) {
+    public ApiRespDto<String> signin(SigninReqDto signinReqDto) {
         if (signinReqDto == null) {
             throw new BadRequestException("요청 값이 비어있습니다.");
         }

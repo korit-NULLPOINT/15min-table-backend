@@ -19,7 +19,7 @@ public class RecipeRatingService {
     @Autowired
     private RecipeRatingRepository recipeRatingRepository;
 
-    public ApiRespDto<?> upsertRating(UpsertRatingReqDto upsertRatingReqDto, PrincipalUser principalUser) {
+    public ApiRespDto<RecipeRatingRespDto> upsertRating(UpsertRatingReqDto upsertRatingReqDto, PrincipalUser principalUser) {
         if (principalUser == null) throw new UnauthenticatedException("로그인 해주세요.");
 
         if (upsertRatingReqDto == null) throw new BadRequestException("요청 값이 비어있습니다.");
@@ -51,7 +51,7 @@ public class RecipeRatingService {
         return new ApiRespDto<>("success", "평점 등록/수정 완료", saved);
     }
 
-    public ApiRespDto<?> deleteRating(Integer recipeId, PrincipalUser principalUser) {
+    public ApiRespDto<Void> deleteRating(Integer recipeId, PrincipalUser principalUser) {
         if (principalUser == null) {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }
@@ -66,7 +66,7 @@ public class RecipeRatingService {
         return new ApiRespDto<>("success", "평점 삭제 완료", null);
     }
 
-    public ApiRespDto<?> getRatingByRecipeIdAndUserId(Integer recipeId, PrincipalUser principalUser) {
+    public ApiRespDto<RecipeRatingRespDto> getRatingByRecipeIdAndUserId(Integer recipeId, PrincipalUser principalUser) {
         if (principalUser == null) {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }
@@ -80,7 +80,7 @@ public class RecipeRatingService {
         return new ApiRespDto<>("success", "내 평점 조회 완료", myRating);
     }
 
-    public ApiRespDto<?> getRatingSummary(Integer recipeId) {
+    public ApiRespDto<RatingSummaryRespDto> getRatingSummary(Integer recipeId) {
         RatingSummaryRespDto summary = recipeRatingRepository
                 .getRatingSummaryByRecipeId(recipeId)
                 .orElseGet(() -> new RatingSummaryRespDto(0.0, 0)); // 평점 없을 때 기본값

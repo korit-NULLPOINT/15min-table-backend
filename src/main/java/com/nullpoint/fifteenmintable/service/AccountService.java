@@ -27,7 +27,7 @@ public class AccountService {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Transactional
-    public ApiRespDto<?> changePassword(ChangePasswordReqDto changePasswordReqDto, PrincipalUser principalUser) {
+    public ApiRespDto<Void> changePassword(ChangePasswordReqDto changePasswordReqDto, PrincipalUser principalUser) {
         if (principalUser == null) throw new UnauthenticatedException("로그인이 필요합니다.");
         if (changePasswordReqDto == null) throw new BadRequestException("요청 값이 비어있습니다.");
         if (changePasswordReqDto.getUserId() == null) throw new BadRequestException("userId는 필수입니다.");
@@ -61,7 +61,7 @@ public class AccountService {
     }
 
     @Transactional
-    public ApiRespDto<?> changeUsername(ChangeUsernameReqDto changeUsernameReqDto, PrincipalUser principalUser) {
+    public ApiRespDto<Void> changeUsername(ChangeUsernameReqDto changeUsernameReqDto, PrincipalUser principalUser) {
         if (principalUser == null) throw new UnauthenticatedException("로그인이 필요합니다.");
         if (changeUsernameReqDto == null) throw new BadRequestException("요청 값이 비어있습니다.");
         if (changeUsernameReqDto.getUserId() == null) throw new BadRequestException("userId는 필수입니다.");
@@ -90,7 +90,7 @@ public class AccountService {
     }
 
     @Transactional
-    public ApiRespDto<?> changeProfileImg(ChangeProfileImgReqDto changeProfileImgReqDto, PrincipalUser principalUser) {
+    public ApiRespDto<Void> changeProfileImg(ChangeProfileImgReqDto changeProfileImgReqDto, PrincipalUser principalUser) {
         if (principalUser == null) throw new UnauthenticatedException("로그인이 필요합니다.");
         if (changeProfileImgReqDto == null) throw new BadRequestException("요청 값이 비어있습니다.");
         if (changeProfileImgReqDto.getUserId() == null) throw new BadRequestException("userId는 필수입니다.");
@@ -114,7 +114,7 @@ public class AccountService {
     }
 
     @Transactional
-    public ApiRespDto<?> withdraw(PrincipalUser principalUser) {
+    public ApiRespDto<Void> withdraw(PrincipalUser principalUser) {
         if (principalUser == null) throw new UnauthenticatedException("로그인이 필요합니다.");
 
         User user = userRepository.getUserByUserId(principalUser.getUserId())

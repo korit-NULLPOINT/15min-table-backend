@@ -1,7 +1,10 @@
 package com.nullpoint.fifteenmintable.controller;
 
+import com.nullpoint.fifteenmintable.dto.ApiRespDto;
 import com.nullpoint.fifteenmintable.dto.recipe.AddRecipeReqDto;
 import com.nullpoint.fifteenmintable.dto.recipe.ModifyRecipeReqDto;
+import com.nullpoint.fifteenmintable.dto.recipe.RecipeDetailRespDto;
+import com.nullpoint.fifteenmintable.dto.recipe.RecipeListPageRespDto;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import com.nullpoint.fifteenmintable.service.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +20,7 @@ public class RecipeController {
     private RecipeService recipeService;
 
     @PostMapping("/add")
-    public ResponseEntity<?> addRecipe(
+    public ResponseEntity<ApiRespDto<Integer>> addRecipe(
             @PathVariable Integer boardId,
             @RequestBody AddRecipeReqDto addRecipeReqDto,
             @AuthenticationPrincipal PrincipalUser principalUser
@@ -26,7 +29,7 @@ public class RecipeController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<?> getRecipeList(
+    public ResponseEntity<ApiRespDto<RecipeListPageRespDto>> getRecipeList(
             @PathVariable Integer boardId,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size
@@ -35,7 +38,7 @@ public class RecipeController {
     }
 
     @GetMapping("/detail/{recipeId}")
-    public ResponseEntity<?> getRecipeDetail(
+    public ResponseEntity<ApiRespDto<RecipeDetailRespDto>> getRecipeDetail(
             @PathVariable Integer boardId,
             @PathVariable Integer recipeId
     ) {
@@ -43,7 +46,7 @@ public class RecipeController {
     }
 
     @PutMapping("/modify/{recipeId}")
-    public ResponseEntity<?> modifyRecipe(
+    public ResponseEntity<ApiRespDto<Void>> modifyRecipe(
             @PathVariable Integer boardId,
             @PathVariable Integer recipeId,
             @RequestBody ModifyRecipeReqDto modifyRecipeReqDto,
@@ -53,7 +56,7 @@ public class RecipeController {
     }
 
     @DeleteMapping("/remove/{recipeId}")
-    public ResponseEntity<?> removeRecipe(
+    public ResponseEntity<ApiRespDto<Void>> removeRecipe(
             @PathVariable Integer boardId,
             @PathVariable Integer recipeId,
             @AuthenticationPrincipal PrincipalUser principalUser

@@ -36,7 +36,7 @@ public class OAuth2AuthService {
     private String defaultProfileImgUrl;
 
     @Transactional
-    public ApiRespDto<?> signup(OAuth2SignupReqDto oAuth2SignupReqDto) {
+    public ApiRespDto<Void> signup(OAuth2SignupReqDto oAuth2SignupReqDto) {
         if (oAuth2SignupReqDto == null) throw new BadRequestException("요청 값이 비어있습니다.");
         if (isBlank(oAuth2SignupReqDto.getEmail()) || isBlank(oAuth2SignupReqDto.getPassword()) || isBlank(oAuth2SignupReqDto.getUsername())
                 || isBlank(oAuth2SignupReqDto.getProvider()) || isBlank(oAuth2SignupReqDto.getProviderUserId())) {
@@ -87,7 +87,7 @@ public class OAuth2AuthService {
     }
 
     @Transactional
-    public ApiRespDto<?> merge(OAuth2MergeReqDto oAuth2MergeReqDto) {
+    public ApiRespDto<Void> merge(OAuth2MergeReqDto oAuth2MergeReqDto) {
         if (oAuth2MergeReqDto == null) throw new BadRequestException("요청 값이 비어있습니다.");
         if (isBlank(oAuth2MergeReqDto.getEmail()) || isBlank(oAuth2MergeReqDto.getPassword())
                 || isBlank(oAuth2MergeReqDto.getProvider()) || isBlank(oAuth2MergeReqDto.getProviderUserId())) {

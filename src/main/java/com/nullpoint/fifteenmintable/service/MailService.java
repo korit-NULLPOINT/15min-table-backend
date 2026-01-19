@@ -32,7 +32,7 @@ public class MailService {
     @Autowired
     private JavaMailSender javaMailSender;
 
-    public ApiRespDto<?> sendMail(PrincipalUser principalUser) {
+    public ApiRespDto<Void> sendMail(PrincipalUser principalUser) {
         boolean hasTempRole = principalUser.getUserRoles()
                 .stream()
                 .anyMatch(userRole -> userRole.getRoleId() == 3);

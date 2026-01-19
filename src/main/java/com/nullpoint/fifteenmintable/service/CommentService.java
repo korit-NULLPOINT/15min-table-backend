@@ -21,7 +21,7 @@ public class CommentService {
     @Autowired
     private CommentRepository commentRepository;
 
-    public ApiRespDto<?> addComment(AddCommentReqDto addCommentReqDto, PrincipalUser principalUser) {
+    public ApiRespDto<Comment> addComment(AddCommentReqDto addCommentReqDto, PrincipalUser principalUser) {
         if (principalUser == null) {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }
@@ -44,14 +44,14 @@ public class CommentService {
         return new ApiRespDto<>("success", "댓글 추가 완료", comment);
     }
 
-    public ApiRespDto<?> getCommentListByRecipeId(Integer recipeId) {
+    public ApiRespDto<List<CommentRespDto>> getCommentListByRecipeId(Integer recipeId) {
         if (recipeId == null) throw new BadRequestException("recipeId는 필수입니다.");
 
         List<CommentRespDto> list = commentRepository.getCommentListByRecipeId(recipeId);
         return new ApiRespDto<>("success", "레시피 댓글 목록 조회 완료", list);
     }
 
-    public ApiRespDto<?> getCommentListByUserId(PrincipalUser principalUser) {
+    public ApiRespDto<List<CommentRespDto>> getCommentListByUserId(PrincipalUser principalUser) {
         if (principalUser == null) {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }
@@ -65,7 +65,7 @@ public class CommentService {
     /**
      * 단건조회로 작성자 확인 후 삭제
      */
-    public ApiRespDto<?> deleteComment(Integer commentId, PrincipalUser principalUser) {
+    public ApiRespDto<Void> deleteComment(Integer commentId, PrincipalUser principalUser) {
         if (principalUser == null) {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }
