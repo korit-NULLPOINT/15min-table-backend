@@ -1,12 +1,16 @@
 package com.nullpoint.fifteenmintable.controller;
 
+import com.nullpoint.fifteenmintable.dto.ApiRespDto;
 import com.nullpoint.fifteenmintable.dto.Board.BoardCreateReqDto;
+import com.nullpoint.fifteenmintable.entity.Board;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import com.nullpoint.fifteenmintable.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/board")
@@ -19,7 +23,7 @@ public class BoardController {
      * 게시물 생성
      */
     @PostMapping
-    public ResponseEntity<?> addBoard(
+    public ResponseEntity<ApiRespDto<Void>> addBoard(
             @RequestBody BoardCreateReqDto boardCreateReqDto,
             @AuthenticationPrincipal PrincipalUser principalUser
     ) {
@@ -32,7 +36,7 @@ public class BoardController {
      * 게시물 전체 조회 (로그인 필수)
      */
     @GetMapping
-    public ResponseEntity<?> getBoardList(
+    public ResponseEntity<ApiRespDto<List<Board>>> getBoardList(
             @AuthenticationPrincipal PrincipalUser principalUser
     ) {
         return ResponseEntity.ok(
@@ -44,7 +48,7 @@ public class BoardController {
      * 게시물 삭제 (작성자만 가능, 실제 DELETE)
      */
     @DeleteMapping("/{boardId}")
-    public ResponseEntity<?> removeBoard(
+    public ResponseEntity<ApiRespDto<Void>> removeBoard(
             @AuthenticationPrincipal PrincipalUser principalUser,
             @PathVariable Integer boardId
     ) {

@@ -1,4 +1,5 @@
 package com.nullpoint.fifteenmintable.controller.user;
+import com.nullpoint.fifteenmintable.dto.ApiRespDto;
 import com.nullpoint.fifteenmintable.dto.oauth2.OAuth2MergeReqDto;
 import com.nullpoint.fifteenmintable.dto.oauth2.OAuth2SignupReqDto;
 import com.nullpoint.fifteenmintable.service.OAuth2AuthService;
@@ -17,12 +18,12 @@ public class OAuth2AuthController {
     private OAuth2AuthService oAuth2AuthService;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody OAuth2SignupReqDto oAuth2SignupReqDto) {
+    public ResponseEntity<ApiRespDto<Void>> signup(@RequestBody OAuth2SignupReqDto oAuth2SignupReqDto) {
         return ResponseEntity.ok(oAuth2AuthService.signup(oAuth2SignupReqDto));
     }
 
     @PostMapping("/merge")
-    public ResponseEntity<?> merge(@RequestBody OAuth2MergeReqDto oAuth2MergeReqDto) {
+    public ResponseEntity<ApiRespDto<Void>> merge(@RequestBody OAuth2MergeReqDto oAuth2MergeReqDto) {
         return ResponseEntity.ok(oAuth2AuthService.merge(oAuth2MergeReqDto));
     }
 

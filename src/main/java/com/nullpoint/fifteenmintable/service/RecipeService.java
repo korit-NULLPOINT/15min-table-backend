@@ -31,7 +31,7 @@ public class RecipeService {
     @Autowired
     private NotificationService notificationService;
 
-    public ApiRespDto<?> addRecipe(Integer boardId, AddRecipeReqDto addRecipeReqDto, PrincipalUser principalUser) {
+    public ApiRespDto<Integer> addRecipe(Integer boardId, AddRecipeReqDto addRecipeReqDto, PrincipalUser principalUser) {
         if (principalUser == null) throw new UnauthenticatedException("로그인 해주세요.");
         if (boardId == null) throw new BadRequestException("boardId는 필수입니다.");
         if (addRecipeReqDto == null) throw new BadRequestException("요청 값이 비어있습니다.");
@@ -56,7 +56,7 @@ public class RecipeService {
         return new ApiRespDto<>("success", "레시피가 등록되었습니다.", recipe.getRecipeId());
     }
 
-    public ApiRespDto<?> getRecipeListByBoardId(Integer boardId, Integer page, Integer size) {
+    public ApiRespDto<RecipeListPageRespDto> getRecipeListByBoardId(Integer boardId, Integer page, Integer size) {
         if (boardId == null) throw new BadRequestException("boardId는 필수입니다.");
 
         int safePage = (page == null) ? 0 : Math.max(page, 0);
@@ -85,7 +85,7 @@ public class RecipeService {
     }
 
     @Transactional
-    public ApiRespDto<?> getRecipeDetail(Integer boardId, Integer recipeId) {
+    public ApiRespDto<RecipeDetailRespDto> getRecipeDetail(Integer boardId, Integer recipeId) {
         if (boardId == null) throw new BadRequestException("boardId는 필수입니다.");
         if (recipeId == null) throw new BadRequestException("recipeId는 필수입니다.");
 
@@ -102,7 +102,7 @@ public class RecipeService {
     }
 
     @Transactional
-    public ApiRespDto<?> modifyRecipe(Integer boardId, Integer recipeId, ModifyRecipeReqDto modifyRecipeReqDto, PrincipalUser principalUser) {
+    public ApiRespDto<Void> modifyRecipe(Integer boardId, Integer recipeId, ModifyRecipeReqDto modifyRecipeReqDto, PrincipalUser principalUser) {
         if (principalUser == null) throw new UnauthenticatedException("로그인 해주세요.");
         if (boardId == null) throw new BadRequestException("boardId는 필수입니다.");
         if (recipeId == null) throw new BadRequestException("recipeId는 필수입니다.");
@@ -122,7 +122,10 @@ public class RecipeService {
             throw new NotFoundException("해당 게시판의 레시피가 아닙니다.");
         }
 
-        if (!foundRecipe.getUserId().equals(principalUser.getUserId())) {
+        boolean isOwner = foundRecipe.getUserId().equals(principalUser.getUserId());
+        boolean isAdmin = principalUser.isAdmin();
+
+        if (!isOwner && !isAdmin) {
             throw new ForbiddenException("권한이 없습니다.");
         }
 
@@ -136,7 +139,7 @@ public class RecipeService {
     }
 
     @Transactional
-    public ApiRespDto<?> removeRecipe(Integer boardId, Integer recipeId, PrincipalUser principalUser) {
+    public ApiRespDto<Void> removeRecipe(Integer boardId, Integer recipeId, PrincipalUser principalUser) {
         if (principalUser == null) throw new UnauthenticatedException("로그인 해주세요.");
         if (boardId == null) throw new BadRequestException("boardId는 필수입니다.");
         if (recipeId == null) throw new BadRequestException("recipeId는 필수입니다.");
@@ -149,8 +152,9 @@ public class RecipeService {
         }
 
         boolean isOwner = foundRecipe.getUserId().equals(principalUser.getUserId());
+        boolean isAdmin = principalUser.isAdmin();
 
-        if (!isOwner) {
+        if (!isOwner && !isAdmin) {
             throw new ForbiddenException("권한이 없습니다.");
         }
 

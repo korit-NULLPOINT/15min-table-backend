@@ -1,5 +1,8 @@
 package com.nullpoint.fifteenmintable.controller;
 
+import com.nullpoint.fifteenmintable.dto.ApiRespDto;
+import com.nullpoint.fifteenmintable.dto.rating.RatingSummaryRespDto;
+import com.nullpoint.fifteenmintable.dto.rating.RecipeRatingRespDto;
 import com.nullpoint.fifteenmintable.dto.rating.UpsertRatingReqDto;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import com.nullpoint.fifteenmintable.service.RecipeRatingService;
@@ -16,7 +19,7 @@ public class RatingController {
     private RecipeRatingService recipeRatingService;
 
     @PostMapping("/upsert")
-    public ResponseEntity<?> upsertRating(
+    public ResponseEntity<ApiRespDto<RecipeRatingRespDto>> upsertRating(
             @RequestBody UpsertRatingReqDto upsertRatingReqDto,
             @AuthenticationPrincipal PrincipalUser principalUser
     ) {
@@ -24,7 +27,7 @@ public class RatingController {
     }
 
     @PostMapping("/delete/{recipeId}")
-    public ResponseEntity<?> deleteRating(
+    public ResponseEntity<ApiRespDto<Void>> deleteRating(
             @PathVariable Integer recipeId,
             @AuthenticationPrincipal PrincipalUser principalUser
     ) {
@@ -32,7 +35,7 @@ public class RatingController {
     }
 
     @GetMapping("/{recipeId}/get")
-    public ResponseEntity<?> getRating(
+    public ResponseEntity<ApiRespDto<RecipeRatingRespDto>> getRating(
             @PathVariable Integer recipeId,
             @AuthenticationPrincipal PrincipalUser principalUser
     ) {
@@ -40,7 +43,7 @@ public class RatingController {
     }
 
     @GetMapping("/{recipeId}/summary")
-    public ResponseEntity<?> getSummary(@PathVariable Integer recipeId) {
+    public ResponseEntity<ApiRespDto<RatingSummaryRespDto>> getSummary(@PathVariable Integer recipeId) {
         return ResponseEntity.ok(recipeRatingService.getRatingSummary(recipeId));
     }
 }

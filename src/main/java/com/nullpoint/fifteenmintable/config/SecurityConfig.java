@@ -123,6 +123,8 @@ public class SecurityConfig {
                     "/board/**"
             ).hasAnyRole("ADMIN", "USER", "TEMP_USER");   // ✅ 나중에 TEMP_USER 빼면 됨
 
+            auth.requestMatchers("/admin/**").hasRole("ADMIN");
+
             // 기타 보호
             auth.requestMatchers(
                     "/follow/**",

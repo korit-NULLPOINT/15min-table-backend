@@ -17,7 +17,7 @@
         @Autowired
         private BoardRepository boardRepository;
 
-        public ApiRespDto<?> addBoard(BoardCreateReqDto dto, PrincipalUser principalUser) {
+        public ApiRespDto<Void> addBoard(BoardCreateReqDto dto, PrincipalUser principalUser) {
             Board board = dto.toEntity();
 
             int result = boardRepository.addBoard(board);
@@ -28,13 +28,13 @@
             return new ApiRespDto<>("success", "게시판 생성 완료", null);
         }
 
-        public ApiRespDto<?> getBoardList() {
+        public ApiRespDto<List<Board>> getBoardList() {
 
             List<Board> boardList = boardRepository.getBoardList();
             return new ApiRespDto<>("success", "게시물 전체 조회 완료", boardList);
         }
 
-        public ApiRespDto<?> removeBoard(Integer boardId, PrincipalUser principalUser) {
+        public ApiRespDto<Void> removeBoard(Integer boardId, PrincipalUser principalUser) {
             int result = boardRepository.removeBoard(boardId);
             if (result != 1) {
                 return new ApiRespDto<>("failed", "게시물 삭제에 실패했습니다.", null);

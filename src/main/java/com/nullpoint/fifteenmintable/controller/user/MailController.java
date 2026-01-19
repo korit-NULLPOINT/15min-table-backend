@@ -1,4 +1,5 @@
 package com.nullpoint.fifteenmintable.controller.user;
+import com.nullpoint.fifteenmintable.dto.ApiRespDto;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import com.nullpoint.fifteenmintable.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ public class MailController {
     private MailService mailService;
 
     @PostMapping("/send")
-    public ResponseEntity<?> sendMail(@AuthenticationPrincipal PrincipalUser principalUser) {
+    public ResponseEntity<ApiRespDto<Void>> sendMail(@AuthenticationPrincipal PrincipalUser principalUser) {
         return ResponseEntity.ok(mailService.sendMail(principalUser));
     }
 

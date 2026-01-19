@@ -1,11 +1,16 @@
 package com.nullpoint.fifteenmintable.controller;
 
+import com.nullpoint.fifteenmintable.dto.ApiRespDto;
+import com.nullpoint.fifteenmintable.dto.follow.FollowRespDto;
+import com.nullpoint.fifteenmintable.dto.follow.FollowStatusRespDto;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import com.nullpoint.fifteenmintable.service.FollowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/follow")
@@ -15,7 +20,7 @@ public class FollowController {
     private FollowService followService;
 
     @PostMapping("/{targetUserId}")
-    public ResponseEntity<?> follow(
+    public ResponseEntity<ApiRespDto<Void>> follow(
             @PathVariable Integer targetUserId,
             @AuthenticationPrincipal PrincipalUser principalUser
     ) {
@@ -23,7 +28,7 @@ public class FollowController {
     }
 
     @DeleteMapping("/{targetUserId}")
-    public ResponseEntity<?> unfollow(
+    public ResponseEntity<ApiRespDto<Void>> unfollow(
             @PathVariable Integer targetUserId,
             @AuthenticationPrincipal PrincipalUser principalUser
     ) {
@@ -31,17 +36,17 @@ public class FollowController {
     }
 
     @GetMapping("/followers")
-    public ResponseEntity<?> getFollowers(@AuthenticationPrincipal PrincipalUser principalUser) {
+    public ResponseEntity<ApiRespDto<List<FollowRespDto>>> getFollowers(@AuthenticationPrincipal PrincipalUser principalUser) {
         return ResponseEntity.ok(followService.getFollowers(principalUser));
     }
 
     @GetMapping("/followings")
-    public ResponseEntity<?> getFollowings(@AuthenticationPrincipal PrincipalUser principalUser) {
+    public ResponseEntity<ApiRespDto<List<FollowRespDto>>> getFollowings(@AuthenticationPrincipal PrincipalUser principalUser) {
         return ResponseEntity.ok(followService.getFollowings(principalUser));
     }
 
     @GetMapping("/status/{targetUserId}")
-    public ResponseEntity<?> getFollowStatus(
+    public ResponseEntity<ApiRespDto<FollowStatusRespDto>> getFollowStatus(
             @PathVariable Integer targetUserId,
             @AuthenticationPrincipal PrincipalUser principalUser
     ) {

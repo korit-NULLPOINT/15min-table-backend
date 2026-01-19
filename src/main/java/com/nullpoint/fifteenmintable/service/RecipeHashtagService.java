@@ -4,10 +4,14 @@ import com.nullpoint.fifteenmintable.dto.ApiRespDto;
 import com.nullpoint.fifteenmintable.dto.hashtag.AddRecipeHashtagsReqDto;
 import com.nullpoint.fifteenmintable.dto.hashtag.HashtagRespDto;
 import com.nullpoint.fifteenmintable.entity.Hashtag;
+import com.nullpoint.fifteenmintable.entity.Recipe;
 import com.nullpoint.fifteenmintable.entity.RecipeHashtag;
+import com.nullpoint.fifteenmintable.exception.ForbiddenException;
+import com.nullpoint.fifteenmintable.exception.NotFoundException;
 import com.nullpoint.fifteenmintable.exception.UnauthenticatedException;
 import com.nullpoint.fifteenmintable.repository.HashtagRepository;
 import com.nullpoint.fifteenmintable.repository.RecipeHashtagRepository;
+import com.nullpoint.fifteenmintable.repository.RecipeRepository;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,11 +31,14 @@ public class RecipeHashtagService {
     @Autowired
     private RecipeHashtagRepository recipeHashtagRepository;
 
+    @Autowired
+    private RecipeRepository recipeRepository;
+
     /**
      * 레시피 해시태그 교체(전체 삭제 후 다시 삽입)
      */
     @Transactional
-    public ApiRespDto<?> saveRecipeHashtags(AddRecipeHashtagsReqDto addRecipeHashtagsReqDto, PrincipalUser principalUser) {
+    public ApiRespDto<List<HashtagRespDto>> saveRecipeHashtags(AddRecipeHashtagsReqDto addRecipeHashtagsReqDto, PrincipalUser principalUser) {
         if (principalUser == null) {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }
@@ -43,6 +50,17 @@ public class RecipeHashtagService {
         }
 
         Integer recipeId = addRecipeHashtagsReqDto.getRecipeId();
+
+        Recipe recipe = recipeRepository.getRecipeEntityById(recipeId)
+                .orElseThrow(() -> new NotFoundException("레시피가 존재하지 않습니다."));
+
+        boolean isOwner = recipe.getUserId().equals(principalUser.getUserId());
+        boolean isAdmin = principalUser.isAdmin();
+
+        if (!isOwner && !isAdmin) {
+            throw new ForbiddenException("해시태그 수정 권한이 없습니다.");
+        }
+
         List<String> names = addRecipeHashtagsReqDto.getHashtagNames();
 
         // 1) 레시피에 달린 기존 연결 전부 삭제 (0이어도 정상)
@@ -101,7 +119,7 @@ public class RecipeHashtagService {
     /**
      * 레시피에 달린 해시태그 조회 (로그인 불필요)
      */
-    public ApiRespDto<?> getHashtagsByRecipeId(Integer recipeId) {
+    public ApiRespDto<List<HashtagRespDto>> getHashtagsByRecipeId(Integer recipeId) {
         if (recipeId == null) {
             throw new RuntimeException("recipeId는 필수입니다.");
         }
@@ -113,7 +131,7 @@ public class RecipeHashtagService {
     /**
      * 해시태그 검색(자동완성) (로그인 불필요)
      */
-    public ApiRespDto<?> searchHashtags(String keyword) {
+    public ApiRespDto<List<HashtagRespDto>> searchHashtags(String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) {
             return new ApiRespDto<>("success", "검색 결과", List.of());
         }

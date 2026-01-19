@@ -47,7 +47,7 @@ public class AiHashtagService {
     @Value("${gemini.base-url:https://generativelanguage.googleapis.com/v1beta}")
     private String baseUrl;
 
-    public ApiRespDto<?> generateRecipeHashtags(AiHashtagReqDto reqDto, PrincipalUser principalUser) {
+    public ApiRespDto<AiHashtagRespDto> generateRecipeHashtags(AiHashtagReqDto reqDto, PrincipalUser principalUser) {
         if (principalUser == null) throw new UnauthenticatedException("로그인 해주세요.");
         if (reqDto == null) throw new BadRequestException("요청 값이 비어있습니다.");
 
