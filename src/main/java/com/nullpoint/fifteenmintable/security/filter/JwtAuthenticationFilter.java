@@ -1,13 +1,15 @@
 package com.nullpoint.fifteenmintable.security.filter;
+
 import com.nullpoint.fifteenmintable.entity.User;
 import com.nullpoint.fifteenmintable.repository.UserRepository;
+import com.nullpoint.fifteenmintable.security.cookie.SseCookieUtils;
 import com.nullpoint.fifteenmintable.security.jwt.JwtUtils;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.*;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,7 +29,9 @@ public class JwtAuthenticationFilter implements Filter {
     private UserRepository userRepository;
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
+            throws IOException, ServletException {
+
         HttpServletRequest request = (HttpServletRequest) servletRequest;
 
         List<String> methods = List.of("POST", "GET", "PUT", "PATCH", "DELETE");
@@ -38,9 +42,18 @@ public class JwtAuthenticationFilter implements Filter {
 
         String authorization = request.getHeader("Authorization");
 
+        // ✅ 1) 헤더 우선
+        String accessToken = null;
         if (jwtUtils.isBearer(authorization)) {
-            String accessToken = jwtUtils.removeBearer(authorization);
+            accessToken = jwtUtils.removeBearer(authorization);
+        }
 
+        // ✅ 2) 헤더 없으면 SSE_AT 쿠키 fallback (EventSource는 헤더 못 넣음)
+        if (accessToken == null || accessToken.trim().isEmpty()) {
+            accessToken = getCookieValue(request, SseCookieUtils.SSE_COOKIE_NAME);
+        }
+
+        if (accessToken != null && !accessToken.trim().isEmpty()) {
             try {
                 Claims claims = jwtUtils.getClaims(accessToken);
                 String id = claims.getId();
@@ -74,5 +87,17 @@ public class JwtAuthenticationFilter implements Filter {
         }
 
         filterChain.doFilter(servletRequest, servletResponse);
+    }
+
+    private String getCookieValue(HttpServletRequest request, String cookieName) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) return null;
+
+        for (Cookie cookie : cookies) {
+            if (cookieName.equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
     }
 }

@@ -46,7 +46,7 @@ public class SecurityConfig {
         corsConfiguration.addAllowedMethod(CorsConfiguration.ALL);
 
         // 최소 권장(나중에 properties로 빼기)
-        corsConfiguration.addAllowedOriginPattern("http://localhost:5173");
+        corsConfiguration.addAllowedOriginPattern("http://localhost:*");
         corsConfiguration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -73,6 +73,8 @@ public class SecurityConfig {
 
 
         http.authorizeHttpRequests(auth -> {
+            // SSE 쿠키 허용
+            auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
 
             // 0) 공개
             auth.requestMatchers(
@@ -101,7 +103,7 @@ public class SecurityConfig {
             // 2) TEMP 전용(메일 인증/상태 확인 등)
             auth.requestMatchers(
                     "/mail/send",
-                    "/user/account/principal"
+                    "/user/account/**"
             ).hasAnyRole("ADMIN", "USER", "TEMP_USER");
 
             // 3) 쓰기(POST/PUT/DELETE)
