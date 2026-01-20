@@ -4,6 +4,7 @@ import com.nullpoint.fifteenmintable.dto.ApiRespDto;
 import com.nullpoint.fifteenmintable.dto.follow.FollowRespDto;
 import com.nullpoint.fifteenmintable.dto.follow.FollowStatusRespDto;
 import com.nullpoint.fifteenmintable.entity.Follow;
+import com.nullpoint.fifteenmintable.exception.BadRequestException;
 import com.nullpoint.fifteenmintable.exception.NotFoundException;
 import com.nullpoint.fifteenmintable.exception.UnauthenticatedException;
 import com.nullpoint.fifteenmintable.repository.FollowRepository;
@@ -33,13 +34,13 @@ public class FollowService {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }
         if (targetUserId == null) {
-            throw new RuntimeException("targetUserId는 필수입니다.");
+            throw new BadRequestException("targetUserId는 필수입니다.");
         }
 
         Integer me = principalUser.getUserId();
 
         if (me.equals(targetUserId)) {
-            throw new RuntimeException("자기 자신을 팔로우할 수 없습니다.");
+            throw new BadRequestException("자기 자신을 팔로우할 수 없습니다.");
         }
 
         // 대상 유저 존재 체크
@@ -76,7 +77,7 @@ public class FollowService {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }
         if (targetUserId == null) {
-            throw new RuntimeException("targetUserId는 필수입니다.");
+            throw new BadRequestException("targetUserId는 필수입니다.");
         }
 
         Integer me = principalUser.getUserId();
@@ -116,7 +117,7 @@ public class FollowService {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }
         if (targetUserId == null) {
-            throw new RuntimeException("targetUserId는 필수입니다.");
+            throw new BadRequestException("targetUserId는 필수입니다.");
         }
 
         boolean isFollowing = followRepository.existsFollow(principalUser.getUserId(), targetUserId);

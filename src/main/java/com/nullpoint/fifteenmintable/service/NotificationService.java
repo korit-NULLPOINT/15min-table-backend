@@ -4,14 +4,19 @@ import com.nullpoint.fifteenmintable.dto.ApiRespDto;
 import com.nullpoint.fifteenmintable.dto.notification.NotificationPushRespDto;
 import com.nullpoint.fifteenmintable.dto.notification.NotificationRespDto;
 import com.nullpoint.fifteenmintable.entity.Notification;
+import com.nullpoint.fifteenmintable.entity.Recipe;
+import com.nullpoint.fifteenmintable.exception.BadRequestException;
 import com.nullpoint.fifteenmintable.exception.NotFoundException;
 import com.nullpoint.fifteenmintable.exception.UnauthenticatedException;
 import com.nullpoint.fifteenmintable.repository.FollowRepository;
 import com.nullpoint.fifteenmintable.repository.NotificationRepository;
+import com.nullpoint.fifteenmintable.repository.RecipeRepository;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +31,9 @@ public class NotificationService {
     private FollowRepository followRepository;
 
     @Autowired
+    private RecipeRepository recipeRepository;
+
+    @Autowired
     private NotificationSseService notificationSseService;
 
 
@@ -35,7 +43,7 @@ public class NotificationService {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }
         if (recipeId == null) {
-            throw new RuntimeException("recipeId는 필수입니다.");
+            throw new BadRequestException("recipeId는 필수입니다.");
         }
 
         Integer actorUserId = principalUser.getUserId();
@@ -57,18 +65,51 @@ public class NotificationService {
 
             notificationRepository.createNotification(notification);
 
-            notificationSseService.pushToUser(
-                    receiverUserId,
-                    NotificationPushRespDto.builder()
-                            .notificationId(notification.getNotificationId())
-                            .type("RECIPE_POST")
-                            .actorUserId(actorUserId)
-                            .recipeId(recipeId)
-                            .commentId(null)
-                            .build()
-            );
+            afterCommit(() -> {
+                try {
+                    notificationSseService.pushToUser(
+                            receiverUserId,
+                            NotificationPushRespDto.builder()
+                                    .notificationId(notification.getNotificationId())
+                                    .type("RECIPE_POST")
+                                    .actorUserId(actorUserId)
+                                    .recipeId(recipeId)
+                                    .commentId(null)
+                                    .build()
+                    );
+                } catch (Exception e) {
+                    System.out.println("[SSE] push failed: " + e.getMessage());
+                }
+            });
         }
     }
+
+    @Transactional
+    public void createCommentNotification(Integer recipeId, Integer commentId, PrincipalUser principalUser) {
+        if (principalUser == null) throw new UnauthenticatedException("로그인이 필요합니다.");
+        if (recipeId == null) throw new BadRequestException("recipeId는 필수입니다.");
+        if (commentId == null) throw new BadRequestException("commentId는 필수입니다.");
+
+        Integer actorUserId = principalUser.getUserId();
+
+        Recipe recipe = recipeRepository.getRecipeEntityById(recipeId)
+                .orElseThrow(() -> new NotFoundException("레시피를 찾을 수 없습니다."));
+
+        Integer receiverUserId = recipe.getUserId();
+
+        if (receiverUserId == null || receiverUserId.equals(actorUserId)) return;
+
+        Notification notification = Notification.builder()
+                .receiverUserId(receiverUserId)
+                .actorUserId(actorUserId)
+                .notificationType("COMMENT")
+                .recipeId(recipeId)
+                .commentId(commentId)
+                .build();
+
+        notificationRepository.createNotification(notification);
+    }
+
 
     @Transactional
     public void createFollowNotification(Integer targetUserId, PrincipalUser principalUser) {
@@ -76,7 +117,7 @@ public class NotificationService {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }
         if (targetUserId == null) {
-            throw new RuntimeException("targetUserId는 필수입니다.");
+            throw new BadRequestException("targetUserId는 필수입니다.");
         }
 
         Integer actorUserId = principalUser.getUserId();
@@ -91,16 +132,22 @@ public class NotificationService {
 
         notificationRepository.createNotification(notification);
 
-        notificationSseService.pushToUser(
-                targetUserId,
-                NotificationPushRespDto.builder()
-                        .notificationId(notification.getNotificationId())
-                        .type("FOLLOW")
-                        .actorUserId(actorUserId)
-                        .recipeId(null)
-                        .commentId(null)
-                        .build()
-        );
+        afterCommit(() -> {
+            try {
+                notificationSseService.pushToUser(
+                        targetUserId,
+                        NotificationPushRespDto.builder()
+                                .notificationId(notification.getNotificationId())
+                                .type("FOLLOW")
+                                .actorUserId(actorUserId)
+                                .recipeId(null)
+                                .commentId(null)
+                                .build()
+                );
+            } catch (Exception e) {
+                System.out.println("[SSE] push failed: " + e.getMessage());
+            }
+        });
     }
 
     /**
@@ -139,7 +186,7 @@ public class NotificationService {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }
         if (notificationId == null) {
-            throw new RuntimeException("notificationId는 필수입니다.");
+            throw new BadRequestException("notificationId는 필수입니다.");
         }
 
         int updated = notificationRepository.markAsRead(notificationId, principalUser.getUserId());
@@ -163,5 +210,18 @@ public class NotificationService {
 
         notificationRepository.markAllAsRead(principalUser.getUserId());
         return new ApiRespDto<>("success", "모두 읽음 처리 완료", null);
+    }
+
+    private void afterCommit(Runnable r) {
+        if (!TransactionSynchronizationManager.isActualTransactionActive()) {
+            r.run();
+            return;
+        }
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                r.run();
+            }
+        });
     }
 }

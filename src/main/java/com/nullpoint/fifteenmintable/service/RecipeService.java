@@ -8,11 +8,9 @@ import com.nullpoint.fifteenmintable.exception.BadRequestException;
 import com.nullpoint.fifteenmintable.exception.ForbiddenException;
 import com.nullpoint.fifteenmintable.exception.NotFoundException;
 import com.nullpoint.fifteenmintable.exception.UnauthenticatedException;
-import com.nullpoint.fifteenmintable.mapper.RecipeHashtagMapper;
 import com.nullpoint.fifteenmintable.repository.RecipeHashtagRepository;
 import com.nullpoint.fifteenmintable.repository.RecipeRepository;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +29,7 @@ public class RecipeService {
     @Autowired
     private NotificationService notificationService;
 
+    @Transactional
     public ApiRespDto<Integer> addRecipe(Integer boardId, AddRecipeReqDto addRecipeReqDto, PrincipalUser principalUser) {
         if (principalUser == null) throw new UnauthenticatedException("로그인 해주세요.");
         if (boardId == null) throw new BadRequestException("boardId는 필수입니다.");

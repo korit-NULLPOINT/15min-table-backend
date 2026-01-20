@@ -12,6 +12,7 @@ import com.nullpoint.fifteenmintable.repository.CommentRepository;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,6 +22,10 @@ public class CommentService {
     @Autowired
     private CommentRepository commentRepository;
 
+    @Autowired
+    private NotificationService notificationService;
+
+    @Transactional
     public ApiRespDto<Comment> addComment(AddCommentReqDto addCommentReqDto, PrincipalUser principalUser) {
         if (principalUser == null) {
             throw new UnauthenticatedException("로그인이 필요합니다.");
@@ -40,6 +45,12 @@ public class CommentService {
         if (result != 1) {
             throw new RuntimeException("댓글 추가 실패");
         }
+
+        notificationService.createCommentNotification(
+                addCommentReqDto.getRecipeId(),
+                comment.getCommentId(),
+                principalUser
+        );
 
         return new ApiRespDto<>("success", "댓글 추가 완료", comment);
     }
