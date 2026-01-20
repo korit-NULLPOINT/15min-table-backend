@@ -20,6 +20,7 @@
         <result property="actorUsername" column="actor_username"/>
         <result property="notificationType" column="notification_type"/>
         <result property="recipeId" column="recipe_id"/>
+        <result property="commentId" column="comment_id"/>
         <result property="isRead" column="is_read"/>
         <result property="createDt" column="create_dt"/>
     </resultMap>
@@ -40,6 +41,7 @@
             ut.username as actor_username,
             nt.notification_type,
             nt.recipe_id,
+            nt.comment_id,
             nt.is_read,
             nt.create_dt
         from

@@ -2,6 +2,7 @@ package com.nullpoint.fifteenmintable.controller.user;
 import com.nullpoint.fifteenmintable.dto.ApiRespDto;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import com.nullpoint.fifteenmintable.service.MailService;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,6 +27,7 @@ public class MailController {
         return ResponseEntity.ok(mailService.sendMail(principalUser));
     }
 
+    @Hidden
     @GetMapping("/verify")
     public String verify(Model model, @RequestParam String token) {
         Map<String, Object> resultMap = mailService.verify(token);

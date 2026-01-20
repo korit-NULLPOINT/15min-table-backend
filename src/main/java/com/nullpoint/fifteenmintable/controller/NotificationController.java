@@ -26,8 +26,8 @@ public class NotificationController {
     private NotificationSseService notificationSseService;
 
     @Hidden // orval 에서 제외
-    @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter stream(@AuthenticationPrincipal PrincipalUser principalUser) {
+    @GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter subscribe(@AuthenticationPrincipal PrincipalUser principalUser) {
         // 로그인 안 되면 시큐리티/엔트리포인트에서 컷
         return notificationSseService.subscribe(principalUser.getUserId());
     }
@@ -36,7 +36,7 @@ public class NotificationController {
      * - 최초 모달: /notifications?size=5
      * - 무한스크롤: /notifications?cursor=123&size=20
      */
-    @GetMapping
+    @GetMapping("")
     public ResponseEntity<ApiRespDto<List<NotificationRespDto>>> getNotifications(
             @RequestParam(required = false) Integer cursor,
             @RequestParam(required = false) Integer size,
