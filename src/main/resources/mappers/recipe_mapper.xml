@@ -23,11 +23,13 @@
 
     <resultMap id="RecipeListRespMap" type="com.nullpoint.fifteenmintable.dto.recipe.RecipeListRespDto">
         <id property="recipeId" column="recipe_id"/>
+        <result property="userId" column="user_id"/>
         <result property="thumbnailImgUrl" column="thumbnail_img_url"/>
         <result property="viewCount" column="view_count"/>
         <result property="avgRating" column="avg_rating"/>
         <result property="title" column="title"/>
         <result property="username" column="username"/>
+        <result property="profileImgUrl" column="profile_img_url"/>
         <result property="mainCategoryId" column="main_category_id"/>
         <result property="subCategoryId" column="sub_category_id"/>
     </resultMap>
@@ -39,6 +41,7 @@
         <result property="subCategoryId" column="sub_category_id"/>
         <result property="userId" column="user_id"/>
         <result property="username" column="username"/>
+        <result property="profileImgUrl" column="profile_img_url"/>
 
         <result property="title" column="title"/>
         <result property="intro" column="intro"/>
@@ -69,11 +72,13 @@
     <select id="getRecipeCardListByBoardId" resultMap="RecipeListRespMap">
         select
             rt.recipe_id,
+            rt.user_id,
             rt.thumbnail_img_url,
             rt.view_count,
             COALESCE(ROUND(rat_t.avg_rating, 1), 0) as avg_rating,
             rt.title,
             ut.username,
+            ut.profile_img_url,
             rt.main_category_id,
             rt.sub_category_id
         from
@@ -115,6 +120,7 @@
             rt.sub_category_id,
             rt.user_id,
             ut.username,
+            ut.profile_img_url,
 
             rt.title,
             rt.intro,

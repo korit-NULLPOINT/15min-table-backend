@@ -7,6 +7,8 @@
         <id property="commentId" column="comment_id"/>
         <result property="recipeId" column="recipe_id"/>
         <result property="userId" column="user_id"/>
+        <result property="username" column="username"/>
+        <result property="profileImgUrl" column="profile_img_url"/>
         <result property="content" column="content"/>
         <result property="createDt" column="create_dt"/>
         <result property="updateDt" column="update_dt"/>
@@ -21,31 +23,60 @@
 
     <select id="getCommentListByRecipeId" resultMap="CommentRespDtoResultMap">
         select
-            *
+            ct.comment_id,
+            ct.recipe_id,
+            ct.user_id,
+            ut.username,
+            ut.profile_img_url,
+            ct.content,
+            ct.create_dt,
+            ct.update_dt
         from
-            comment_tb
+            comment_tb ct
+            join user_tb ut
+            on ut.user_id = ct.user_id
         where
-            recipe_id = #{recipeId}
+            ct.recipe_id = #{recipeId}
         order by
-            comment_id desc;
+            ct.comment_id desc;
     </select>
 
     <select id="getCommentListByUserId" resultMap="CommentRespDtoResultMap">
         select
-            *
+            ct.comment_id,
+            ct.recipe_id,
+            ct.user_id,
+            ut.username,
+            ut.profile_img_url,
+            ct.content,
+            ct.create_dt,
+            ct.update_dt
         from
-            comment_tb
+            comment_tb ct
+            join user_tb ut
+            on ut.user_id = ct.user_id
         where
-            user_id = #{userId};
+            ct.user_id = #{userId}
+        order by
+            ct.comment_id desc;
     </select>
 
     <select id="getCommentByCommentId" resultMap="CommentRespDtoResultMap">
         select
-            *
+            ct.comment_id,
+            ct.recipe_id,
+            ct.user_id,
+            ut.username,
+            ut.profile_img_url,
+            ct.content,
+            ct.create_dt,
+            ct.update_dt
         from
-            comment_tb
+            comment_tb ct
+            join user_tb ut
+            on ut.user_id = ct.user_id
         where
-            comment_id = #{commentId};
+            ct.comment_id = #{commentId};
     </select>
 
     <delete id="deleteComment">

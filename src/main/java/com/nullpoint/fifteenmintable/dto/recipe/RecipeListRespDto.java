@@ -9,11 +9,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RecipeListRespDto {
     private Integer recipeId;
+    private Integer userId;
     private String thumbnailImgUrl;
     private Integer viewCount;
     private Double avgRating;
     private String title;
     private String username;
+    private String profileImgUrl;
     private Integer mainCategoryId;
     private Integer subCategoryId;
 }
