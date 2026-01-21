@@ -14,4 +14,6 @@ public class RecipeListRespDto {
     private Double avgRating;
     private String title;
     private String username;
+    private Integer mainCategoryId;
+    private Integer subCategoryId;
 }
