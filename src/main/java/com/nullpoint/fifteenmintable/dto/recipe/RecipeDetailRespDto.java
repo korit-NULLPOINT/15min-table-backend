@@ -18,6 +18,7 @@ public class RecipeDetailRespDto {
     private Integer subCategoryId;
     private Integer userId;
     private String username;
+    private String profileImgUrl;
 
     private String title;
     private String intro;
