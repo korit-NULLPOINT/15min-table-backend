@@ -28,6 +28,8 @@
         <result property="avgRating" column="avg_rating"/>
         <result property="title" column="title"/>
         <result property="username" column="username"/>
+        <result property="mainCategoryId" column="main_category_id"/>
+        <result property="subCategoryId" column="sub_category_id"/>
     </resultMap>
 
     <resultMap id="RecipeDetailRespMap" type="com.nullpoint.fifteenmintable.dto.recipe.RecipeDetailRespDto">
@@ -71,7 +73,9 @@
             rt.view_count,
             COALESCE(ROUND(rat_t.avg_rating, 1), 0) as avg_rating,
             rt.title,
-            ut.username
+            ut.username,
+            rt.main_category_id,
+            rt.sub_category_id
         from
             recipe_tb rt
             join user_tb ut
