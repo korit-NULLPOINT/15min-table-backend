@@ -32,6 +32,8 @@
         <result property="profileImgUrl" column="profile_img_url"/>
         <result property="mainCategoryId" column="main_category_id"/>
         <result property="subCategoryId" column="sub_category_id"/>
+        <result property="createDt" column="create_dt"/>
+        <result property="updateDt" column="update_dt"/>
     </resultMap>
 
     <resultMap id="RecipeDetailRespMap" type="com.nullpoint.fifteenmintable.dto.recipe.RecipeDetailRespDto">
@@ -80,7 +82,9 @@
             ut.username,
             ut.profile_img_url,
             rt.main_category_id,
-            rt.sub_category_id
+            rt.sub_category_id,
+            rt.create_dt,
+            rt.update_dt
         from
             recipe_tb rt
             join user_tb ut

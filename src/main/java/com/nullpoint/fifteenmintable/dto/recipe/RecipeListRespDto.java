@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,4 +20,6 @@ public class RecipeListRespDto {
     private String profileImgUrl;
     private Integer mainCategoryId;
     private Integer subCategoryId;
+    private LocalDateTime createDt;
+    private LocalDateTime updateDt;
 }
