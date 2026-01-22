@@ -1,6 +1,7 @@
 package com.nullpoint.fifteenmintable.controller;
 
 import com.nullpoint.fifteenmintable.dto.ApiRespDto;
+import com.nullpoint.fifteenmintable.dto.follow.FollowCountRespDto;
 import com.nullpoint.fifteenmintable.dto.follow.FollowRespDto;
 import com.nullpoint.fifteenmintable.dto.follow.FollowStatusRespDto;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
@@ -51,5 +52,12 @@ public class FollowController {
             @AuthenticationPrincipal PrincipalUser principalUser
     ) {
         return ResponseEntity.ok(followService.getFollowStatus(targetUserId, principalUser));
+    }
+
+    @GetMapping("/count/{userId}")
+    public ResponseEntity<ApiRespDto<FollowCountRespDto>> getFollowCount(
+            @PathVariable Integer userId
+    ) {
+        return ResponseEntity.ok(followService.getFollowCount(userId));
     }
 }

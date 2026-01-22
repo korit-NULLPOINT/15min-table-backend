@@ -75,7 +75,7 @@ public class RecipeRatingService {
 
         RecipeRatingRespDto myRating = recipeRatingRepository
                 .getRatingByRecipeIdAndUserId(recipeId, principalUser.getUserId())
-                .orElseThrow(() -> new NotFoundException("평점이 존재 하지 않습니다."));
+                .orElse(null);
 
         return new ApiRespDto<>("success", "내 평점 조회 완료", myRating);
     }

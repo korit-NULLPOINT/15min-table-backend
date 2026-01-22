@@ -18,6 +18,15 @@
         <collection property="userRoles" resultMap="UserRoleResultMap"/>
     </resultMap>
 
+    <resultMap id="UserProfileRespDtoMap" type="com.nullpoint.fifteenmintable.dto.user.UserProfileRespDto">
+        <id property="userId" column="user_id"/>
+        <result property="username" column="username"/>
+        <result property="profileImgUrl" column="profile_img_url"/>
+        <result property="followersCount" column="followers_count"/>
+        <result property="followingsCount" column="followings_count"/>
+        <result property="isFollowing" column="is_following"/>
+    </resultMap>
+
     <resultMap id="UserRoleResultMap" type="com.nullpoint.fifteenmintable.entity.UserRole">
         <id property="userRoleId" column="user_role_id"/>
         <result property="userId" column="urt_user_id"/>
@@ -107,6 +116,41 @@
             join role_tb rt on (urt.role_id = rt.role_id)
         where
             (urt.role_id = 2 or urt.role_id = 3);
+    </select>
+
+    <select id="getUserProfile" resultMap="UserProfileRespDtoMap">
+        select
+            ut.user_id,
+            ut.username,
+            ut.profile_img_url,
+
+            (
+                select count(*)
+                from follow_tb ft1
+                where ft1.following_user_id = ut.user_id
+            ) as followers_count,
+
+            (
+                select count(*)
+                from follow_tb ft2
+                where ft2.follower_user_id = ut.user_id
+            ) as followings_count,
+
+        case
+            when #{viewerUserId} is null then 0
+            when exists (
+                select 1
+                from follow_tb ft3
+                where ft3.follower_user_id = #{viewerUserId}
+                and ft3.following_user_id = ut.user_id
+            ) then 1
+            else 0
+        end as is_following
+
+        from
+            user_tb ut
+        where
+            ut.user_id = #{userId}
     </select>
 
     <insert id="addUser" useGeneratedKeys="true" keyProperty="userId">

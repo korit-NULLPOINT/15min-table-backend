@@ -1,6 +1,7 @@
 package com.nullpoint.fifteenmintable.service;
 
 import com.nullpoint.fifteenmintable.dto.ApiRespDto;
+import com.nullpoint.fifteenmintable.dto.follow.FollowCountRespDto;
 import com.nullpoint.fifteenmintable.dto.follow.FollowRespDto;
 import com.nullpoint.fifteenmintable.dto.follow.FollowStatusRespDto;
 import com.nullpoint.fifteenmintable.entity.Follow;
@@ -125,4 +126,16 @@ public class FollowService {
         return new ApiRespDto<>("success", "팔로우 상태 조회 완료",
                 new FollowStatusRespDto(isFollowing));
     }
+
+    public ApiRespDto<FollowCountRespDto> getFollowCount(Integer userId) {
+        if (userId == null) {
+            throw new BadRequestException("userId는 필수입니다.");
+        }
+
+        FollowCountRespDto countDto = followRepository.getFollowCount(userId)
+                .orElse(new FollowCountRespDto(0, 0));
+
+        return new ApiRespDto<>("success", "팔로워/팔로잉 카운트 조회 완료", countDto);
+    }
+
 }
