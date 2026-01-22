@@ -1,4 +1,5 @@
 package com.nullpoint.fifteenmintable.repository;
+import com.nullpoint.fifteenmintable.dto.user.UserProfileRespDto;
 import com.nullpoint.fifteenmintable.entity.User;
 import com.nullpoint.fifteenmintable.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,10 @@ public class UserRepository {
 
     public Optional<User> getUserByUsername(String username) {
         return userMapper.getUserByUsername(username);
+    }
+
+    public Optional<UserProfileRespDto> getUserProfile(Integer userId, Integer viewerUserId) {
+        return userMapper.getUserProfile(userId, viewerUserId);
     }
 
     public int addUser(User user) {

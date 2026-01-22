@@ -107,6 +107,42 @@
         offset #{offset}
     </select>
 
+    <select id="getRecipeCardListByUserId" resultMap="RecipeListRespMap">
+        select
+            rt.recipe_id,
+            rt.user_id,
+            rt.thumbnail_img_url,
+            rt.view_count,
+            coalesce(round(rat_t.avg_rating, 1), 0) as avg_rating,
+            rt.title,
+            ut.username,
+            ut.profile_img_url,
+            rt.main_category_id,
+            rt.sub_category_id,
+            rt.create_dt,
+            rt.update_dt
+        from
+            recipe_tb rt
+            join user_tb ut
+            on ut.user_id = rt.user_id
+            left join (
+                select
+                    recipe_id,
+                    avg(rating) as avg_rating
+                from
+                    recipe_rating_tb
+                group by
+                    recipe_id
+            ) rat_t
+            on rat_t.recipe_id = rt.recipe_id
+        where
+            rt.user_id = #{userId}
+        order by
+            rt.create_dt desc
+        limit #{limit}
+        offset #{offset}
+    </select>
+
     <select id="getRecipeCountByBoardId" resultType="int">
         select
             count(*)
@@ -114,6 +150,15 @@
             recipe_tb
         where
             board_id = #{boardId}
+    </select>
+
+    <select id="getRecipeCountByUserId" resultType="int">
+        select
+            count(*)
+        from
+            recipe_tb rt
+        where
+            rt.user_id = #{userId}
     </select>
 
     <select id="getRecipeDetail" resultMap="RecipeDetailRespMap">

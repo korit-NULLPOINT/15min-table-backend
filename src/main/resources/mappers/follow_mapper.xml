@@ -19,6 +19,11 @@
         <result property="createDt" column="create_dt"/>
     </resultMap>
 
+    <resultMap id="FollowCountRespDtoResultMap" type="com.nullpoint.fifteenmintable.dto.follow.FollowCountRespDto">
+        <result property="followerCount" column="follower_count"/>
+        <result property="followingCount" column="following_count"/>
+    </resultMap>
+
     <insert id="addFollow" useGeneratedKeys="true" keyProperty="followId">
         insert into
             follow_tb (follower_user_id, following_user_id, create_dt)
@@ -46,6 +51,22 @@
             follower_user_id = #{followerUserId}
             and following_user_id = #{followingUserId}
         limit 1;
+    </select>
+
+    <select id="getFollowCount" resultMap="FollowCountRespDtoResultMap" parameterType="int">
+        select
+            (select
+                count(*)
+            from
+                follow_tb
+            where
+                following_user_id = #{userId}) as follower_count,
+            (select
+                count(*)
+            from
+                follow_tb
+            where
+                follower_user_id = #{userId}) as following_count;
     </select>
 
     <!-- ========= EXISTS ========= -->

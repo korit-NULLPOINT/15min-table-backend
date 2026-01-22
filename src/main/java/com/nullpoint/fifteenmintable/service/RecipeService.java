@@ -83,6 +83,32 @@ public class RecipeService {
         return new ApiRespDto<>("success", "레시피 목록 조회 완료", data);
     }
 
+    public ApiRespDto<RecipeListPageRespDto> getRecipeListByUserId(Integer userId, Integer page, Integer size) {
+        if (userId == null) throw new BadRequestException("userId는 필수입니다.");
+
+        int safePage = (page == null) ? 0 : Math.max(page, 0);
+        int safeSize = (size == null) ? 9 : Math.min(Math.max(size, 1), 50);
+        int offset = safePage * safeSize;
+
+        List<RecipeListRespDto> items = recipeRepository.getRecipeCardListByUserId(userId, offset, safeSize);
+        int totalCount = recipeRepository.getRecipeCountByUserId(userId);
+
+        RecipeListPageRespDto data = RecipeListPageRespDto.builder()
+                .items(items)
+                .totalCount(totalCount)
+                .page(safePage)
+                .size(safeSize)
+                .build();
+
+        return new ApiRespDto<>("success", "유저 레시피 목록 조회 완료", data);
+    }
+
+    public ApiRespDto<RecipeListPageRespDto> getMyRecipeList(Integer page, Integer size, PrincipalUser principalUser) {
+        if (principalUser == null) throw new UnauthenticatedException("로그인이 필요합니다.");
+        return getRecipeListByUserId(principalUser.getUserId(), page, size);
+    }
+
+
     @Transactional
     public ApiRespDto<RecipeDetailRespDto> getRecipeDetail(Integer boardId, Integer recipeId) {
         if (boardId == null) throw new BadRequestException("boardId는 필수입니다.");
