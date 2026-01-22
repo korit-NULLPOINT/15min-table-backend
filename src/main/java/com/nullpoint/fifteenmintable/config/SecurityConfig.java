@@ -93,6 +93,10 @@ public class SecurityConfig {
                     "/board/*/recipes/list",
                     "/board/*/recipes/detail/*",
                     "/comment/list/*",
+                    "/users/profile/*",
+                    "/recipes/user/*",
+                    "/recipe-hashtag/search",
+                    "/recipe-hashtag/list/*",
                     "/rating/*/summary"
             ).permitAll();
 

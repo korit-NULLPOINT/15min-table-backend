@@ -18,16 +18,10 @@ public class UserProfileService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private FollowRepository followRepository;
-
     public ApiRespDto<UserProfileRespDto> getUserProfile(Integer userId, PrincipalUser principalUser) {
         if (userId == null) {
             throw new BadRequestException("userId는 필수입니다.");
         }
-
-        User user = userRepository.getUserByUserId(userId)
-                .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
 
         Integer viewerUserId = (principalUser == null) ? null : principalUser.getUserId();
 
