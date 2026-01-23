@@ -49,10 +49,12 @@ public class RecipeService {
         int result = recipeRepository.addRecipe(recipe);
         if (result != 1) throw new RuntimeException("레시피 추가 실패");
 
+        Integer recipeId = recipe.getRecipeId();
+
         // SSE 푸쉬
         notificationService.createRecipePostNotifications(recipe.getRecipeId(), principalUser);
 
-        return new ApiRespDto<>("success", "레시피가 등록되었습니다.", recipe.getRecipeId());
+        return new ApiRespDto<>("success", "레시피가 등록되었습니다.", recipeId);
     }
 
     public ApiRespDto<RecipeListPageRespDto> getRecipeListByBoardId(Integer boardId, Integer page, Integer size) {
