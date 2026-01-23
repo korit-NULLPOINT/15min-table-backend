@@ -18,6 +18,11 @@
         <result property="createDt" column="ht_create_dt"/>
     </resultMap>
 
+    <resultMap id="HashtagRespDtoResultMap" type="com.nullpoint.fifteenmintable.dto.hashtag.HashtagRespDto">
+        <id property="hashtagId" column="hashtag_id"/>
+        <result property="name" column="name"/>
+    </resultMap>
+
     <insert id="createRecipeHashtag" useGeneratedKeys="true" keyProperty="recipeHashtagId">
         insert into
             recipe_hashtag_tb (recipe_id, hashtag_id, create_dt)
@@ -53,7 +58,7 @@
             rht.recipe_hashtag_id = #{recipeHashtagId};
     </select>
 
-    <select id="getByRecipeId" resultMap="RecipeHashtagResultMap" resultType="com.nullpoint.fifteenmintable.dto.hashtag.HashtagRespDto">
+    <select id="getByRecipeId" resultMap="HashtagRespDtoResultMap">
         select
             ht.hashtag_id as hashtag_id,
             ht.name as name
