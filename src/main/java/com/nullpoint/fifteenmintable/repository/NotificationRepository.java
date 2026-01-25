@@ -30,8 +30,10 @@ public class NotificationRepository {
         return notificationMapper.getUnreadCount(receiverUserId);
     }
 
-    public List<NotificationRespDto> getNotifications(Integer receiverUserId, Integer cursor, Integer size) {
-        return notificationMapper.getNotifications(receiverUserId, cursor, size);
+    public List<NotificationRespDto> getNotifications(
+            Integer receiverUserId, Integer cursor, Integer size, String mode, Integer readKeepDays
+    ) {
+        return notificationMapper.getNotifications(receiverUserId, cursor, size, mode, readKeepDays);
     }
 
 }

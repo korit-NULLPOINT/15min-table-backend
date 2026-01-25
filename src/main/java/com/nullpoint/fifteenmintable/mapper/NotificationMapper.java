@@ -17,10 +17,9 @@ public interface NotificationMapper {
     int getUnreadCount(Integer receiverUserId);
     List<NotificationRespDto> getNotifications(
             @Param("receiverUserId") Integer receiverUserId,
-            @Param("cursor") Integer cursor,   // 마지막으로 받은 notificationId (없으면 null)
-            @Param("size") Integer size
+            @Param("cursor") Integer cursor,
+            @Param("size") Integer size,
+            @Param("mode") String mode,
+            @Param("readKeepDays") Integer readKeepDays
     );
-
-
-
 }

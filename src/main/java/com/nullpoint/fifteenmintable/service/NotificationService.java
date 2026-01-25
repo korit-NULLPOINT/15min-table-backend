@@ -154,7 +154,9 @@ public class NotificationService {
      * - cursor: 마지막으로 받은 notificationId (없으면 null)
      * - size: 기본 5, 최대 20 제한
      */
-    public ApiRespDto<List<NotificationRespDto>> getNotifications(Integer cursor, Integer size, PrincipalUser principalUser) {
+    public ApiRespDto<List<NotificationRespDto>> getNotifications(
+            Integer cursor, Integer size, String mode, PrincipalUser principalUser
+    ) {
         if (principalUser == null) {
             throw new UnauthenticatedException("로그인이 필요합니다.");
         }
@@ -163,8 +165,15 @@ public class NotificationService {
         if (s < 1) s = 1;
         if (s > 20) s = 20;
 
+        String m = (mode == null) ? "UNREAD" : mode.trim().toUpperCase();
+        if (!m.equals("UNREAD") && !m.equals("READ")) {
+            throw new BadRequestException("mode는 UNREAD 또는 READ만 가능합니다.");
+        }
+
+        final int READ_KEEP_DAYS = 14;
+
         List<NotificationRespDto> list =
-                notificationRepository.getNotifications(principalUser.getUserId(), cursor, s);
+                notificationRepository.getNotifications(principalUser.getUserId(), cursor, s, m, READ_KEEP_DAYS);
 
         if (list == null) list = Collections.emptyList();
 

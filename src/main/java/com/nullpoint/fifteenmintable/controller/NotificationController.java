@@ -40,9 +40,10 @@ public class NotificationController {
     public ResponseEntity<ApiRespDto<List<NotificationRespDto>>> getNotifications(
             @RequestParam(required = false) Integer cursor,
             @RequestParam(required = false) Integer size,
+            @RequestParam(required = false, defaultValue = "UNREAD") String mode,
             @AuthenticationPrincipal PrincipalUser principalUser
     ) {
-        return ResponseEntity.ok(notificationService.getNotifications(cursor, size, principalUser));
+        return ResponseEntity.ok(notificationService.getNotifications(cursor, size, mode, principalUser));
     }
 
     /**
