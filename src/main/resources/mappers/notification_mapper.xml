@@ -50,13 +50,19 @@
             on ut.user_id = nt.actor_user_id
         where
             nt.receiver_user_id = #{receiverUserId}
+        <if test="mode == 'UNREAD'">
+            and nt.is_read = 0
+        </if>
+        <if test="mode == 'READ'">
+            and nt.is_read = 1
+            and nt.create_dt <![CDATA[ >= DATE_SUB(NOW(), INTERVAL #{readKeepDays} DAY) ]]>
+        </if>
         <if test="cursor != null">
             and nt.notification_id &lt; #{cursor}
         </if>
         order by
             nt.notification_id desc
-        limit
-            #{size}
+        limit #{size}
     </select>
 
     <select id="getUnreadCount" resultType="int">
