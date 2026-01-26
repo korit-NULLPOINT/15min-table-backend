@@ -22,4 +22,6 @@ public class RecipeListRespDto {
     private Integer subCategoryId;
     private LocalDateTime createDt;
     private LocalDateTime updateDt;
+
+    private Boolean bookmarkedByMe;
 }

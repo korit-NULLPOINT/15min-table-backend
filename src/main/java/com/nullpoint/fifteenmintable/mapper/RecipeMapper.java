@@ -15,11 +15,13 @@ public interface RecipeMapper {
     int addRecipe(Recipe recipe);
     List<RecipeListRespDto> getRecipeCardListByBoardId(
             @Param("boardId") Integer boardId,
+            @Param("userId") Integer userId,
             @Param("offset") Integer offset,
             @Param("limit") Integer limit
     );
     List<RecipeListRespDto> getRecipeCardListByUserId(
             @Param("userId") Integer userId,
+            @Param("loginUserId") Integer loginUserId,
             @Param("offset") Integer offset,
             @Param("limit") Integer limit
     );
