@@ -32,9 +32,10 @@ public class RecipeController {
     public ResponseEntity<ApiRespDto<RecipeListPageRespDto>> getRecipeList(
             @PathVariable Integer boardId,
             @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size
+            @RequestParam(required = false) Integer size,
+            @AuthenticationPrincipal PrincipalUser principalUser
     ) {
-        return ResponseEntity.ok(recipeService.getRecipeListByBoardId(boardId, page, size));
+        return ResponseEntity.ok(recipeService.getRecipeListByBoardId(boardId, page, size, principalUser));
     }
 
     @GetMapping("/detail/{recipeId}")

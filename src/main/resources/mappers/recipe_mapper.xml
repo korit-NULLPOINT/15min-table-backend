@@ -34,6 +34,7 @@
         <result property="subCategoryId" column="sub_category_id"/>
         <result property="createDt" column="create_dt"/>
         <result property="updateDt" column="update_dt"/>
+        <result property="bookmarkedByMe" column="bookmarked_by_me"/>
     </resultMap>
 
     <resultMap id="RecipeDetailRespMap" type="com.nullpoint.fifteenmintable.dto.recipe.RecipeDetailRespDto">
@@ -84,7 +85,8 @@
             rt.main_category_id,
             rt.sub_category_id,
             rt.create_dt,
-            rt.update_dt
+            rt.update_dt,
+            if(bmt.recipe_bookmark_id is null, false, true) as bookmarked_by_me
         from
             recipe_tb rt
             join user_tb ut
@@ -98,7 +100,11 @@
                 group by
                     recipe_id
             ) rat_t
-            on rat_t.recipe_id = rt.recipe_id
+                on rat_t.recipe_id = rt.recipe_id
+
+            left join recipe_bookmark_tb bmt
+                on bmt.recipe_id = rt.recipe_id
+                and bmt.user_id = #{userId}
         where
             rt.board_id = #{boardId}
         order by
@@ -120,7 +126,8 @@
             rt.main_category_id,
             rt.sub_category_id,
             rt.create_dt,
-            rt.update_dt
+            rt.update_dt,
+            if(bmt.recipe_bookmark_id is null, false, true) as bookmarked_by_me
         from
             recipe_tb rt
             join user_tb ut
@@ -135,6 +142,10 @@
                     recipe_id
             ) rat_t
             on rat_t.recipe_id = rt.recipe_id
+
+            left join recipe_bookmark_tb bmt
+                on bmt.recipe_id = rt.recipe_id
+                and bmt.user_id = #{loginUserId}
         where
             rt.user_id = #{userId}
         order by

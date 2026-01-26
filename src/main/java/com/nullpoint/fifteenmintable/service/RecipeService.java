@@ -57,7 +57,9 @@ public class RecipeService {
         return new ApiRespDto<>("success", "레시피가 등록되었습니다.", recipeId);
     }
 
-    public ApiRespDto<RecipeListPageRespDto> getRecipeListByBoardId(Integer boardId, Integer page, Integer size) {
+    public ApiRespDto<RecipeListPageRespDto> getRecipeListByBoardId(
+            Integer boardId, Integer page, Integer size , PrincipalUser principalUser
+    ) {
         if (boardId == null) throw new BadRequestException("boardId는 필수입니다.");
 
         int safePage = (page == null) ? 0 : Math.max(page, 0);
@@ -70,8 +72,10 @@ public class RecipeService {
         * page=2, size=20 → offset=40 → 41~60번
         * */
 
+        Integer loginUserId = (principalUser == null) ? null : principalUser.getUserId();
+
         List<RecipeListRespDto> items =
-                recipeRepository.getRecipeCardListByBoardId(boardId, offset, safeSize);
+                recipeRepository.getRecipeCardListByBoardId(boardId, loginUserId, offset, safeSize);
 
         int totalCount = recipeRepository.getRecipeCountByBoardId(boardId);
 
@@ -85,14 +89,19 @@ public class RecipeService {
         return new ApiRespDto<>("success", "레시피 목록 조회 완료", data);
     }
 
-    public ApiRespDto<RecipeListPageRespDto> getRecipeListByUserId(Integer userId, Integer page, Integer size) {
+    public ApiRespDto<RecipeListPageRespDto> getRecipeListByUserId(
+            Integer userId, Integer page, Integer size, PrincipalUser principalUser
+    ) {
         if (userId == null) throw new BadRequestException("userId는 필수입니다.");
 
         int safePage = (page == null) ? 0 : Math.max(page, 0);
         int safeSize = (size == null) ? 9 : Math.min(Math.max(size, 1), 50);
         int offset = safePage * safeSize;
 
-        List<RecipeListRespDto> items = recipeRepository.getRecipeCardListByUserId(userId, offset, safeSize);
+        Integer loginUserId = (principalUser == null) ? null : principalUser.getUserId();
+
+        List<RecipeListRespDto> items = recipeRepository.getRecipeCardListByUserId(userId, loginUserId, offset, safeSize);
+
         int totalCount = recipeRepository.getRecipeCountByUserId(userId);
 
         RecipeListPageRespDto data = RecipeListPageRespDto.builder()
@@ -107,7 +116,7 @@ public class RecipeService {
 
     public ApiRespDto<RecipeListPageRespDto> getMyRecipeList(Integer page, Integer size, PrincipalUser principalUser) {
         if (principalUser == null) throw new UnauthenticatedException("로그인이 필요합니다.");
-        return getRecipeListByUserId(principalUser.getUserId(), page, size);
+        return getRecipeListByUserId(principalUser.getUserId(), page, size, principalUser);
     }
 
 

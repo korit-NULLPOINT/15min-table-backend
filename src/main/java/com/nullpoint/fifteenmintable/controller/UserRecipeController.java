@@ -20,9 +20,10 @@ public class UserRecipeController {
     public ResponseEntity<ApiRespDto<RecipeListPageRespDto>> getRecipeListByUserId(
             @PathVariable Integer userId,
             @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size
+            @RequestParam(required = false) Integer size,
+            @AuthenticationPrincipal PrincipalUser principalUser
     ) {
-        return ResponseEntity.ok(recipeService.getRecipeListByUserId(userId, page, size));
+        return ResponseEntity.ok(recipeService.getRecipeListByUserId(userId, page, size, principalUser));
     }
 
     @GetMapping("/my")

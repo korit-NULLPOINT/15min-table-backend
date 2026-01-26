@@ -21,12 +21,12 @@ public class RecipeRepository {
         return recipeMapper.addRecipe(recipe);
     }
 
-    public List<RecipeListRespDto> getRecipeCardListByBoardId(Integer boardId, Integer offset, Integer limit) {
-        return recipeMapper.getRecipeCardListByBoardId(boardId, offset, limit);
+    public List<RecipeListRespDto> getRecipeCardListByBoardId(Integer boardId, Integer userId, Integer offset, Integer limit) {
+        return recipeMapper.getRecipeCardListByBoardId(boardId, userId, offset, limit);
     }
 
-    public List<RecipeListRespDto> getRecipeCardListByUserId(Integer userId, Integer offset, Integer limit) {
-        return recipeMapper.getRecipeCardListByUserId(userId, offset, limit);
+    public List<RecipeListRespDto> getRecipeCardListByUserId(Integer userId, Integer loginUserId, Integer offset, Integer limit) {
+        return recipeMapper.getRecipeCardListByUserId(userId, loginUserId, offset, limit);
     }
 
     public int getRecipeCountByBoardId(Integer boardId) {
