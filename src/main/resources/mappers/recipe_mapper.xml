@@ -213,12 +213,14 @@
             on rat_t.recipe_id = rt.recipe_id
             left join (
                 select
-                    recipe_id,
+                    target_id as recipe_id,
                     count(*) as comment_count
                 from
                     comment_tb
+                where
+                    target_type = 'RECIPE'
                 group by
-                    recipe_id
+                    target_id
             ) com_t
             on com_t.recipe_id = rt.recipe_id
         where

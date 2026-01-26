@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 public class Comment {
     private Integer commentId;
     private Integer recipeId;
+    private String targetType;
+    private Integer targetId;
     private Integer userId;
     private String content;
     private LocalDateTime createDt;

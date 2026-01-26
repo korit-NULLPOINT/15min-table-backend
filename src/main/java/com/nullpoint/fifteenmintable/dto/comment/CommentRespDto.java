@@ -14,7 +14,7 @@ public class CommentRespDto {
     private Integer recipeId;
     private Integer userId;
     private String username;
-    private String profileImgUrl;
+    private String title;
     private String content;
     private LocalDateTime createDt;
     private LocalDateTime updateDt;

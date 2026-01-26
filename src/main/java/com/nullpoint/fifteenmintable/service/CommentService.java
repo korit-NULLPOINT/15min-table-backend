@@ -19,6 +19,8 @@ import java.util.List;
 @Service
 public class CommentService {
 
+    private static final String TARGET_RECIPE = "RECIPE";
+
     @Autowired
     private CommentRepository commentRepository;
 
@@ -32,7 +34,9 @@ public class CommentService {
         }
 
         if (addCommentReqDto == null) throw new BadRequestException("요청 값이 비어있습니다.");
-        if (addCommentReqDto.getRecipeId() == null) throw new BadRequestException("recipeId는 필수입니다.");
+        if (addCommentReqDto.getTargetType() == null || addCommentReqDto.getTargetType().trim().isEmpty()) {
+            throw new BadRequestException("targetType은 필수입니다.");
+        }
         if (addCommentReqDto.getContent() == null || addCommentReqDto.getContent().trim().isEmpty()) {
             throw new BadRequestException("댓글 내용은 필수입니다.");
         }
@@ -40,6 +44,8 @@ public class CommentService {
         Integer userId = principalUser.getUserId();
 
         Comment comment = addCommentReqDto.toEntity(userId);
+        comment.setContent(comment.getContent().trim());
+
         int result = commentRepository.addComment(comment);
 
         if (result != 1) {
@@ -47,7 +53,7 @@ public class CommentService {
         }
 
         notificationService.createCommentNotification(
-                addCommentReqDto.getRecipeId(),
+                addCommentReqDto.getTargetId(),
                 comment.getCommentId(),
                 principalUser
         );
