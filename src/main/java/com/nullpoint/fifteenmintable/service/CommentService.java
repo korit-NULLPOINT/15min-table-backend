@@ -19,8 +19,6 @@ import java.util.List;
 @Service
 public class CommentService {
 
-    private static final String TARGET_RECIPE = "RECIPE";
-
     @Autowired
     private CommentRepository commentRepository;
 
@@ -36,6 +34,9 @@ public class CommentService {
         if (addCommentReqDto == null) throw new BadRequestException("요청 값이 비어있습니다.");
         if (addCommentReqDto.getTargetType() == null || addCommentReqDto.getTargetType().trim().isEmpty()) {
             throw new BadRequestException("targetType은 필수입니다.");
+        }
+        if (addCommentReqDto.getTargetId() == null) {
+            throw new BadRequestException("targetId는 필수입니다.");
         }
         if (addCommentReqDto.getContent() == null || addCommentReqDto.getContent().trim().isEmpty()) {
             throw new BadRequestException("댓글 내용은 필수입니다.");
@@ -53,19 +54,22 @@ public class CommentService {
         }
 
         notificationService.createCommentNotification(
+                addCommentReqDto.getTargetType(),
                 addCommentReqDto.getTargetId(),
                 comment.getCommentId(),
                 principalUser
         );
 
+
         return new ApiRespDto<>("success", "댓글 추가 완료", comment);
     }
 
-    public ApiRespDto<List<CommentRespDto>> getCommentListByRecipeId(Integer recipeId) {
-        if (recipeId == null) throw new BadRequestException("recipeId는 필수입니다.");
+    public ApiRespDto<List<CommentRespDto>> getCommentListByTarget(String targetType, Integer targetId) {
+        if (targetType == null || targetType.trim().isEmpty()) throw new BadRequestException("targetType은 필수입니다.");
+        if (targetId == null) throw new BadRequestException("targetId는 필수입니다.");
 
-        List<CommentRespDto> list = commentRepository.getCommentListByRecipeId(recipeId);
-        return new ApiRespDto<>("success", "레시피 댓글 목록 조회 완료", list);
+        List<CommentRespDto> list = commentRepository.getCommentListByTarget(targetType, targetId);
+        return new ApiRespDto<>("success", "댓글 목록 조회 완료", list);
     }
 
     public ApiRespDto<List<CommentRespDto>> getCommentListByUserId(PrincipalUser principalUser) {
@@ -79,9 +83,8 @@ public class CommentService {
         return new ApiRespDto<>("success", "내 댓글 목록 조회 완료", list);
     }
 
-    /**
-     * 단건조회로 작성자 확인 후 삭제
-     */
+
+
     public ApiRespDto<Void> deleteComment(Integer commentId, PrincipalUser principalUser) {
         if (principalUser == null) {
             throw new UnauthenticatedException("로그인이 필요합니다.");
@@ -90,16 +93,13 @@ public class CommentService {
 
         Integer userId = principalUser.getUserId();
 
-        // 1) 댓글 존재 확인 + 작성자 확인
         CommentRespDto found = commentRepository.getCommentByCommentId(commentId)
                 .orElseThrow(() -> new NotFoundException("삭제할 댓글이 없습니다."));
 
-        // 2) 권한 체크
         if (found.getUserId() == null || !found.getUserId().equals(userId)) {
             throw new ForbiddenException("권한이 없습니다.");
         }
 
-        // 3) 삭제
         int result = commentRepository.deleteComment(commentId);
         if (result != 1) {
             throw new RuntimeException("댓글 삭제 실패");

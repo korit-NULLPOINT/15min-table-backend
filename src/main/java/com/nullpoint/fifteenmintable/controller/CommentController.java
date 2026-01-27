@@ -43,11 +43,18 @@ public class CommentController {
         return ResponseEntity.ok(commentService.addComment(addCommentReqDto, principalUser));
     }
 
-    @GetMapping("/list/{recipeId}")
-    public ResponseEntity<ApiRespDto<List<CommentRespDto>>> getCommentListByRecipeId(
+    @GetMapping("/list/recipe/{recipeId}")
+    public ResponseEntity<ApiRespDto<List<CommentRespDto>>> getRecipeCommentListByTarget(
             @PathVariable Integer recipeId
     ) {
-        return ResponseEntity.ok(commentService.getCommentListByRecipeId(recipeId));
+        return ResponseEntity.ok(commentService.getCommentListByTarget("RECIPE", recipeId));
+    }
+
+    @GetMapping("/list/post/{postId}")
+    public ResponseEntity<ApiRespDto<List<CommentRespDto>>> getPostCommentListByTarget(
+            @PathVariable Integer postId
+    ) {
+        return ResponseEntity.ok(commentService.getCommentListByTarget("POST", postId));
     }
 
     @GetMapping("/my/list")

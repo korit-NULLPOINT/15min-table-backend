@@ -3,6 +3,7 @@ package com.nullpoint.fifteenmintable.repository;
 import com.nullpoint.fifteenmintable.dto.comment.CommentRespDto;
 import com.nullpoint.fifteenmintable.entity.Comment;
 import com.nullpoint.fifteenmintable.mapper.CommentMapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -22,8 +23,8 @@ public class CommentRepository {
         return commentMapper.getCommentByCommentId(commentId);
     }
 
-    public  List<CommentRespDto> getCommentListByRecipeId(Integer recipeId) {
-        return commentMapper.getCommentListByRecipeId(recipeId);
+    public  List<CommentRespDto> getCommentListByTarget(String targetType, Integer targetId) {
+        return commentMapper.getCommentListByTarget(targetType, targetId);
     }
 
     public List<CommentRespDto> getCommentListByUserId(Integer userId) {
@@ -32,5 +33,9 @@ public class CommentRepository {
 
     public int deleteComment(Integer commentId) {
         return commentMapper.deleteComment(commentId);
+    }
+
+    public int deleteByTarget(String targetType, Integer targetId) {
+        return commentMapper.deleteByTarget(targetType, targetId);
     }
 }

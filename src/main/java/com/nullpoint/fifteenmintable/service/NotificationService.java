@@ -24,6 +24,9 @@ import java.util.List;
 @Service
 public class NotificationService {
 
+    private static final String TARGET_RECIPE = "RECIPE";
+    private static final String TARGET_POST = "POST";
+
     @Autowired
     private NotificationRepository notificationRepository;
 
@@ -59,7 +62,8 @@ public class NotificationService {
                     .receiverUserId(receiverUserId)
                     .actorUserId(actorUserId)
                     .notificationType("RECIPE_POST")
-                    .recipeId(recipeId)
+                    .targetType(TARGET_RECIPE)
+                    .targetId(recipeId)
                     .commentId(null)
                     .build();
 
@@ -73,7 +77,8 @@ public class NotificationService {
                                     .notificationId(notification.getNotificationId())
                                     .type("RECIPE_POST")
                                     .actorUserId(actorUserId)
-                                    .recipeId(recipeId)
+                                    .targetType(TARGET_RECIPE)
+                                    .targetId(recipeId)
                                     .commentId(null)
                                     .build()
                     );
@@ -85,17 +90,25 @@ public class NotificationService {
     }
 
     @Transactional
-    public void createCommentNotification(Integer recipeId, Integer commentId, PrincipalUser principalUser) {
+    public void createCommentNotification(String targetType, Integer targetId, Integer commentId, PrincipalUser principalUser) {
         if (principalUser == null) throw new UnauthenticatedException("로그인이 필요합니다.");
-        if (recipeId == null) throw new BadRequestException("recipeId는 필수입니다.");
+        if (targetType == null || targetType.trim().isEmpty()) throw new BadRequestException("targetType은 필수입니다.");
+        if (targetId == null) throw new BadRequestException("targetId는 필수입니다.");
         if (commentId == null) throw new BadRequestException("commentId는 필수입니다.");
 
         Integer actorUserId = principalUser.getUserId();
+        String tt = targetType.trim().toUpperCase();
+        Integer receiverUserId = null;
 
-        Recipe recipe = recipeRepository.getRecipeEntityById(recipeId)
-                .orElseThrow(() -> new NotFoundException("레시피를 찾을 수 없습니다."));
 
-        Integer receiverUserId = recipe.getUserId();
+        // 현재 프로젝트는 RECIPE만 존재하므로 RECIPE만 처리 (POST는 추후 PostRepository 생기면 여기 확장)
+        if (TARGET_RECIPE.equals(tt)) {
+            Recipe recipe = recipeRepository.getRecipeEntityById(targetId)
+                    .orElseThrow(() -> new NotFoundException("레시피를 찾을 수 없습니다."));
+            receiverUserId = recipe.getUserId();
+        } else {
+            return;
+        }
 
         if (receiverUserId == null || receiverUserId.equals(actorUserId)) return;
 
@@ -103,7 +116,8 @@ public class NotificationService {
                 .receiverUserId(receiverUserId)
                 .actorUserId(actorUserId)
                 .notificationType("COMMENT")
-                .recipeId(recipeId)
+                .targetType(tt)
+                .targetId(targetId)
                 .commentId(commentId)
                 .build();
 
@@ -126,7 +140,8 @@ public class NotificationService {
                 .receiverUserId(targetUserId)
                 .actorUserId(actorUserId)
                 .notificationType("FOLLOW")
-                .recipeId(null)
+                .targetType(null)
+                .targetId(null)
                 .commentId(null)
                 .build();
 
@@ -140,7 +155,8 @@ public class NotificationService {
                                 .notificationId(notification.getNotificationId())
                                 .type("FOLLOW")
                                 .actorUserId(actorUserId)
-                                .recipeId(null)
+                                .targetType(null)
+                                .targetId(null)
                                 .commentId(null)
                                 .build()
                 );

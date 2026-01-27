@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Comment {
     private Integer commentId;
-    private Integer recipeId;
     private String targetType;
     private Integer targetId;
     private Integer userId;

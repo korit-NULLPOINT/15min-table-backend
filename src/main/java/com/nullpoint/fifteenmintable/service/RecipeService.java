@@ -8,6 +8,7 @@ import com.nullpoint.fifteenmintable.exception.BadRequestException;
 import com.nullpoint.fifteenmintable.exception.ForbiddenException;
 import com.nullpoint.fifteenmintable.exception.NotFoundException;
 import com.nullpoint.fifteenmintable.exception.UnauthenticatedException;
+import com.nullpoint.fifteenmintable.repository.CommentRepository;
 import com.nullpoint.fifteenmintable.repository.RecipeHashtagRepository;
 import com.nullpoint.fifteenmintable.repository.RecipeRepository;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
@@ -25,6 +26,9 @@ public class RecipeService {
 
     @Autowired
     private RecipeHashtagRepository recipeHashtagRepository;
+
+    @Autowired
+    private CommentRepository commentRepository;
 
     @Autowired
     private NotificationService notificationService;
@@ -193,6 +197,8 @@ public class RecipeService {
         if (!isOwner && !isAdmin) {
             throw new ForbiddenException("권한이 없습니다.");
         }
+
+        commentRepository.deleteByTarget("RECIPE", recipeId);
 
         int result = recipeRepository.removeRecipe(recipeId, principalUser.getUserId());
         if (result != 1) throw new RuntimeException("레시피 삭제 실패");
