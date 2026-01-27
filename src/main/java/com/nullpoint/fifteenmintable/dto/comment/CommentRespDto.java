@@ -11,10 +11,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class CommentRespDto {
     private Integer commentId;
-    private Integer recipeId;
+    private String targetType;
+    private Integer targetId;
     private Integer userId;
     private String username;
-    private String profileImgUrl;
+    private String title;
     private String content;
     private LocalDateTime createDt;
     private LocalDateTime updateDt;

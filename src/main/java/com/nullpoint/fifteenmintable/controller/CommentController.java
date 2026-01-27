@@ -20,22 +20,43 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
-    // 댓글 작성
-    @PostMapping("/add")
-    public ResponseEntity<ApiRespDto<Comment>> addComment(
+    // 레시피 댓글 작성
+    @PostMapping("/add/recipe/{recipeId}")
+    public ResponseEntity<ApiRespDto<Comment>> addRecipeComment(
+            @PathVariable Integer recipeId,
             @RequestBody AddCommentReqDto addCommentReqDto,
             @AuthenticationPrincipal PrincipalUser principalUser
     ) {
+        addCommentReqDto.setTargetType("RECIPE");
+        addCommentReqDto.setTargetId(recipeId);
         return ResponseEntity.ok(commentService.addComment(addCommentReqDto, principalUser));
     }
 
-    // 레시피별 댓글 목록
-    @GetMapping("/list/{recipeId}")
-    public ResponseEntity<ApiRespDto<List<CommentRespDto>>> getCommentListByRecipeId(@PathVariable Integer recipeId) {
-        return ResponseEntity.ok(commentService.getCommentListByRecipeId(recipeId));
+    @PostMapping("/add/post/{postId}")
+    public ResponseEntity<ApiRespDto<Comment>> addPostComment(
+            @PathVariable Integer postId,
+            @RequestBody AddCommentReqDto addCommentReqDto,
+            @AuthenticationPrincipal PrincipalUser principalUser
+    ) {
+        addCommentReqDto.setTargetType("POST");
+        addCommentReqDto.setTargetId(postId);
+        return ResponseEntity.ok(commentService.addComment(addCommentReqDto, principalUser));
     }
 
-    // 내 댓글 목록 (마이페이지 용)
+    @GetMapping("/list/recipe/{recipeId}")
+    public ResponseEntity<ApiRespDto<List<CommentRespDto>>> getRecipeCommentListByTarget(
+            @PathVariable Integer recipeId
+    ) {
+        return ResponseEntity.ok(commentService.getCommentListByTarget("RECIPE", recipeId));
+    }
+
+    @GetMapping("/list/post/{postId}")
+    public ResponseEntity<ApiRespDto<List<CommentRespDto>>> getPostCommentListByTarget(
+            @PathVariable Integer postId
+    ) {
+        return ResponseEntity.ok(commentService.getCommentListByTarget("POST", postId));
+    }
+
     @GetMapping("/my/list")
     public ResponseEntity<ApiRespDto<List<CommentRespDto>>> getMyCommentList(
             @AuthenticationPrincipal PrincipalUser principalUser
@@ -43,8 +64,7 @@ public class CommentController {
         return ResponseEntity.ok(commentService.getCommentListByUserId(principalUser));
     }
 
-    // 댓글 삭제 (권한 체크는 서비스에서 commentId 단건조회로 처리)
-    @PostMapping("/delete/{commentId}")
+    @DeleteMapping("/delete/{commentId}")
     public ResponseEntity<ApiRespDto<Void>> deleteComment(
             @PathVariable Integer commentId,
             @AuthenticationPrincipal PrincipalUser principalUser

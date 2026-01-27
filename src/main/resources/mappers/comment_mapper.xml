@@ -3,86 +3,111 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.nullpoint.fifteenmintable.mapper.CommentMapper">
+
     <resultMap id="CommentRespDtoResultMap" type="com.nullpoint.fifteenmintable.dto.comment.CommentRespDto">
         <id property="commentId" column="comment_id"/>
-        <result property="recipeId" column="recipe_id"/>
+        <result property="targetType" column="target_type" />
+        <result property="targetId" column="target_id"/>
         <result property="userId" column="user_id"/>
         <result property="username" column="username"/>
-        <result property="profileImgUrl" column="profile_img_url"/>
+        <result property="title" column="title"/>
         <result property="content" column="content"/>
         <result property="createDt" column="create_dt"/>
         <result property="updateDt" column="update_dt"/>
     </resultMap>
 
     <insert id="addComment" useGeneratedKeys="true" keyProperty="commentId">
-        insert into
-            comment_tb(comment_id, recipe_id, user_id, content, create_dt, update_dt)
+        insert into comment_tb
+            (target_type, target_id, user_id, content, create_dt, update_dt)
         values
-            (0, #{recipeId}, #{userId}, #{content}, now(), null);
+            (#{targetType}, #{targetId}, #{userId}, #{content}, now(), null)
     </insert>
 
-    <select id="getCommentListByRecipeId" resultMap="CommentRespDtoResultMap">
+    <select id="getCommentListByTarget" resultMap="CommentRespDtoResultMap">
         select
             ct.comment_id,
-            ct.recipe_id,
+            ct.target_type,
+            ct.target_id,
             ct.user_id,
             ut.username,
-            ut.profile_img_url,
+            rt.title as title,
             ct.content,
             ct.create_dt,
             ct.update_dt
         from
             comment_tb ct
-            join user_tb ut
-            on ut.user_id = ct.user_id
+                join user_tb ut
+                on ut.user_id = ct.user_id
+        <!-- 현재는 레시피만 있으므로 RECIPE일 때만 title 채움 (POST는 나중에 post_tb 생기면 조인 추가) -->
+            left join recipe_tb rt
+                on rt.recipe_id = ct.target_id
+                and ct.target_type = 'RECIPE'
         where
-            ct.recipe_id = #{recipeId}
+            ct.target_type = #{targetType}
+            and ct.target_id = #{targetId}
         order by
-            ct.comment_id desc;
+            ct.comment_id desc
     </select>
 
     <select id="getCommentListByUserId" resultMap="CommentRespDtoResultMap">
         select
             ct.comment_id,
-            ct.recipe_id,
+            ct.target_type,
+            ct.target_id,
             ct.user_id,
             ut.username,
-            ut.profile_img_url,
+            rt.title as title,
             ct.content,
             ct.create_dt,
             ct.update_dt
         from
             comment_tb ct
-            join user_tb ut
-            on ut.user_id = ct.user_id
+                join user_tb ut
+                on ut.user_id = ct.user_id
+            left join recipe_tb rt
+                on rt.recipe_id = ct.target_id
+                and ct.target_type = 'RECIPE'
         where
             ct.user_id = #{userId}
         order by
-            ct.comment_id desc;
+            ct.comment_id desc
     </select>
 
     <select id="getCommentByCommentId" resultMap="CommentRespDtoResultMap">
         select
             ct.comment_id,
-            ct.recipe_id,
+            ct.target_type,
+            ct.target_id,
             ct.user_id,
             ut.username,
-            ut.profile_img_url,
+            rt.title as title,
             ct.content,
             ct.create_dt,
             ct.update_dt
         from
             comment_tb ct
             join user_tb ut
-            on ut.user_id = ct.user_id
+                on ut.user_id = ct.user_id
+            left join recipe_tb rt
+                on rt.recipe_id = ct.target_id
+                and ct.target_type = 'RECIPE'
         where
-            ct.comment_id = #{commentId};
+            ct.comment_id = #{commentId}
+        limit 1
     </select>
+
+    <delete id="deleteByTarget">
+        delete from
+            comment_tb
+        where
+            target_type = #{targetType}
+            and target_id = #{targetId}
+    </delete>
 
     <delete id="deleteComment">
         delete from
             comment_tb
         where
-            comment_id = #{commentId};
+            comment_id = #{commentId}
     </delete>
 </mapper>

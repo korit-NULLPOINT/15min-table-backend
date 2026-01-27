@@ -13,6 +13,7 @@ public class NotificationPushRespDto {
     private Integer notificationId;
     private String type;        // "FOLLOW" | "RECIPE_POST"
     private Integer actorUserId;
-    private Integer recipeId;
+    private String targetType;
+    private Integer targetId;
     private Integer commentId;
 }

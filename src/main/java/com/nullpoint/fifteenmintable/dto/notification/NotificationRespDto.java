@@ -14,7 +14,8 @@ public class NotificationRespDto {
     private Integer actorUserId;
     private String actorUsername;
     private String notificationType;
-    private Integer recipeId;
+    private String targetType;
+    private Integer targetId;
     private Integer commentId;
     private Integer isRead;
     private LocalDateTime createDt;

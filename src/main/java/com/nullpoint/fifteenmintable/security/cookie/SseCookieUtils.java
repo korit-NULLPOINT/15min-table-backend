@@ -26,7 +26,10 @@ public class SseCookieUtils {
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 
-    /** SSE 인증용 쿠키 제거 */
+    /**
+     * SSE 인증용 쿠키 제거
+     * 로그아웃 API 만들시 추가
+     * */
     public void clearSseAccessToken(HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from(SSE_COOKIE_NAME, "")
                 .httpOnly(true)
