@@ -3,7 +3,6 @@ package com.nullpoint.fifteenmintable.repository;
 import com.nullpoint.fifteenmintable.dto.comment.CommentRespDto;
 import com.nullpoint.fifteenmintable.entity.Comment;
 import com.nullpoint.fifteenmintable.mapper.CommentMapper;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -35,7 +34,11 @@ public class CommentRepository {
         return commentMapper.deleteComment(commentId);
     }
 
-    public int deleteByTarget(String targetType, Integer targetId) {
-        return commentMapper.deleteByTarget(targetType, targetId);
+    public void deleteByTarget(String targetType, Integer targetId) {
+        commentMapper.deleteByTarget(targetType, targetId);
+    }
+
+    public int deleteRecipeCommentsOfPurgeTargets() {
+        return commentMapper.deleteRecipeCommentsOfPurgeTargets();
     }
 }

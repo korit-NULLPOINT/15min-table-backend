@@ -1,4 +1,4 @@
-package com.nullpoint.fifteenmintable.dto.Board;
+package com.nullpoint.fifteenmintable.dto.board;
 
 import com.nullpoint.fifteenmintable.entity.Board;
 import com.nullpoint.fifteenmintable.entity.BoardType;

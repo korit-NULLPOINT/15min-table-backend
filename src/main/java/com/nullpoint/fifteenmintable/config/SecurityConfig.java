@@ -76,6 +76,8 @@ public class SecurityConfig {
             // SSE 쿠키 허용
             auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
 
+            auth.requestMatchers("/admin/**").hasRole("ADMIN");
+
             // 0) 공개
             auth.requestMatchers(
                     "/user/auth/**",
@@ -99,10 +101,6 @@ public class SecurityConfig {
                     "/recipe-hashtag/list/*",
                     "/rating/*/summary"
             ).permitAll();
-
-            auth.requestMatchers(HttpMethod.GET,
-                    "/notifications/**"    // ✅ stream, list, unread-count 전부
-            ).hasAnyRole("ADMIN", "USER", "TEMP_USER");
 
             // 2) TEMP 전용(메일 인증/상태 확인 등)
             auth.requestMatchers(
@@ -128,8 +126,6 @@ public class SecurityConfig {
             auth.requestMatchers(HttpMethod.DELETE,
                     "/board/**"
             ).hasAnyRole("ADMIN", "USER", "TEMP_USER");   // ✅ 나중에 TEMP_USER 빼면 됨
-
-            auth.requestMatchers("/admin/**").hasRole("ADMIN");
 
             // 기타 보호
             auth.requestMatchers(

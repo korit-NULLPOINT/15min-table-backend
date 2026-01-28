@@ -8,6 +8,7 @@ import com.nullpoint.fifteenmintable.exception.BadRequestException;
 import com.nullpoint.fifteenmintable.exception.ForbiddenException;
 import com.nullpoint.fifteenmintable.exception.NotFoundException;
 import com.nullpoint.fifteenmintable.exception.UnauthenticatedException;
+import com.nullpoint.fifteenmintable.repository.CommentRepository;
 import com.nullpoint.fifteenmintable.repository.UserRepository;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +16,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 public class AccountService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private CommentRepository commentRepository;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -130,6 +132,14 @@ public class AccountService {
         }
 
         return new ApiRespDto<>("success", "탈퇴처리가 완료되었습니다. 90일 이후 회원정보가 완전히 삭제됩니다.", null);
+    }
+
+    @Transactional
+    public int deleteUser() {
+
+        commentRepository.deleteRecipeCommentsOfPurgeTargets();
+
+        return userRepository.deleteUser();
     }
 
     private boolean isBlank(String s) {

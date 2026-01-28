@@ -110,4 +110,20 @@
         where
             comment_id = #{commentId}
     </delete>
+
+    <delete id="deleteRecipeCommentsOfPurgeTargets">
+        delete
+            ct
+        from
+            comment_tb ct
+        join recipe_tb rt
+            on ct.target_type = 'RECIPE'
+            and ct.target_id = rt.recipe_id
+        join user_tb ut
+            on rt.user_id = ut.user_id
+        where
+            ut.status = 'INACTIVE'
+            and ut.delete_dt <![CDATA[<=]]> now();
+    </delete>
+
 </mapper>

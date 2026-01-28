@@ -1,7 +1,7 @@
     package com.nullpoint.fifteenmintable.service;
 
     import com.nullpoint.fifteenmintable.dto.ApiRespDto;
-    import com.nullpoint.fifteenmintable.dto.Board.BoardCreateReqDto;
+    import com.nullpoint.fifteenmintable.dto.board.BoardCreateReqDto;
     import com.nullpoint.fifteenmintable.entity.Board;
     import com.nullpoint.fifteenmintable.repository.BoardRepository;
     import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
@@ -9,7 +9,6 @@
     import org.springframework.stereotype.Service;
 
     import java.util.List;
-    import java.util.Optional;
 
     @Service
     public class BoardService {
