@@ -1,10 +1,7 @@
 package com.nullpoint.fifteenmintable.controller;
 
 import com.nullpoint.fifteenmintable.dto.ApiRespDto;
-import com.nullpoint.fifteenmintable.dto.recipe.AddRecipeReqDto;
-import com.nullpoint.fifteenmintable.dto.recipe.ModifyRecipeReqDto;
-import com.nullpoint.fifteenmintable.dto.recipe.RecipeDetailRespDto;
-import com.nullpoint.fifteenmintable.dto.recipe.RecipeListPageRespDto;
+import com.nullpoint.fifteenmintable.dto.recipe.*;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import com.nullpoint.fifteenmintable.service.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +34,18 @@ public class RecipeController {
     ) {
         return ResponseEntity.ok(recipeService.getRecipeListByBoardId(boardId, page, size, principalUser));
     }
+
+    @GetMapping("/list/filtered")
+    public ResponseEntity<ApiRespDto<RecipeListPageRespDto>> getFilteredRecipeList(
+            @PathVariable Integer boardId,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size,
+            @ModelAttribute RecipeFilterReqDto recipeFilterReqDto,
+            @AuthenticationPrincipal PrincipalUser principalUser
+    ) {
+        return ResponseEntity.ok(recipeService.getFilteredRecipeList(boardId, page, size, recipeFilterReqDto, principalUser));
+    }
+
 
     @GetMapping("/detail/{recipeId}")
     public ResponseEntity<ApiRespDto<RecipeDetailRespDto>> getRecipeDetail(

@@ -1,7 +1,7 @@
 package com.nullpoint.fifteenmintable.controller;
 
 import com.nullpoint.fifteenmintable.dto.ApiRespDto;
-import com.nullpoint.fifteenmintable.dto.Board.BoardCreateReqDto;
+import com.nullpoint.fifteenmintable.dto.board.BoardCreateReqDto;
 import com.nullpoint.fifteenmintable.entity.Board;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import com.nullpoint.fifteenmintable.service.BoardService;

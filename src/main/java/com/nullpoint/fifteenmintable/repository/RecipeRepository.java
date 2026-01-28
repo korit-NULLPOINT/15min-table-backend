@@ -1,6 +1,7 @@
 package com.nullpoint.fifteenmintable.repository;
 
 import com.nullpoint.fifteenmintable.dto.recipe.RecipeDetailRespDto;
+import com.nullpoint.fifteenmintable.dto.recipe.RecipeFilterReqDto;
 import com.nullpoint.fifteenmintable.dto.recipe.RecipeListRespDto;
 import com.nullpoint.fifteenmintable.entity.Recipe;
 import com.nullpoint.fifteenmintable.mapper.RecipeMapper;
@@ -27,6 +28,14 @@ public class RecipeRepository {
 
     public List<RecipeListRespDto> getRecipeCardListByUserId(Integer userId, Integer loginUserId, Integer offset, Integer limit) {
         return recipeMapper.getRecipeCardListByUserId(userId, loginUserId, offset, limit);
+    }
+
+    public List<RecipeListRespDto> getRecipeCardListByBoardIdAndFilter(Integer boardId, Integer userId, Integer limit, Integer offset, RecipeFilterReqDto filter) {
+        return recipeMapper.getRecipeCardListByBoardIdAndFilter(boardId, userId, limit, offset, filter);
+    }
+
+    public int getRecipeCountByBoardIdAndFilter(Integer boardId, RecipeFilterReqDto filter) {
+        return recipeMapper.getRecipeCountByBoardIdAndFilter(boardId, filter);
     }
 
     public int getRecipeCountByBoardId(Integer boardId) {
