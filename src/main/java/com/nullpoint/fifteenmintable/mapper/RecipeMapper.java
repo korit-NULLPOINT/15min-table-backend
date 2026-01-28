@@ -1,6 +1,7 @@
 package com.nullpoint.fifteenmintable.mapper;
 
 import com.nullpoint.fifteenmintable.dto.recipe.RecipeDetailRespDto;
+import com.nullpoint.fifteenmintable.dto.recipe.RecipeFilterReqDto;
 import com.nullpoint.fifteenmintable.dto.recipe.RecipeListRespDto;
 import com.nullpoint.fifteenmintable.entity.Recipe;
 import org.apache.ibatis.annotations.Mapper;
@@ -25,6 +26,19 @@ public interface RecipeMapper {
             @Param("offset") Integer offset,
             @Param("limit") Integer limit
     );
+    List<RecipeListRespDto> getRecipeCardListByBoardIdAndFilter(
+            @Param("boardId") Integer boardId,
+            @Param("userId") Integer userId,
+            @Param("limit") int limit,
+            @Param("offset") int offset,
+            @Param("filter") RecipeFilterReqDto filter // DTO를 통째로 넘김
+    );
+
+    int getRecipeCountByBoardIdAndFilter(
+            @Param("boardId") Integer boardId,
+            @Param("filter") RecipeFilterReqDto filter // DTO를 통째로 넘김
+    );
+
     Optional<RecipeDetailRespDto> getRecipeDetail(@Param("boardId") Integer boardId,
                                                   @Param("recipeId") Integer recipeId);
     int getRecipeCountByBoardId(@Param("boardId") Integer boardId);

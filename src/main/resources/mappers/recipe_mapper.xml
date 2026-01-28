@@ -109,9 +109,78 @@
             rt.board_id = #{boardId}
         order by
             rt.create_dt DESC
-        limit #{limit}
-        offset #{offset}
+        <if test="limit > 0">
+            LIMIT #{limit}
+            OFFSET #{offset}
+        </if>
     </select>
+
+    <select id="getRecipeCardListByBoardIdAndFilter" resultMap="RecipeListRespMap">
+        select
+            rt.recipe_id,
+            rt.user_id,
+            rt.thumbnail_img_url,
+            rt.view_count,
+            COALESCE(ROUND(rat_t.avg_rating, 1), 0) as avg_rating,
+            rt.title,
+            ut.username,
+            ut.profile_img_url,
+            rt.main_category_id,
+            rt.sub_category_id,
+            rt.create_dt,
+            rt.update_dt,
+            if(bmt.recipe_bookmark_id is null, false, true) as bookmarked_by_me
+        from
+            recipe_tb rt
+            join user_tb ut
+            on ut.user_id = rt.user_id
+            left join (
+                select recipe_id, avg(rating) as avg_rating
+                from recipe_rating_tb
+                group by recipe_id
+            ) rat_t
+            on rat_t.recipe_id = rt.recipe_id
+            left join recipe_bookmark_tb bmt
+            on bmt.recipe_id = rt.recipe_id
+            and bmt.user_id = #{userId}
+        where
+            rt.board_id = #{boardId}
+        <if test="filter.mainCategoryId != null">
+            AND rt.main_category_id = #{filter.mainCategoryId}
+        </if>
+        <if test="filter.subCategoryId != null">
+            AND rt.sub_category_id = #{filter.subCategoryId}
+        </if>
+        <if test="filter.keyword != null and filter.keyword != ''">
+            AND rt.title LIKE CONCAT('%', #{filter.keyword}, '%')
+        </if>
+
+        order by
+            rt.create_dt DESC
+        <if test="limit > 0">
+            LIMIT #{limit}
+            OFFSET #{offset}
+        </if>
+    </select>
+
+    <select id="getRecipeCountByBoardIdAndFilter" resultType="int">
+        select
+            count(*)
+        from
+            recipe_tb rt
+        where
+            rt.board_id = #{boardId}
+        <if test="filter.mainCategoryId != null">
+            AND rt.main_category_id = #{filter.mainCategoryId}
+        </if>
+        <if test="filter.subCategoryId != null">
+            AND rt.sub_category_id = #{filter.subCategoryId}
+        </if>
+        <if test="filter.keyword != null and filter.keyword != ''">
+            AND rt.title LIKE CONCAT('%', #{filter.keyword}, '%')
+        </if>
+    </select>
+
 
     <select id="getRecipeCardListByUserId" resultMap="RecipeListRespMap">
         select

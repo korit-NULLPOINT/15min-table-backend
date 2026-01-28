@@ -93,6 +93,38 @@ public class RecipeService {
         return new ApiRespDto<>("success", "레시피 목록 조회 완료", data);
     }
 
+    public ApiRespDto<RecipeListPageRespDto> getFilteredRecipeList(Integer boardId, Integer page, Integer size, RecipeFilterReqDto recipeFilterReqDto, PrincipalUser principalUser) {
+        Integer loginUserId = (principalUser == null) ? null : principalUser.getUserId();
+
+        // 1. Paging Calc
+        int safePage = (page == null) ? 0 : Math.max(page, 0);
+        int safeSize = (size == null) ? 9 : Math.min(Math.max(size, 1), 50);
+        int offset = safePage * safeSize;
+
+        // 2. getFilteredList from DB
+        List<RecipeListRespDto> pagedItems = recipeRepository.getRecipeCardListByBoardIdAndFilter(
+                boardId,
+                loginUserId,
+                safeSize,
+                offset,
+                recipeFilterReqDto // 검색 조건 객체 전달
+        );
+
+        // 3. totalCount
+        int totalCount = recipeRepository.getRecipeCountByBoardIdAndFilter(boardId, recipeFilterReqDto);
+
+        // 4. Return
+        RecipeListPageRespDto data = RecipeListPageRespDto.builder()
+                .items(pagedItems)
+                .totalCount(totalCount)
+                .page(safePage)
+                .size(safeSize)
+                .build();
+
+        return new ApiRespDto<>("success", "필터링 조회 완료", data);
+    }
+
+
     public ApiRespDto<RecipeListPageRespDto> getRecipeListByUserId(
             Integer userId, Integer page, Integer size, PrincipalUser principalUser
     ) {
@@ -117,6 +149,7 @@ public class RecipeService {
 
         return new ApiRespDto<>("success", "유저 레시피 목록 조회 완료", data);
     }
+
 
     public ApiRespDto<RecipeListPageRespDto> getMyRecipeList(Integer page, Integer size, PrincipalUser principalUser) {
         if (principalUser == null) throw new UnauthenticatedException("로그인이 필요합니다.");
