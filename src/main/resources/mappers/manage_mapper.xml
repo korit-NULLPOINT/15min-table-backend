@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nullpoint.fifteenmintable.mapper.ManageMapper">
+
+    <resultMap id="AdminStatsRespDtoMap" type="com.nullpoint.fifteenmintable.dto.admin.AdminStatsRespDto">
+        <result property="totalUsers" column="total_users"/>
+        <result property="totalRecipes" column="total_recipes"/>
+        <result property="totalCommunityPosts" column="total_community_posts"/>
+    </resultMap>
+
+    <resultMap id="AdminActivityRespDtoMap" type="com.nullpoint.fifteenmintable.dto.admin.AdminActivityRespDto">
+        <result property="type" column="type"/>
+        <result property="action" column="action"/>
+        <result property="targetId" column="target_id"/>
+        <result property="title" column="title"/>
+        <result property="username" column="username"/>
+        <result property="occurredAt" column="occurred_at"/>
+    </resultMap>
+
+    <resultMap id="AdminTimeSeriesPointDtoMap" type="com.nullpoint.fifteenmintable.dto.admin.AdminTimeSeriesPointDto">
+        <result property="date" column="date"/>
+        <result property="count" column="count"/>
+    </resultMap>
+
+    <select id="getDashboardStats" resultMap="AdminStatsRespDtoMap">
+        select
+            (select count(*) from user_tb) as total_users,
+            (select count(*) from recipe_tb) as total_recipes,
+            0 as total_community_posts
+    </select>
+
+    <select id="getRecentActivities" resultMap="AdminActivityRespDtoMap">
+        select
+            *
+        from
+            (
+            select
+                'SIGNUP' as type,
+                'CREATED' as action,
+                ut.user_id as target_id,
+                null as title,
+                ut.username as username,
+                ut.create_dt as occurred_at
+            from
+                user_tb ut
+
+            union all
+
+            /* recipe created: target_id = recipe_id */
+            select
+                'RECIPE' as type,
+                'CREATED' as action,
+                rt.recipe_id as target_id,
+                rt.title as title,
+                ut.username as username,
+                rt.create_dt as occurred_at
+            from
+                recipe_tb rt
+                inner join user_tb ut
+                    on ut.user_id = rt.user_id
+
+            union all
+
+            select
+                'RECIPE' as type,
+                'UPDATED' as action,
+                rt.recipe_id as target_id,
+                rt.title as title,
+                ut.username as username,
+                rt.update_dt as occurred_at
+            from
+                recipe_tb rt
+                inner join user_tb ut
+                    on ut.user_id = rt.user_id
+            where
+                rt.update_dt is not null
+                and rt.update_dt != rt.create_dt
+            ) a
+        order by
+            a.occurred_at desc
+        limit
+            #{limit}
+    </select>
+
+
+    <!-- =========================
+         3) timeseries (graph)
+            params:
+            - metric: users | recipes
+            - bucket: day | month | year
+            - from/to: LocalDateTime (nullable)
+         ========================= -->
+    <select id="getTimeSeries" resultMap="AdminTimeSeriesPointDtoMap">
+        <choose>
+            <!-- users -->
+            <when test="metric == 'users'">
+                select
+                    <choose>
+                        <when test="bucket == 'day'">date_format(ut.create_dt, '%Y-%m-%d')</when>
+                        <when test="bucket == 'month'">date_format(ut.create_dt, '%Y-%m')</when>
+                        <otherwise>date_format(ut.create_dt, '%Y')</otherwise>
+                    </choose>
+                    as date,
+                    count(*) as count
+                from
+                    user_tb ut
+                where
+                    1 = 1
+                <if test="from != null">
+                    and ut.create_dt &gt;= #{from}
+                </if>
+                <if test="to != null">
+                    and ut.create_dt &lt;= #{to}
+                </if>
+                group by
+                    date
+                order by
+                    date
+            </when>
+
+            <!-- recipes -->
+            <when test="metric == 'recipes'">
+                select
+                    <choose>
+                        <when test="bucket == 'day'">date_format(rt.create_dt, '%Y-%m-%d')</when>
+                        <when test="bucket == 'month'">date_format(rt.create_dt, '%Y-%m')</when>
+                        <otherwise>date_format(rt.create_dt, '%Y')</otherwise>
+                    </choose>
+                    as date,
+                    count(*) as count
+                from
+                    recipe_tb rt
+                where
+                    1 = 1
+                <if test="from != null">
+                    and rt.create_dt &gt;= #{from}
+                </if>
+                <if test="to != null">
+                    and rt.create_dt &lt;= #{to}
+                </if>
+                group by
+                    date
+                order by
+                    date
+            </when>
+
+            <!-- unknown metric fallback -->
+            <otherwise>
+                select
+                    null as date,
+                    0 as count
+            </otherwise>
+        </choose>
+    </select>
+
+</mapper>

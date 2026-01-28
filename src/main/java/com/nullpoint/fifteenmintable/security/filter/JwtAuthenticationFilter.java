@@ -4,7 +4,7 @@ import com.nullpoint.fifteenmintable.entity.User;
 import com.nullpoint.fifteenmintable.repository.UserRepository;
 import com.nullpoint.fifteenmintable.security.cookie.SseCookieUtils;
 import com.nullpoint.fifteenmintable.security.jwt.JwtUtils;
-import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
+import com.nullpoint.fifteenmintable.service.PrincipalLoaderService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.*;
 import jakarta.servlet.http.Cookie;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class JwtAuthenticationFilter implements Filter {
@@ -26,7 +25,7 @@ public class JwtAuthenticationFilter implements Filter {
     private JwtUtils jwtUtils;
 
     @Autowired
-    private UserRepository userRepository;
+    private PrincipalLoaderService principalLoaderService;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
@@ -56,31 +55,15 @@ public class JwtAuthenticationFilter implements Filter {
         if (accessToken != null && !accessToken.trim().isEmpty()) {
             try {
                 Claims claims = jwtUtils.getClaims(accessToken);
-                String id = claims.getId();
-                Integer userId = Integer.parseInt(id);
+                Integer userId = Integer.parseInt(claims.getId());
 
-                Optional<User> foundUser = userRepository.getUserByUserId(userId);
-                if (foundUser.isPresent()) {
-                    User user = foundUser.get();
-
-                    PrincipalUser principalUser = PrincipalUser.builder()
-                            .userId(user.getUserId())
-                            .email(user.getEmail())
-                            .password(user.getPassword())
-                            .username(user.getUsername())
-                            .profileImgUrl(user.getProfileImgUrl())
-                            .status(user.getStatus())
-                            .userRoles(user.getUserRoles())
-                            .build();
-
+                principalLoaderService.loadByUserId(userId).ifPresentOrElse(principalUser -> {
                     Authentication authentication =
                             new UsernamePasswordAuthenticationToken(
                                     principalUser, null, principalUser.getAuthorities());
-
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-                } else {
-                    SecurityContextHolder.clearContext();
-                }
+                }, SecurityContextHolder::clearContext);
+
             } catch (RuntimeException e) {
                 SecurityContextHolder.clearContext();
             }

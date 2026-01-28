@@ -12,6 +12,7 @@ import java.util.Optional;
 public interface CommentMapper {
     int addComment(Comment comment);
     int deleteComment(Integer commentId);
+    int deleteRecipeCommentsOfPurgeTargets();
     int deleteByTarget(@Param("targetType") String targetType, @Param("targetId") Integer targetId);
     Optional<CommentRespDto> getCommentByCommentId(Integer commentId);
     List<CommentRespDto> getCommentListByTarget(@Param("targetType") String targetType, @Param("targetId") Integer targetId);
