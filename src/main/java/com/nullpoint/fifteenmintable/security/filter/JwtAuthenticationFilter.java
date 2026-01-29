@@ -58,6 +58,14 @@ public class JwtAuthenticationFilter implements Filter {
                 Integer userId = Integer.parseInt(claims.getId());
 
                 principalLoaderService.loadByUserId(userId).ifPresentOrElse(principalUser -> {
+
+                    String status = principalUser.getStatus();
+
+                    if (!"ACTIVE".equals(status)) {
+                        SecurityContextHolder.clearContext();
+                        return;
+                    }
+
                     Authentication authentication =
                             new UsernamePasswordAuthenticationToken(
                                     principalUser, null, principalUser.getAuthorities());

@@ -1,6 +1,7 @@
 package com.nullpoint.fifteenmintable.repository;
 
 import com.nullpoint.fifteenmintable.dto.admin.AdminActivityRespDto;
+import com.nullpoint.fifteenmintable.dto.admin.AdminRecipeRespDto;
 import com.nullpoint.fifteenmintable.dto.admin.AdminStatsRespDto;
 import com.nullpoint.fifteenmintable.dto.admin.AdminTimeSeriesPointDto;
 import com.nullpoint.fifteenmintable.mapper.ManageMapper;
@@ -17,6 +18,12 @@ public class ManageRepository {
 
     @Autowired
     private ManageMapper manageMapper;
+
+    public List<AdminRecipeRespDto> getAdminRecipeList(
+            String keyword, String sortKey, String sortBy, Object cursorValue, Integer cursorId, Integer size
+    ) {
+        return manageMapper.getAdminRecipeList(keyword, sortKey, sortBy, cursorValue, cursorId, size);
+    }
 
     public Optional<AdminStatsRespDto> getDashboardStats() {
         return manageMapper.getDashboardStats();

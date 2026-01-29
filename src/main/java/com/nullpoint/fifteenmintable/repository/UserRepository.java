@@ -57,4 +57,12 @@ public class UserRepository {
     public int deleteUser() {
         return userMapper.deleteUser();
     }
+
+    public int banUser(Integer userId) {
+        return userMapper.banUser(userId);
+    }
+
+    public int restoreUser(Integer userId) {
+        return userMapper.restoreUser(userId);
+    }
 }

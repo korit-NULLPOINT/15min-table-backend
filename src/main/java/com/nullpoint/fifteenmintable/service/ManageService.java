@@ -2,9 +2,12 @@ package com.nullpoint.fifteenmintable.service;
 
 import com.nullpoint.fifteenmintable.dto.ApiRespDto;
 import com.nullpoint.fifteenmintable.dto.admin.AdminActivityRespDto;
+import com.nullpoint.fifteenmintable.dto.admin.AdminRecipeRespDto;
 import com.nullpoint.fifteenmintable.dto.admin.AdminStatsRespDto;
 import com.nullpoint.fifteenmintable.dto.admin.AdminTimeSeriesPointDto;
 import com.nullpoint.fifteenmintable.entity.User;
+import com.nullpoint.fifteenmintable.exception.BadRequestException;
+import com.nullpoint.fifteenmintable.exception.NotFoundException;
 import com.nullpoint.fifteenmintable.repository.ManageRepository;
 import com.nullpoint.fifteenmintable.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,4 +70,59 @@ public class ManageService {
         List<AdminTimeSeriesPointDto> series = manageRepository.getTimeSeries(metric, bucket, from, to);
         return new ApiRespDto<>("success", "시계열 통계 조회 완료", series);
     }
+
+    public ApiRespDto<Void> banUser(Integer userId) {
+        userRepository.getUserByUserId(userId)
+                .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
+
+        int result = userRepository.banUser(userId);
+        if (result != 1) throw new RuntimeException("차단 처리에 실패했습니다.");
+
+        return new ApiRespDto<>("success", "사용자 차단 완료", null);
+    }
+
+    public ApiRespDto<Void> restoreUser(Integer userId) {
+        userRepository.getUserByUserId(userId)
+                .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
+
+        int result = userRepository.restoreUser(userId);
+        if (result != 1) throw new RuntimeException("복구 처리에 실패했습니다.");
+
+        return new ApiRespDto<>("success", "사용자 복구 완료", null);
+    }
+
+    public ApiRespDto<List<AdminRecipeRespDto>> getAdminRecipeList(
+            String keyword,
+            String sortKey,
+            String sortBy,
+            Integer cursorId,
+            LocalDateTime cursorCreateDt,
+            Integer cursorViewCount,
+            Integer size
+    ) {
+        int safeSize = (size == null || size <= 0) ? 20 : Math.min(size, 50);
+
+        String safeSortKey = (sortKey == null || sortKey.isBlank()) ? "createDt" : sortKey;
+        if (!safeSortKey.equals("createDt") && !safeSortKey.equals("viewCount")) safeSortKey = "createDt";
+
+        String safeSortBy = (sortBy == null || sortBy.isBlank()) ? "desc" : sortBy;
+        if (!safeSortBy.equals("asc") && !safeSortBy.equals("desc")) safeSortBy = "desc";
+
+        Object cursorValue = null;
+        if (cursorId != null) {
+            if (safeSortKey.equals("createDt")) cursorValue = cursorCreateDt;
+            else cursorValue = cursorViewCount;
+
+            if (cursorValue == null) {
+                throw new BadRequestException("cursorId와 cursorValue는 함께 전달되어야 합니다.");
+            }
+        }
+
+        List<AdminRecipeRespDto> recipes = manageRepository.getAdminRecipeList(
+                keyword, safeSortKey, safeSortBy, cursorValue, cursorId, safeSize
+        );
+
+        return new ApiRespDto<>("success", "관리자 레시피 목록 조회 완료", recipes);
+    }
+
 }

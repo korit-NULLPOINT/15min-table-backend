@@ -1,6 +1,7 @@
 package com.nullpoint.fifteenmintable.mapper;
 
 import com.nullpoint.fifteenmintable.dto.admin.AdminActivityRespDto;
+import com.nullpoint.fifteenmintable.dto.admin.AdminRecipeRespDto;
 import com.nullpoint.fifteenmintable.dto.admin.AdminStatsRespDto;
 import com.nullpoint.fifteenmintable.dto.admin.AdminTimeSeriesPointDto;
 import org.apache.ibatis.annotations.Mapper;
@@ -12,6 +13,15 @@ import java.util.Optional;
 
 @Mapper
 public interface ManageMapper {
+
+    List<AdminRecipeRespDto> getAdminRecipeList(
+            @Param("keyword") String keyword,
+            @Param("sortKey") String sortKey,   // createDt | viewCount
+            @Param("sortBy") String sortBy,   // asc | desc
+            @Param("cursorValue") Object cursorValue, // createDt: LocalDateTime, viewCount: Integer
+            @Param("cursorId") Integer cursorId,
+            @Param("size") Integer size
+    );
 
     Optional<AdminStatsRespDto> getDashboardStats();
 

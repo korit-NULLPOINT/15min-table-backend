@@ -22,5 +22,7 @@ public interface UserMapper {
     List<User> getUserList();
     int withdraw(Integer userId);
     int deleteUser();
+    int banUser(Integer userId);
+    int restoreUser(Integer userId);
 
 }
