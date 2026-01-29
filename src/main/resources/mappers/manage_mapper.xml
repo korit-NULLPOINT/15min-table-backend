@@ -25,134 +25,151 @@
         <result property="count" column="count"/>
     </resultMap>
 
+    <!-- =========================
+         1) dashboard stats (cards)
+         ========================= -->
     <select id="getDashboardStats" resultMap="AdminStatsRespDtoMap">
         select
-            (select count(*) from user_tb) as total_users,
-            (select count(*) from recipe_tb) as total_recipes,
-            0 as total_community_posts
+        (
+        select count(*)
+        from user_tb ut
+        where 1=1
+        <if test="from != null">
+            and ut.create_dt &gt;= #{from}
+        </if>
+        <if test="to != null">
+            and ut.create_dt &lt;= #{to}
+        </if>
+        ) as total_users,
+
+        (
+        select count(*)
+        from recipe_tb rt
+        where 1=1
+        <if test="from != null">
+            and rt.create_dt &gt;= #{from}
+        </if>
+        <if test="to != null">
+            and rt.create_dt &lt;= #{to}
+        </if>
+        ) as total_recipes,
+
+        (
+        select count(*)
+        from community_tb ct
+        where 1=1
+        <if test="from != null">
+            and ct.create_dt &gt;= #{from}
+        </if>
+        <if test="to != null">
+            and ct.create_dt &lt;= #{to}
+        </if>
+        ) as total_community_posts
     </select>
 
+    <!-- =========================
+         2) recent activities
+         ========================= -->
     <select id="getRecentActivities" resultMap="AdminActivityRespDtoMap">
+        select *
+        from (
         select
-            *
-        from
-            (
-            select
-                'SIGNUP' as type,
-                'CREATED' as action,
-                ut.user_id as target_id,
-                null as title,
-                ut.username as username,
-                ut.create_dt as occurred_at
-            from
-                user_tb ut
+        'SIGNUP' as type,
+        'CREATED' as action,
+        ut.user_id as target_id,
+        null as title,
+        ut.username as username,
+        ut.create_dt as occurred_at
+        from user_tb ut
 
-            union all
+        union all
 
-            /* recipe created: target_id = recipe_id */
-            select
-                'RECIPE' as type,
-                'CREATED' as action,
-                rt.recipe_id as target_id,
-                rt.title as title,
-                ut.username as username,
-                rt.create_dt as occurred_at
-            from
-                recipe_tb rt
-                inner join user_tb ut
-                    on ut.user_id = rt.user_id
+        select
+        'RECIPE' as type,
+        'CREATED' as action,
+        rt.recipe_id as target_id,
+        rt.title as title,
+        ut.username as username,
+        rt.create_dt as occurred_at
+        from recipe_tb rt
+        join user_tb ut on ut.user_id = rt.user_id
 
-            union all
+        union all
 
-            select
-                'RECIPE' as type,
-                'UPDATED' as action,
-                rt.recipe_id as target_id,
-                rt.title as title,
-                ut.username as username,
-                rt.update_dt as occurred_at
-            from
-                recipe_tb rt
-                inner join user_tb ut
-                    on ut.user_id = rt.user_id
-            where
-                rt.update_dt is not null
-                and rt.update_dt != rt.create_dt
-            ) a
-        order by
-            a.occurred_at desc
-        limit
-            #{limit}
+        select
+        'RECIPE' as type,
+        'UPDATED' as action,
+        rt.recipe_id as target_id,
+        rt.title as title,
+        ut.username as username,
+        rt.update_dt as occurred_at
+        from recipe_tb rt
+        join user_tb ut on ut.user_id = rt.user_id
+        where rt.update_dt is not null
+        and rt.update_dt != rt.create_dt
+        ) a
+        order by a.occurred_at desc
+        limit #{limit}
     </select>
-
 
     <!-- =========================
          3) timeseries (graph)
-            params:
-            - metric: users | recipes
-            - bucket: day | month | year
-            - from/to: LocalDateTime (nullable)
          ========================= -->
     <select id="getTimeSeries" resultMap="AdminTimeSeriesPointDtoMap">
         <choose>
-            <!-- users -->
+
             <when test="metric == 'users'">
                 select
-                    <choose>
-                        <when test="bucket == 'day'">date_format(ut.create_dt, '%Y-%m-%d')</when>
-                        <when test="bucket == 'month'">date_format(ut.create_dt, '%Y-%m')</when>
-                        <otherwise>date_format(ut.create_dt, '%Y')</otherwise>
-                    </choose>
-                    as date,
-                    count(*) as count
-                from
-                    user_tb ut
-                where
-                    1 = 1
-                <if test="from != null">
-                    and ut.create_dt &gt;= #{from}
-                </if>
-                <if test="to != null">
-                    and ut.create_dt &lt;= #{to}
-                </if>
-                group by
-                    date
-                order by
-                    date
+                <choose>
+                    <when test="bucket == 'day'">date_format(ut.create_dt, '%Y-%m-%d')</when>
+                    <when test="bucket == 'month'">date_format(ut.create_dt, '%Y-%m')</when>
+                    <otherwise>date_format(ut.create_dt, '%Y')</otherwise>
+                </choose> as date,
+                count(*) as count
+                from user_tb ut
+                where 1=1
+                <if test="from != null">and ut.create_dt &gt;= #{from}</if>
+                <if test="to != null">and ut.create_dt &lt;= #{to}</if>
+                group by date
+                order by date
             </when>
 
-            <!-- recipes -->
             <when test="metric == 'recipes'">
                 select
-                    <choose>
-                        <when test="bucket == 'day'">date_format(rt.create_dt, '%Y-%m-%d')</when>
-                        <when test="bucket == 'month'">date_format(rt.create_dt, '%Y-%m')</when>
-                        <otherwise>date_format(rt.create_dt, '%Y')</otherwise>
-                    </choose>
-                    as date,
-                    count(*) as count
-                from
-                    recipe_tb rt
-                where
-                    1 = 1
-                <if test="from != null">
-                    and rt.create_dt &gt;= #{from}
-                </if>
-                <if test="to != null">
-                    and rt.create_dt &lt;= #{to}
-                </if>
-                group by
-                    date
-                order by
-                    date
+                <choose>
+                    <when test="bucket == 'day'">date_format(rt.create_dt, '%Y-%m-%d')</when>
+                    <when test="bucket == 'month'">date_format(rt.create_dt, '%Y-%m')</when>
+                    <otherwise>date_format(rt.create_dt, '%Y')</otherwise>
+                </choose> as date,
+                count(*) as count
+                from recipe_tb rt
+                where 1=1
+                <if test="from != null">and rt.create_dt &gt;= #{from}</if>
+                <if test="to != null">and rt.create_dt &lt;= #{to}</if>
+                group by date
+                order by date
             </when>
 
-            <!-- unknown metric fallback -->
-            <otherwise>
+            <when test="metric == 'community'">
                 select
-                    null as date,
-                    0 as count
+                <choose>
+                    <when test="bucket == 'day'">date_format(ct.create_dt, '%Y-%m-%d')</when>
+                    <when test="bucket == 'month'">date_format(ct.create_dt, '%Y-%m')</when>
+                    <otherwise>date_format(ct.create_dt, '%Y')</otherwise>
+                </choose> as date,
+                count(*) as count
+                from community_tb ct
+                where 1=1
+                <if test="from != null">and ct.create_dt &gt;= #{from}</if>
+                <if test="to != null">and ct.create_dt &lt;= #{to}</if>
+                group by date
+                order by date
+            </when>
+
+            <otherwise>
+                select null as date, 0 as count
             </otherwise>
+
         </choose>
     </select>
 

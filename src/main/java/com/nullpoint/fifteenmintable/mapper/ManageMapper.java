@@ -13,8 +13,10 @@ import java.util.Optional;
 @Mapper
 public interface ManageMapper {
 
-    Optional<AdminStatsRespDto> getDashboardStats();
-
+    Optional<AdminStatsRespDto> getDashboardStats(
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to
+    );
     List<AdminActivityRespDto> getRecentActivities(@Param("limit") Integer limit);
 
     List<AdminTimeSeriesPointDto> getTimeSeries(

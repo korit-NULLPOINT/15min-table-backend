@@ -33,8 +33,10 @@ public class ManageController {
 
 
     @GetMapping("/stats")
-    public ResponseEntity<ApiRespDto<AdminStatsRespDto>> getDashboardStats() {
-        return ResponseEntity.ok(manageService.getDashboardStats());
+    public ResponseEntity<ApiRespDto<AdminStatsRespDto>> getDashboardStats(
+            @RequestParam(defaultValue = "ALL") String range
+    ) {
+        return ResponseEntity.ok(manageService.getDashboardStats(range));
     }
 
     @GetMapping("/activities")

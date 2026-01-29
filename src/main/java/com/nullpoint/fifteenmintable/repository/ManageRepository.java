@@ -18,9 +18,10 @@ public class ManageRepository {
     @Autowired
     private ManageMapper manageMapper;
 
-    public Optional<AdminStatsRespDto> getDashboardStats() {
-        return manageMapper.getDashboardStats();
+    public Optional<AdminStatsRespDto> getDashboardStats(LocalDateTime from, LocalDateTime to) {
+        return manageMapper.getDashboardStats(from, to);
     }
+
 
     public List<AdminActivityRespDto> getRecentActivities(Integer limit) {
         return manageMapper.getRecentActivities(limit);

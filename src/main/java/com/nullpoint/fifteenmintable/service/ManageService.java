@@ -36,13 +36,29 @@ public class ManageService {
         return new ApiRespDto<>("success", "회원 정보 조회 완료", foundUser.get());
     }
 
-    public ApiRespDto<AdminStatsRespDto> getDashboardStats() {
+    public ApiRespDto<AdminStatsRespDto> getDashboardStats(String range) {
+        LocalDateTime to = LocalDateTime.now();
+        LocalDateTime from = resolveFrom(range, to);
+
         AdminStatsRespDto stats = manageRepository
-                .getDashboardStats()
+                .getDashboardStats(from, to)
                 .orElse(new AdminStatsRespDto(0L, 0L, 0L));
 
         return new ApiRespDto<>("success", "대시보드 통계 조회 완료", stats);
     }
+
+    private LocalDateTime resolveFrom(String range, LocalDateTime to) {
+        if (range == null) return null;
+
+        return switch (range.toUpperCase()) {
+            case "WEEK" -> to.minusDays(7);
+            case "MONTH" -> to.minusMonths(1);
+            case "YEAR" -> to.minusYears(1);
+            case "ALL" -> null;
+            default -> null;
+        };
+    }
+
 
     public ApiRespDto<List<AdminActivityRespDto>> getRecentActivities(Integer limit) {
         int safeLimit = (limit == null || limit <= 0) ? 10 : Math.min(limit, 50);
