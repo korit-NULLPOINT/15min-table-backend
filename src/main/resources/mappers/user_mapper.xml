@@ -208,6 +208,30 @@
             status = "INACTIVE"
             and delete_dt <![CDATA[<=]]> now();
     </delete>
+
+    <update id="banUser">
+        update
+            user_tb
+        set
+            status = "BANNED",
+            withdraw_dt = null,
+            delete_dt = null,
+            update_dt = now()
+        where
+            user_id = #{userId};
+    </update>
+
+    <update id="restoreUser">
+        update
+            user_tb
+        set
+            status = "ACTIVE",
+            withdraw_dt = null,
+            delete_dt = null,
+            update_dt = now()
+        where
+            user_id = #{userId};
+    </update>
 </mapper>
 
 

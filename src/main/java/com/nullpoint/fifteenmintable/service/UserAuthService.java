@@ -91,6 +91,9 @@ public class UserAuthService {
         User user = userRepository.getUserByEmail(signinReqDto.getEmail())
                 .orElseThrow(() -> new NotFoundException("사용자 정보를 다시 확인해주세요."));
 
+        if (user.isBanned()) {
+            throw new UnauthenticatedException("차단된 계정입니다.");
+        }
         if (!user.isActive()) {
             throw new UnauthenticatedException("탈퇴처리된 계정입니다.");
         }

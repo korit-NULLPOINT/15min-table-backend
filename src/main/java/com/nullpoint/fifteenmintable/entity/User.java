@@ -31,4 +31,8 @@ public class User {
     public boolean isActive() {
         return "ACTIVE".equals(status);
     }
+
+    public boolean isBanned() {
+        return "BANNED".equals(status);
+    }
 }

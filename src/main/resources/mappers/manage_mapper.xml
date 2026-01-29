@@ -5,6 +5,18 @@
 
 <mapper namespace="com.nullpoint.fifteenmintable.mapper.ManageMapper">
 
+    <resultMap id="AdminRecipeRespDtoMap" type="com.nullpoint.fifteenmintable.dto.admin.AdminRecipeRespDto">
+        <id property="recipeId" column="recipe_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="viewCount" column="view_count"/>
+        <result property="commentCount" column="comment_count"/>
+        <result property="title" column="title"/>
+        <result property="username" column="username"/>
+        <result property="profileImgUrl" column="profile_img_url"/>
+        <result property="createDt" column="create_dt"/>
+        <result property="updateDt" column="update_dt"/>
+    </resultMap>
+
     <resultMap id="AdminStatsRespDtoMap" type="com.nullpoint.fifteenmintable.dto.admin.AdminStatsRespDto">
         <result property="totalUsers" column="total_users"/>
         <result property="totalRecipes" column="total_recipes"/>
@@ -24,6 +36,127 @@
         <result property="date" column="date"/>
         <result property="count" column="count"/>
     </resultMap>
+
+    <select id="getAdminRecipeList" resultMap="AdminRecipeRespDtoMap">
+        select
+            rt.recipe_id,
+            rt.user_id,
+            rt.view_count,
+            coalesce(ct.comment_count, 0) as comment_count,
+            rt.title,
+            ut.username,
+            ut.profile_img_url,
+            rt.create_dt,
+            rt.update_dt
+        from
+            recipe_tb rt
+            inner join user_tb ut
+                on ut.user_id = rt.user_id
+            left join (
+                select
+                    target_id as recipe_id,
+                    count(*) as comment_count
+                from
+                    comment_tb
+                where
+                    target_type = 'RECIPE'
+                group by
+                    target_id
+            ) ct
+                on ct.recipe_id = rt.recipe_id
+        where
+            1 = 1
+
+            <!-- keyword search: title or username -->
+            <if test="keyword != null and keyword != ''">
+                and (
+                    rt.title like concat('%', #{keyword}, '%')
+                    or ut.username like concat('%', #{keyword}, '%')
+                )
+            </if>
+
+            <!-- keyset cursor -->
+            <if test="cursorValue != null and cursorId != null">
+                <choose>
+                    <!-- sortKey: createDt -->
+                    <when test="sortKey == 'createDt'">
+                        <choose>
+                            <when test="sortBy == 'asc'">
+                                and (
+                                    rt.create_dt &gt; #{cursorValue}
+                                    or (rt.create_dt = #{cursorValue} and rt.recipe_id &gt; #{cursorId})
+                                )
+                            </when>
+                            <otherwise>
+                                and (
+                                    rt.create_dt &lt; #{cursorValue}
+                                    or (rt.create_dt = #{cursorValue} and rt.recipe_id &lt; #{cursorId})
+                                )
+                            </otherwise>
+                        </choose>
+                    </when>
+
+                    <!-- sortKey: viewCount -->
+                    <when test="sortKey == 'viewCount'">
+                        <choose>
+                            <when test="sortBy == 'asc'">
+                                and (
+                                    rt.view_count &gt; #{cursorValue}
+                                    or (rt.view_count = #{cursorValue} and rt.recipe_id &gt; #{cursorId})
+                                )
+                            </when>
+                            <otherwise>
+                                and (
+                                    rt.view_count &lt; #{cursorValue}
+                                    or (rt.view_count = #{cursorValue} and rt.recipe_id &lt; #{cursorId})
+                                )
+                            </otherwise>
+                        </choose>
+                    </when>
+
+                    <!-- fallback: createDt desc -->
+                    <otherwise>
+                        and (
+                        rt.create_dt &lt; #{cursorValue}
+                        or (rt.create_dt = #{cursorValue} and rt.recipe_id &lt; #{cursorId})
+                        )
+                    </otherwise>
+                </choose>
+            </if>
+
+        <!-- order by -->
+        <choose>
+            <when test="sortKey == 'viewCount'">
+                order by
+                    rt.view_count
+                    <choose>
+                        <when test="sortBy == 'asc'">asc</when>
+                        <otherwise>desc</otherwise>
+                    </choose>,
+                    rt.recipe_id
+                    <choose>
+                        <when test="sortBy == 'asc'">asc</when>
+                        <otherwise>desc</otherwise>
+                    </choose>
+            </when>
+
+            <otherwise>
+                order by
+                    rt.create_dt
+                <choose>
+                    <when test="sortBy == 'asc'">asc</when>
+                    <otherwise>desc</otherwise>
+                </choose>,
+                rt.recipe_id
+                <choose>
+                    <when test="sortBy == 'asc'">asc</when>
+                    <otherwise>desc</otherwise>
+                </choose>
+            </otherwise>
+        </choose>
+
+        limit #{size}
+    </select>
 
     <select id="getDashboardStats" resultMap="AdminStatsRespDtoMap">
         select
