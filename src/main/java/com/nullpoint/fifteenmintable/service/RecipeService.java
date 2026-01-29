@@ -274,7 +274,9 @@ public class RecipeService {
 
         commentRepository.deleteByTarget("RECIPE", recipeId);
 
-        int result = recipeRepository.removeRecipe(recipeId, principalUser.getUserId());
+        Integer deleteUserId = isAdmin ? foundRecipe.getUserId() : principalUser.getUserId();
+
+        int result = recipeRepository.removeRecipe(recipeId, deleteUserId);
         if (result != 1) throw new RuntimeException("레시피 삭제 실패");
 
         return new ApiRespDto<>("success", "레시피 삭제에 성공했습니다.", null);
