@@ -90,7 +90,6 @@ public class MailService {
             return Map.of("status", "failed", "message", "잘못된 요청입니다.\n인증 메일을 다시 요청하세요.");
         }
     }
-
 }
 
 

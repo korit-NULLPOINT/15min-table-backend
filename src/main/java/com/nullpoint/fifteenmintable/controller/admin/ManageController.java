@@ -1,10 +1,7 @@
 package com.nullpoint.fifteenmintable.controller.admin;
 
 import com.nullpoint.fifteenmintable.dto.ApiRespDto;
-import com.nullpoint.fifteenmintable.dto.admin.AdminActivityRespDto;
-import com.nullpoint.fifteenmintable.dto.admin.AdminRecipeRespDto;
-import com.nullpoint.fifteenmintable.dto.admin.AdminStatsRespDto;
-import com.nullpoint.fifteenmintable.dto.admin.AdminTimeSeriesPointDto;
+import com.nullpoint.fifteenmintable.dto.admin.*;
 import com.nullpoint.fifteenmintable.entity.User;
 import com.nullpoint.fifteenmintable.exception.BadRequestException;
 import com.nullpoint.fifteenmintable.service.ManageService;
@@ -100,6 +97,24 @@ public class ManageController {
     ) {
         return ResponseEntity.ok(
                 manageService.getAdminRecipeList(
+                        keyword, sortKey, sortBy, cursorId, cursorCreateDt, cursorViewCount, size
+                )
+        );
+    }
+
+    @GetMapping("/posts")
+    public ResponseEntity<ApiRespDto<List<AdminPostRespDto>>> getAdminPostList(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false, defaultValue = "createDt") String sortKey,
+            @RequestParam(required = false, defaultValue = "desc") String sortBy,
+            @RequestParam(required = false) Integer cursorId,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime cursorCreateDt,
+            @RequestParam(required = false) Integer cursorViewCount,
+            @RequestParam(required = false, defaultValue = "20") Integer size
+    ) {
+        return ResponseEntity.ok(
+                manageService.getAdminPostList(
                         keyword, sortKey, sortBy, cursorId, cursorCreateDt, cursorViewCount, size
                 )
         );

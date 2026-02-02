@@ -17,10 +17,22 @@
         <result property="updateDt" column="update_dt"/>
     </resultMap>
 
+    <resultMap id="AdminPostRespDtoMap" type="com.nullpoint.fifteenmintable.dto.admin.AdminPostRespDto">
+        <id property="postId" column="post_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="viewCount" column="view_count"/>
+        <result property="commentCount" column="comment_count"/>
+        <result property="title" column="title"/>
+        <result property="username" column="username"/>
+        <result property="profileImgUrl" column="profile_img_url"/>
+        <result property="createDt" column="create_dt"/>
+        <result property="updateDt" column="update_dt"/>
+    </resultMap>
+
     <resultMap id="AdminStatsRespDtoMap" type="com.nullpoint.fifteenmintable.dto.admin.AdminStatsRespDto">
         <result property="totalUsers" column="total_users"/>
         <result property="totalRecipes" column="total_recipes"/>
-        <result property="totalCommunityPosts" column="total_community_posts"/>
+        <result property="totalPosts" column="total_posts"/>
     </resultMap>
 
     <resultMap id="AdminActivityRespDtoMap" type="com.nullpoint.fifteenmintable.dto.admin.AdminActivityRespDto">
@@ -158,11 +170,131 @@
         limit #{size}
     </select>
 
+    <select id="getAdminPostList" resultMap="AdminPostRespDtoMap">
+        select
+            pt.post_id,
+            pt.user_id,
+            pt.view_count,
+            coalesce(ct.comment_count, 0) as comment_count,
+            pt.title,
+            ut.username,
+            ut.profile_img_url,
+            pt.create_dt,
+            pt.update_dt
+        from
+            post_tb pt
+            inner join user_tb ut
+                on ut.user_id = pt.user_id
+            left join (
+                select
+                    target_id as post_id,
+                    count(*) as comment_count
+                from
+                    comment_tb
+                where
+                    target_type = 'POST'
+                group by
+                    target_id
+            ) ct
+                on ct.post_id = pt.post_id
+        where
+            1 = 1
+
+            <!-- keyword search: title or username -->
+            <if test="keyword != null and keyword != ''">
+                and (
+                    pt.title like concat('%', #{keyword}, '%')
+                    or ut.username like concat('%', #{keyword}, '%')
+                )
+            </if>
+
+            <!-- keyset cursor -->
+            <if test="cursorValue != null and cursorId != null">
+                <choose>
+                    <!-- sortKey: createDt -->
+                    <when test="sortKey == 'createDt'">
+                        <choose>
+                            <when test="sortBy == 'asc'">
+                                and (
+                                    pt.create_dt &gt; #{cursorValue}
+                                    or (pt.create_dt = #{cursorValue} and pt.post_id &gt; #{cursorId})
+                                )
+                            </when>
+                            <otherwise>
+                                and (
+                                    pt.create_dt &lt; #{cursorValue}
+                                    or (pt.create_dt = #{cursorValue} and pt.post_id &lt; #{cursorId})
+                                )
+                            </otherwise>
+                        </choose>
+                    </when>
+
+                    <!-- sortKey: viewCount -->
+                    <when test="sortKey == 'viewCount'">
+                        <choose>
+                            <when test="sortBy == 'asc'">
+                                and (
+                                    pt.view_count &gt; #{cursorValue}
+                                    or (pt.view_count = #{cursorValue} and pt.post_id &gt; #{cursorId})
+                                )
+                            </when>
+                            <otherwise>
+                                and (
+                                    pt.view_count &lt; #{cursorValue}
+                                    or (pt.view_count = #{cursorValue} and pt.post_id &lt; #{cursorId})
+                                )
+                            </otherwise>
+                        </choose>
+                    </when>
+
+                    <!-- fallback: createDt desc -->
+                    <otherwise>
+                        and (
+                            pt.create_dt &lt; #{cursorValue}
+                            or (pt.create_dt = #{cursorValue} and pt.post_id &lt; #{cursorId})
+                        )
+                    </otherwise>
+                </choose>
+            </if>
+
+        <!-- order by -->
+        <choose>
+            <when test="sortKey == 'viewCount'">
+                order by
+                    pt.view_count
+                    <choose>
+                        <when test="sortBy == 'asc'">asc</when>
+                        <otherwise>desc</otherwise>
+                    </choose>,
+                    pt.post_id
+                    <choose>
+                        <when test="sortBy == 'asc'">asc</when>
+                        <otherwise>desc</otherwise>
+                    </choose>
+            </when>
+
+            <otherwise>
+                order by
+                    pt.create_dt
+                    <choose>
+                        <when test="sortBy == 'asc'">asc</when>
+                        <otherwise>desc</otherwise>
+                    </choose>,
+                    pt.post_id
+                    <choose>
+                        <when test="sortBy == 'asc'">asc</when>
+                        <otherwise>desc</otherwise>
+                    </choose>
+            </otherwise>
+        </choose>
+        limit #{size}
+    </select>
+
     <select id="getDashboardStats" resultMap="AdminStatsRespDtoMap">
         select
             (select count(*) from user_tb) as total_users,
             (select count(*) from recipe_tb) as total_recipes,
-            0 as total_community_posts
+            (select count(*) from post_tb) as total_posts
     </select>
 
     <select id="getRecentActivities" resultMap="AdminActivityRespDtoMap">
@@ -180,7 +312,38 @@
             from
                 user_tb ut
 
-            union all
+        union all
+
+            select
+                'POST' as type,
+                'CREATED' as action,
+                pt.post_id as target_id,
+                pt.title as title,
+                ut.username as username,
+                pt.create_dt as occurred_at
+            from
+                post_tb pt
+                inner join user_tb ut
+                on ut.user_id = pt.user_id
+
+        union all
+
+            select
+                'POST' as type,
+                'UPDATED' as action,
+                pt.post_id as target_id,
+                pt.title as title,
+                ut.username as username,
+                pt.update_dt as occurred_at
+            from
+                post_tb pt
+                inner join user_tb ut
+                    on ut.user_id = pt.user_id
+            where
+                pt.update_dt is not null
+                and pt.update_dt != pt.create_dt
+
+        union all
 
             /* recipe created: target_id = recipe_id */
             select
@@ -268,12 +431,38 @@
                     recipe_tb rt
                 where
                     1 = 1
-                <if test="from != null">
-                    and rt.create_dt &gt;= #{from}
-                </if>
-                <if test="to != null">
-                    and rt.create_dt &lt;= #{to}
-                </if>
+                    <if test="from != null">
+                        and rt.create_dt &gt;= #{from}
+                    </if>
+                    <if test="to != null">
+                        and rt.create_dt &lt;= #{to}
+                    </if>
+                group by
+                    date
+                order by
+                    date
+            </when>
+
+            <!-- posts -->
+            <when test="metric == 'posts'">
+                select
+                    <choose>
+                        <when test="bucket == 'day'">date_format(pt.create_dt, '%Y-%m-%d')</when>
+                        <when test="bucket == 'month'">date_format(pt.create_dt, '%Y-%m')</when>
+                        <otherwise>date_format(pt.create_dt, '%Y')</otherwise>
+                    </choose>
+                    as date,
+                    count(*) as count
+                from
+                    post_tb pt
+                where
+                    1 = 1
+                    <if test="from != null">
+                        and pt.create_dt &gt;= #{from}
+                    </if>
+                    <if test="to != null">
+                        and pt.create_dt &lt;= #{to}
+                    </if>
                 group by
                     date
                 order by

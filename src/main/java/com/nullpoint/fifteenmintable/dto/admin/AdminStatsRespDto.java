@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class AdminStatsRespDto {
     private Long totalUsers;
     private Long totalRecipes;
-    private Long totalCommunityPosts;
+    private Long totalPosts;
 }
