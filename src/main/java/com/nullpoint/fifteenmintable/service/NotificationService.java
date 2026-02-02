@@ -4,12 +4,14 @@ import com.nullpoint.fifteenmintable.dto.ApiRespDto;
 import com.nullpoint.fifteenmintable.dto.notification.NotificationPushRespDto;
 import com.nullpoint.fifteenmintable.dto.notification.NotificationRespDto;
 import com.nullpoint.fifteenmintable.entity.Notification;
+import com.nullpoint.fifteenmintable.entity.Post;
 import com.nullpoint.fifteenmintable.entity.Recipe;
 import com.nullpoint.fifteenmintable.exception.BadRequestException;
 import com.nullpoint.fifteenmintable.exception.NotFoundException;
 import com.nullpoint.fifteenmintable.exception.UnauthenticatedException;
 import com.nullpoint.fifteenmintable.repository.FollowRepository;
 import com.nullpoint.fifteenmintable.repository.NotificationRepository;
+import com.nullpoint.fifteenmintable.repository.PostRepository;
 import com.nullpoint.fifteenmintable.repository.RecipeRepository;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,9 @@ public class NotificationService {
 
     @Autowired
     private RecipeRepository recipeRepository;
+
+    @Autowired
+    private PostRepository postRepository;
 
     @Autowired
     private NotificationSseService notificationSseService;
@@ -98,16 +103,21 @@ public class NotificationService {
 
         Integer actorUserId = principalUser.getUserId();
         String tt = targetType.trim().toUpperCase();
-        Integer receiverUserId = null;
 
+        Integer receiverUserId;
 
-        // 현재 프로젝트는 RECIPE만 존재하므로 RECIPE만 처리 (POST는 추후 PostRepository 생기면 여기 확장)
         if (TARGET_RECIPE.equals(tt)) {
             Recipe recipe = recipeRepository.getRecipeEntityById(targetId)
                     .orElseThrow(() -> new NotFoundException("레시피를 찾을 수 없습니다."));
             receiverUserId = recipe.getUserId();
+
+        } else if (TARGET_POST.equals(tt)) {
+            Post post = postRepository.getPostById(targetId)
+                    .orElseThrow(() -> new NotFoundException("게시글을 찾을 수 없습니다."));
+            receiverUserId = post.getUserId();
+
         } else {
-            return;
+            throw new BadRequestException("지원하지 않는 targetType 입니다.");
         }
 
         if (receiverUserId == null || receiverUserId.equals(actorUserId)) return;
@@ -123,6 +133,7 @@ public class NotificationService {
 
         notificationRepository.createNotification(notification);
     }
+
 
 
     @Transactional

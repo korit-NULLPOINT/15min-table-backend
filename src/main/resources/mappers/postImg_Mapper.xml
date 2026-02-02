@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nullpoint.fifteenmintable.mapper.PostImgMapper">
+
+    <resultMap id="PostImgResultMap" type="com.nullpoint.fifteenmintable.entity.PostImg">
+        <id property="postImgId" column="post_img_id"/>
+        <result property="postId" column="post_id"/>
+        <result property="imgUrl" column="img_url"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="createDt" column="create_dt"/>
+    </resultMap>
+
+    <delete id="deleteByPostId">
+        delete from
+            post_img_tb
+        where
+            post_id = #{postId}
+    </delete>
+
+    <insert id="addPostImgs">
+        insert into post_img_tb
+            (post_id, img_url, sort_order, create_dt)
+        values
+            <foreach collection="postImgs" item="pi" separator=",">
+                (#{pi.postId}, #{pi.imgUrl}, #{pi.sortOrder}, now())
+            </foreach>
+    </insert>
+
+    <select id="getImgUrlsByPostId" resultType="java.lang.String">
+        select
+            img_url
+        from
+            post_img_tb
+        where
+            post_id = #{postId}
+        order by
+            sort_order asc
+    </select>
+</mapper>

@@ -5,7 +5,6 @@ import com.nullpoint.fifteenmintable.dto.recipe.RecipeFilterReqDto;
 import com.nullpoint.fifteenmintable.dto.recipe.RecipeListRespDto;
 import com.nullpoint.fifteenmintable.entity.Recipe;
 import com.nullpoint.fifteenmintable.mapper.RecipeMapper;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -54,8 +53,8 @@ public class RecipeRepository {
         return recipeMapper.getRecipeEntityById(recipeId);
     }
 
-    public int increaseViewCount(Integer recipeId) {
-        return recipeMapper.increaseViewCount(recipeId);
+    public void increaseViewCount(Integer recipeId) {
+        recipeMapper.increaseViewCount(recipeId);
     }
 
     public int modifyRecipe(Recipe recipe) {
