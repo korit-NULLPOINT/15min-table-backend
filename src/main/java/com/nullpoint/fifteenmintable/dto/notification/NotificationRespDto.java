@@ -15,6 +15,7 @@ public class NotificationRespDto {
     private String actorUsername;
     private String notificationType;
     private String targetType;
+    private String targetTitle;
     private Integer targetId;
     private Integer commentId;
     private Integer isRead;
