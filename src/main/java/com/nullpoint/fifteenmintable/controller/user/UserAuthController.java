@@ -3,7 +3,9 @@ import com.nullpoint.fifteenmintable.dto.ApiRespDto;
 import com.nullpoint.fifteenmintable.dto.auth.SigninReqDto;
 import com.nullpoint.fifteenmintable.dto.auth.SignupReqDto;
 import com.nullpoint.fifteenmintable.security.cookie.SseCookieUtils;
+import com.nullpoint.fifteenmintable.security.filter.JwtAuthenticationFilter;
 import com.nullpoint.fifteenmintable.service.UserAuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,9 @@ public class UserAuthController {
 
     @Autowired
     private SseCookieUtils sseCookieUtils;
+
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @PostMapping("/signup")
     public ResponseEntity<ApiRespDto<Void>> signup(@RequestBody SignupReqDto signupReqDto) {
@@ -41,5 +46,18 @@ public class UserAuthController {
         }
 
         return ResponseEntity.ok(respDto);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiRespDto<Void>> logout(HttpServletRequest request, HttpServletResponse response) {
+
+        // SSE 쿠키 삭제
+        sseCookieUtils.clearSseAccessToken(response);
+
+        // 필터의 토큰 추출 로직 재사용 (헤더→쿠키)
+        String accessToken = jwtAuthenticationFilter.resolveAccessToken(request);
+
+        // 블랙리스트 등록
+        return ResponseEntity.ok(userAuthService.logout(accessToken));
     }
 }

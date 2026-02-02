@@ -12,17 +12,24 @@ import com.nullpoint.fifteenmintable.exception.UnauthenticatedException;
 import com.nullpoint.fifteenmintable.repository.UserRepository;
 import com.nullpoint.fifteenmintable.repository.UserRoleRepository;
 import com.nullpoint.fifteenmintable.security.jwt.JwtUtils;
+import com.nullpoint.fifteenmintable.security.jwt.TokenBlacklistStore;
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+
 @Service
 public class UserAuthService {
     
     @Autowired
     private JwtUtils jwtUtils;
+
+    @Autowired
+    private TokenBlacklistStore tokenBlacklistStore;
 
     @Autowired
     private UserRepository userRepository;
@@ -104,6 +111,44 @@ public class UserAuthService {
 
         String accessToken = jwtUtils.generateAccessToken(user.getUserId().toString());
         return new ApiRespDto<>("success", "로그인 성공", accessToken);
+    }
+
+    @Transactional
+    public ApiRespDto<Void> logout(String accessToken) {
+
+        if (isBlank(accessToken)) {
+            return new ApiRespDto<>("success", "로그아웃 되었습니다.", null);
+        }
+
+        if (jwtUtils.isBearer(accessToken)) {
+            accessToken = jwtUtils.removeBearer(accessToken);
+            if (isBlank(accessToken)) {
+                return new ApiRespDto<>("success", "로그아웃 되었습니다.", null);
+            }
+        }
+
+        try {
+            Claims claims = jwtUtils.getClaims(accessToken);
+
+            Date exp = claims.getExpiration();
+            if (exp == null) {
+                // exp가 없다면 블랙리스트 의미가 애매하니 스킵
+                return new ApiRespDto<>("success", "로그아웃 되었습니다.", null);
+            }
+
+            long ttlSeconds = (exp.getTime() - System.currentTimeMillis()) / 1000L;
+
+            // 만료됐거나 곧 만료될 토큰은 굳이 저장 X
+            if (ttlSeconds > 0) {
+                tokenBlacklistStore.blacklist(accessToken, ttlSeconds);
+            }
+
+        } catch (RuntimeException ignore) {
+            // 만료/위조/파싱 실패면 블랙리스트 등록 스킵
+            // (그래도 로그아웃 응답은 성공 처리)
+        }
+
+        return new ApiRespDto<>("success", "로그아웃 되었습니다.", null);
     }
 
     private boolean isBlank(String s) {

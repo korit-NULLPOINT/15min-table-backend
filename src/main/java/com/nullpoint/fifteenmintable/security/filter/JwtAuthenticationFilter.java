@@ -1,9 +1,8 @@
 package com.nullpoint.fifteenmintable.security.filter;
 
-import com.nullpoint.fifteenmintable.entity.User;
-import com.nullpoint.fifteenmintable.repository.UserRepository;
 import com.nullpoint.fifteenmintable.security.cookie.SseCookieUtils;
 import com.nullpoint.fifteenmintable.security.jwt.JwtUtils;
+import com.nullpoint.fifteenmintable.security.jwt.TokenBlacklistStore;
 import com.nullpoint.fifteenmintable.service.PrincipalLoaderService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.*;
@@ -27,6 +26,27 @@ public class JwtAuthenticationFilter implements Filter {
     @Autowired
     private PrincipalLoaderService principalLoaderService;
 
+    @Autowired
+    private TokenBlacklistStore tokenBlacklistStore;
+
+    // ✅ 추가: 컨트롤러/필터 공용 토큰 추출 로직
+    public String resolveAccessToken(HttpServletRequest request) {
+        String authorization = request.getHeader("Authorization");
+
+        // 1) 헤더 우선
+        String accessToken = null;
+        if (jwtUtils.isBearer(authorization)) {
+            accessToken = jwtUtils.removeBearer(authorization);
+        }
+
+        // 2) 헤더 없으면 SSE_AT 쿠키 fallback
+        if (accessToken == null || accessToken.trim().isEmpty()) {
+            accessToken = getCookieValue(request, SseCookieUtils.SSE_COOKIE_NAME);
+        }
+
+        return (accessToken == null || accessToken.trim().isEmpty()) ? null : accessToken;
+    }
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
@@ -39,20 +59,18 @@ public class JwtAuthenticationFilter implements Filter {
             return;
         }
 
-        String authorization = request.getHeader("Authorization");
+        // ✅ 변경: 여기서 공용 메서드 사용
+        String accessToken = resolveAccessToken(request);
 
-        // ✅ 1) 헤더 우선
-        String accessToken = null;
-        if (jwtUtils.isBearer(authorization)) {
-            accessToken = jwtUtils.removeBearer(authorization);
-        }
+        if (accessToken != null) {
 
-        // ✅ 2) 헤더 없으면 SSE_AT 쿠키 fallback (EventSource는 헤더 못 넣음)
-        if (accessToken == null || accessToken.trim().isEmpty()) {
-            accessToken = getCookieValue(request, SseCookieUtils.SSE_COOKIE_NAME);
-        }
+            // ✅ 블랙리스트면 인증 무효
+            if (tokenBlacklistStore.isBlacklisted(accessToken)) {
+                SecurityContextHolder.clearContext();
+                filterChain.doFilter(servletRequest, servletResponse);
+                return;
+            }
 
-        if (accessToken != null && !accessToken.trim().isEmpty()) {
             try {
                 Claims claims = jwtUtils.getClaims(accessToken);
                 Integer userId = Integer.parseInt(claims.getId());
@@ -60,7 +78,6 @@ public class JwtAuthenticationFilter implements Filter {
                 principalLoaderService.loadByUserId(userId).ifPresentOrElse(principalUser -> {
 
                     String status = principalUser.getStatus();
-
                     if (!"ACTIVE".equals(status)) {
                         SecurityContextHolder.clearContext();
                         return;
@@ -92,3 +109,4 @@ public class JwtAuthenticationFilter implements Filter {
         return null;
     }
 }
+

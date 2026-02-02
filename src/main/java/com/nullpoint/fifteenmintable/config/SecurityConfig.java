@@ -78,6 +78,8 @@ public class SecurityConfig {
 
             auth.requestMatchers("/admin/**").hasRole("ADMIN");
 
+            auth.requestMatchers("/user/auth/logout").hasAnyRole("ADMIN","USER","TEMP_USER");
+
             // 0) 공개
             auth.requestMatchers(
                     "/user/auth/**",
