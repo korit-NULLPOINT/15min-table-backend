@@ -1,10 +1,7 @@
 package com.nullpoint.fifteenmintable.service;
 
 import com.nullpoint.fifteenmintable.dto.ApiRespDto;
-import com.nullpoint.fifteenmintable.dto.admin.AdminActivityRespDto;
-import com.nullpoint.fifteenmintable.dto.admin.AdminRecipeRespDto;
-import com.nullpoint.fifteenmintable.dto.admin.AdminStatsRespDto;
-import com.nullpoint.fifteenmintable.dto.admin.AdminTimeSeriesPointDto;
+import com.nullpoint.fifteenmintable.dto.admin.*;
 import com.nullpoint.fifteenmintable.entity.User;
 import com.nullpoint.fifteenmintable.exception.BadRequestException;
 import com.nullpoint.fifteenmintable.exception.NotFoundException;
@@ -32,12 +29,17 @@ public class ManageService {
     }
 
     public ApiRespDto<User> getUserByUsername(String username) {
-        Optional<User> foundUser = userRepository.getUserByUsername(username);
-        if (foundUser.isEmpty()) {
-            return new ApiRespDto<>("failed", "해당 회원이 존재 하지 않습니다", null);
+        if (username == null || username.isBlank()) {
+            throw new BadRequestException("username은 필수입니다.");
         }
-        return new ApiRespDto<>("success", "회원 정보 조회 완료", foundUser.get());
+
+        User foundUser = userRepository.getUserByUsername(username)
+                .orElseThrow(() -> new NotFoundException("해당 회원이 존재하지 않습니다."));
+
+        return new ApiRespDto<>("success", "회원 정보 조회 완료", foundUser);
     }
+
+
 
     public ApiRespDto<AdminStatsRespDto> getDashboardStats() {
         AdminStatsRespDto stats = manageRepository
@@ -61,15 +63,31 @@ public class ManageService {
             LocalDateTime to
     ) {
         if (metric == null || metric.isBlank()) {
-            return new ApiRespDto<>("failed", "metric 값이 필요합니다. (users | recipes)", null);
+            throw new BadRequestException("metric 값이 필요합니다. (users | recipes | posts)");
         }
         if (bucket == null || bucket.isBlank()) {
-            return new ApiRespDto<>("failed", "bucket 값이 필요합니다. (day | month | year)", null);
+            throw new BadRequestException("bucket 값이 필요합니다. (day | month | year)");
         }
 
-        List<AdminTimeSeriesPointDto> series = manageRepository.getTimeSeries(metric, bucket, from, to);
+        String safeMetric = metric.trim();
+        if (!safeMetric.equals("users") && !safeMetric.equals("recipes") && !safeMetric.equals("posts")) {
+            throw new BadRequestException("metric은 users | recipes | posts 중 하나여야 합니다.");
+        }
+
+        String safeBucket = bucket.trim();
+        if (!safeBucket.equals("day") && !safeBucket.equals("month") && !safeBucket.equals("year")) {
+            throw new BadRequestException("bucket은 day | month | year 중 하나여야 합니다.");
+        }
+
+        // (권장) from/to 역전 방지
+        if (from != null && to != null && from.isAfter(to)) {
+            throw new BadRequestException("from은 to보다 이후일 수 없습니다.");
+        }
+
+        List<AdminTimeSeriesPointDto> series = manageRepository.getTimeSeries(safeMetric, safeBucket, from, to);
         return new ApiRespDto<>("success", "시계열 통계 조회 완료", series);
     }
+
 
     public ApiRespDto<Void> banUser(Integer userId) {
         userRepository.getUserByUserId(userId)
@@ -124,5 +142,40 @@ public class ManageService {
 
         return new ApiRespDto<>("success", "관리자 레시피 목록 조회 완료", recipes);
     }
+
+    public ApiRespDto<List<AdminPostRespDto>> getAdminPostList(
+            String keyword,
+            String sortKey,
+            String sortBy,
+            Integer cursorId,
+            LocalDateTime cursorCreateDt,
+            Integer cursorViewCount,
+            Integer size
+    ) {
+        int safeSize = (size == null || size <= 0) ? 20 : Math.min(size, 50);
+
+        String safeSortKey = (sortKey == null || sortKey.isBlank()) ? "createDt" : sortKey;
+        if (!safeSortKey.equals("createDt") && !safeSortKey.equals("viewCount")) safeSortKey = "createDt";
+
+        String safeSortBy = (sortBy == null || sortBy.isBlank()) ? "desc" : sortBy;
+        if (!safeSortBy.equals("asc") && !safeSortBy.equals("desc")) safeSortBy = "desc";
+
+        Object cursorValue = null;
+        if (cursorId != null) {
+            if (safeSortKey.equals("createDt")) cursorValue = cursorCreateDt;
+            else cursorValue = cursorViewCount;
+
+            if (cursorValue == null) {
+                throw new BadRequestException("cursorId와 cursorValue는 함께 전달되어야 합니다.");
+            }
+        }
+
+        List<AdminPostRespDto> posts = manageRepository.getAdminPostList(
+                keyword, safeSortKey, safeSortBy, cursorValue, cursorId, safeSize
+        );
+
+        return new ApiRespDto<>("success", "관리자 게시글 목록 조회 완료", posts);
+    }
+
 
 }

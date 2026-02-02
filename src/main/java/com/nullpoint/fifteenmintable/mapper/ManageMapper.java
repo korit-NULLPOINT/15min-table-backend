@@ -1,9 +1,6 @@
 package com.nullpoint.fifteenmintable.mapper;
 
-import com.nullpoint.fifteenmintable.dto.admin.AdminActivityRespDto;
-import com.nullpoint.fifteenmintable.dto.admin.AdminRecipeRespDto;
-import com.nullpoint.fifteenmintable.dto.admin.AdminStatsRespDto;
-import com.nullpoint.fifteenmintable.dto.admin.AdminTimeSeriesPointDto;
+import com.nullpoint.fifteenmintable.dto.admin.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -16,19 +13,36 @@ public interface ManageMapper {
 
     List<AdminRecipeRespDto> getAdminRecipeList(
             @Param("keyword") String keyword,
-            @Param("sortKey") String sortKey,   // createDt | viewCount
-            @Param("sortBy") String sortBy,   // asc | desc
-            @Param("cursorValue") Object cursorValue, // createDt: LocalDateTime, viewCount: Integer
+            @Param("sortKey") String sortKey,
+            @Param("sortBy") String sortBy,
+            @Param("cursorValue") Object cursorValue,
             @Param("cursorId") Integer cursorId,
             @Param("size") Integer size
     );
+
+    List<AdminPostRespDto> getAdminPostList(
+            @Param("keyword") String keyword,
+            @Param("sortKey") String sortKey,
+            @Param("sortBy") String sortBy,
+            @Param("cursorValue") Object cursorValue,
+            @Param("cursorId") Integer cursorId,
+            @Param("size") Integer size
+    );
+
+    /*
+    sortKey = createDt | viewCount
+
+    sortBy = asc | desc
+
+    cursorValue = createDt: LocalDateTime | viewCount: Integer
+    * */
 
     Optional<AdminStatsRespDto> getDashboardStats();
 
     List<AdminActivityRespDto> getRecentActivities(@Param("limit") Integer limit);
 
     List<AdminTimeSeriesPointDto> getTimeSeries(
-            @Param("metric") String metric,   // "users" | "recipes"
+            @Param("metric") String metric,   // "users" | "recipes" | "posts"
             @Param("bucket") String bucket,   // "day" | "month" | "year"
             @Param("from") LocalDateTime from,
             @Param("to") LocalDateTime to
