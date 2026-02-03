@@ -61,7 +61,7 @@
 |---|---|---|
 | 심재원 | 팀장 / Backend & Frontend | https://github.com/S-JaeWon |
 | 배찬익 | 팀원 /Backend & Frontend| https://github.com/moon-ray-b |
-| 홍해준 | 팀원 /Backend & Frontend | https://github.com/ |
+| 홍해준 | 팀원 /Backend & Frontend | https://github.com/HJ.Hong |
 
 ---
 
