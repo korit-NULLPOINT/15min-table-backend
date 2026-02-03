@@ -36,7 +36,7 @@
 
 - [![My Skills](https://skillicons.dev/icons?i=js,html,css,react)](https://skillicons.dev)
 
-[![My Skills](https://skillicons.dev/icons?i=spring,mysql,posstmain,github,docker,notion&perline=3)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=spring,mysql,posstmain,github,docker&perline=3)](https://skillicons.dev)
 
 <p align="center">
   <a href="https://skillicons.dev">
