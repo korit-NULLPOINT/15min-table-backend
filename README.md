@@ -45,14 +45,7 @@
 - JWT 기반 인증 / 인가
 - 관리자 페이지 실시간 관리
 - 팔로워 팔로잉 / 실시간 알림 기능
-
-- 메인 언어 & 배포
-
-- [![My Skills](https://skillicons.dev/icons?i=js,html,css,react)](https://skillicons.dev)
-
-- [![My Skills](https://skillicons.dev/icons?i=spring,mysql,postman)](https://skillicons.dev)
-
-- [![My Skills](https://skillicons.dev/icons?i=github,docker,notion)](https://skillicons.dev)
+- 
 ---
 
 ## 👥 팀원 소개
@@ -217,6 +210,29 @@
 각 영역에 적합한 기술 스택을 선택하여 협업 효율과 유지보수성을 고려하였다.
 
 ---
+### 🎨 Frontend
+- 메인 언어 및 UI 구현
+- [![My Skills](https://skillicons.dev/icons?i=js,html,css,react,materialui,vite)](https://skillicons.dev)
+
+---
+
+### ⚙️ Backend
+- 서버 및 데이터 처리
+- [![My Skills](https://skillicons.dev/icons?i=spring,java,mysql,postman,redis)](https://skillicons.dev)
+
+---
+
+### 🚀 Deployment & Infrastructure
+- 배포 및 인프라 환경
+- [![My Skills](https://skillicons.dev/icons?i=github,git,docker,aws,notion)](https://skillicons.dev)
+
+### 🤝 Collaboration & Version Control
+- 협업 및 형상 관리
+- [![My Skills](https://skillicons.dev/icons?i=idea,vscode)](https://skillicons.dev)
+
+### 🛠 Development Tools
+- 개발 도구 및 IDE
+- [![My Skills](https://skillicons.dev/icons?i=apple,windows)](https://skillicons.dev)
 
 #### ❇️ 프론트엔드
 
