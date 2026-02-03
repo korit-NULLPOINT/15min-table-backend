@@ -1,7 +1,7 @@
 package com.nullpoint.fifteenmintable.service;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
+//import com.github.benmanes.caffeine.cache.Cache;
+//import com.github.benmanes.caffeine.cache.Caffeine;
 import com.nullpoint.fifteenmintable.dto.hashtag.HashtagRespDto;
 import com.nullpoint.fifteenmintable.dto.recipe.*;
 import com.nullpoint.fifteenmintable.dto.ApiRespDto;
@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+//import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -44,10 +44,10 @@ public class RecipeService {
 
     private final StringRedisTemplate redisTemplate;
     // Redis가 죽었을 때 쓸 비상용 로컬 캐시 (24시간 뒤 자동 삭제, 최대 3000개)
-    private final Cache<String, Boolean> localFallbackCache = Caffeine.newBuilder()
-            .expireAfterWrite(60 * 24, TimeUnit.MINUTES)
-            .maximumSize(3000)
-            .build();
+//    private final Cache<String, Boolean> localFallbackCache = Caffeine.newBuilder()
+//            .expireAfterWrite(60 * 24, TimeUnit.MINUTES)
+//            .maximumSize(3000)
+//            .build();
 
     @Transactional
     public ApiRespDto<Integer> addRecipe(Integer boardId, AddRecipeReqDto addRecipeReqDto, PrincipalUser principalUser) {
@@ -198,11 +198,11 @@ public class RecipeService {
             // 2. Redis 연결 실패 시 -> 로컬 캐시로 Fallback
             log.warn("Redis 연결 실패! 로컬 캐시로 전환합니다. ({})", e.getMessage());
 
-            // 로컬 캐시에 없으면 카운트 증가
-            if (localFallbackCache.getIfPresent(key) == null) {
-                recipeRepository.increaseViewCount(recipeId); // DB 증가
-                localFallbackCache.put(key, true); // 로컬에 기록
-            }
+            // 로컬 캐시에 없으면 카운트 증가 - caffeine 의존성 제거 완료
+//            if (localFallbackCache.getIfPresent(key) == null) {
+//                recipeRepository.increaseViewCount(recipeId); // DB 증가
+//                localFallbackCache.put(key, true); // 로컬에 기록
+//            }
         }
 
         RecipeDetailRespDto detail = recipeRepository.getRecipeDetail(boardId, recipeId)
