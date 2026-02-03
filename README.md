@@ -212,7 +212,7 @@
 ---
 ### 🎨 Frontend
 - 메인 언어 및 UI 구현
-- [![My Skills](https://skillicons.dev/icons?i=js,html,css,react,materialui,vite)](https://skillicons.dev)
+- [![My Skills](https://skillicons.dev/icons?i=js,html,react,materialui,vite)](https://skillicons.dev)
 
 ---
 
@@ -237,6 +237,8 @@
 ### 🛠 Development Tools
 - 개발 도구 및 IDE
 - [![My Skills](https://skillicons.dev/icons?i=apple,windows)](https://skillicons.dev)
+
+---
 
 #### ❇️ 프론트엔드
 
