@@ -34,6 +34,8 @@
 - 🍽️ 자취생 맞춤 집밥
 - 💬 레시피 중심 커뮤니티
 
+- [![My Skills](https://skillicons.dev/icons?i=js,html,css,wasm)](https://skillicons.dev)
+
 <p align="center">
   <a href="https://skillicons.dev">
     <img src="https://skillicons.dev/icons?i="spring,postman,notion,mysql,js,html,react,github,docker,css />
