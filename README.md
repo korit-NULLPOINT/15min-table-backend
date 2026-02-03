@@ -50,7 +50,8 @@
 
 - [![My Skills](https://skillicons.dev/icons?i=js,html,css,react)](https://skillicons.dev)
 
-- [![My Skills](https://skillicons.dev/icons?i=spring,mysql,postman,swagger)](https://skillicons.dev)
+- [![My Skills](https://skillicons.dev/icons?i=spring,mysql,postman)](https://skillicons.dev)
+- ![Swagger](https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white)
 
 - [![My Skills](https://skillicons.dev/icons?i=github,docker,notion)](https://skillicons.dev)
 ---
