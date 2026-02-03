@@ -293,12 +293,53 @@
 - **OS**
   - macOS / Windows 혼합 환경에서 개발
 
+## 🚀 배포
 
+본 프로젝트는 **Docker Compose**를 사용하여  
+백엔드 서버 및 Redis 환경을 컨테이너 기반으로 구성하였다.  
+로컬 및 서버 환경에서 동일한 방식으로 실행할 수 있도록 설정되어 있다.
+
+---
+
+### ❇️ 실행 환경
+
+- Docker
+- Docker Compose
+- Redis (캐시 및 세션 관리)
+- RedisInsight (Redis 상태 확인용 GUI)
+
+---
+
+### ❇️ 배포 및 실행 방법
+
+# docker-compose.yml
+#
+# ✅ 관리용 명령어 모음
+# 1) 실행(백그라운드):          docker compose up -d
+# 2) 상태 확인:                docker compose ps
+# 3) 로그 보기:                docker compose logs -f
+# 4) 특정 서비스만 로그:        docker compose logs -f redis
+# 5) 중지(컨테이너 유지):       docker compose stop
+# 6) 재시작:                   docker compose restart
+# 7) 내리기(컨테이너/네트워크 삭제): docker compose down
+# 8) 내리기 + 볼륨까지 삭제(⚠️ 데이터도 삭제): docker compose down -v
+#
+# ✅ Redis 접속/테스트
+# - Redis CLI 접속:            docker exec -it redis-15mintable redis-cli
+# - ping 테스트:               docker exec -it redis-15mintable redis-cli ping
+
+# ✅ RedisInsight 접속(브라우저)
+# - http://localhost:5540
+# - Redis 연결 URL(도커 RedisInsight 기준):
+#     방법 A) 컨테이너끼리: redis://redis-15mintable:6379
+#     방법 B) 호스트 경유: redis://host.docker.internal:6379
 
 
 
 ## 🖥 화면 구현
 
+### ✅ 로그인
+![로그인 화면](https://github.com/user-attachments/assets/49d24eed-2a26-4bbf-81ca-2b018b885af4)
 
 
 
