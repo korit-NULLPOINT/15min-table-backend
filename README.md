@@ -50,8 +50,9 @@
 
 - [![My Skills](https://skillicons.dev/icons?i=js,html,css,react)](https://skillicons.dev)
 
-- [![My Skills](https://skillicons.dev/icons?i=spring,mysql,postman,github,docker,notion&perline=3)](https://skillicons.dev)
-  
+- [![My Skills](https://skillicons.dev/icons?i=spring,mysql,postman)](https://skillicons.dev)
+
+- [![My Skills](https://skillicons.dev/icons?i=github,docker,notion)](https://skillicons.dev)
 ---
 
 ## 👥 팀원 소개
