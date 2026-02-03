@@ -36,13 +36,8 @@
 
 - [![My Skills](https://skillicons.dev/icons?i=js,html,css,react)](https://skillicons.dev)
 
-[![My Skills](https://skillicons.dev/icons?i=spring,mysql,postmain,github,docker,notion&perline=3)](https://skillicons.dev)
+- [![My Skills](https://skillicons.dev/icons?i=spring,mysql,postman,github,docker,notion&perline=3)](https://skillicons.dev)
 
-<p align="center">
-  <a href="https://skillicons.dev">
-    <img src="https://skillicons.dev/icons?i="spring,postman,notion,mysql,js,html,react,github,docker,css />
-  </a>
-</p>
 ---
 
 ## ✨ 핵심 기능
