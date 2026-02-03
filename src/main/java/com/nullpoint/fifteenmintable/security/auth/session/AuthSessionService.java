@@ -52,9 +52,9 @@ public class AuthSessionService {
         return Math.max(0, ttl);
     }
 
-    /** 로그인 성공 시 세션 생성(원장:DB + 캐시:Redis) */
-    public String createSession(Integer userId, String refreshHash, LocalDateTime expiresDt, String ip, String userAgent) {
-        String sessionId = UUID.randomUUID().toString();
+    /** 로그인 성공 시 세션 생성(원장:DB + 캐시:Redis) - sessionId 외부 주입 버전 */
+    public void createSessionWithId(String sessionId, Integer userId, String refreshHash,
+                                    LocalDateTime expiresDt, String ip, String userAgent) {
         LocalDateTime now = LocalDateTime.now();
 
         AuthSession session = new AuthSession();
@@ -72,11 +72,8 @@ public class AuthSessionService {
 
         authSessionMapper.insertSession(session);
 
-        // Redis 캐시 저장(TTL=만료까지)
         String cacheValue = encodeCache(userId, refreshHash, expiresDt, "ACTIVE");
         redisAuthSessionStore.save(sessionId, cacheValue, ttlSeconds(expiresDt));
-
-        return sessionId;
     }
 
     /**

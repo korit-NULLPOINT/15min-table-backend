@@ -1,5 +1,6 @@
 package com.nullpoint.fifteenmintable.security.auth;
 
+import com.nullpoint.fifteenmintable.dto.ApiRespDto;
 import com.nullpoint.fifteenmintable.exception.UnauthenticatedException;
 import com.nullpoint.fifteenmintable.security.auth.session.AuthSessionService;
 import com.nullpoint.fifteenmintable.security.auth.store.TokenBlacklistStore;
@@ -8,6 +9,7 @@ import com.nullpoint.fifteenmintable.security.cookie.RefreshCookieUtils;
 import com.nullpoint.fifteenmintable.security.cookie.SseCookieUtils;
 import com.nullpoint.fifteenmintable.security.jwt.JwtUtils;
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -87,6 +89,58 @@ public class AuthTokenService {
         return newAccess;
     }
 
+    public void onSigninSuccess(
+            String accessToken, HttpServletRequest request, HttpServletResponse response
+    ) {
+        if (isBlank(accessToken)) return;
+
+        // 1) SSE 쿠키
+        sseCookieUtils.setSseAccessToken(response, accessToken);
+
+        // 2) userId 추출
+        Integer userId;
+        try {
+            userId = Integer.parseInt(jwtUtils.getClaims(accessToken).getId());
+        } catch (RuntimeException e) {
+            return;
+        }
+
+        // 3) expires
+        LocalDateTime expiresDt = LocalDateTime.now().plusSeconds(refreshMaxAgeSeconds);
+
+        // 4) sessionId를 먼저 만든다 (refreshToken이 sessionId를 포함하니까)
+        String sessionId = java.util.UUID.randomUUID().toString();
+
+        // 5) refreshToken 발급(여기서 secret이 생성됨)
+        String refreshToken = refreshTokenService.issueRefreshToken(sessionId);
+
+        // 6) secret 추출 -> hash 만들기
+        String secret = refreshTokenService.extractSecret(refreshToken);
+        String refreshHash = refreshTokenService.hashSecret(secret);
+
+        // 7) ip/ua
+        String ip = getClientIpSimple(request);
+        String userAgent = request.getHeader("User-Agent");
+
+        // 8) DB+Redis 세션 저장 (sessionId 고정)
+        authSessionService.createSessionWithId(sessionId, userId, refreshHash, expiresDt, ip, userAgent);
+
+        // 9) RT 쿠키 심기
+        refreshCookieUtils.setRefreshToken(response, refreshToken, cookieSecure);
+    }
+
+
+    private String getClientIpSimple(jakarta.servlet.http.HttpServletRequest request) {
+        String xff = request.getHeader("X-Forwarded-For");
+        if (xff != null && !xff.isBlank()) {
+            int idx = xff.indexOf(",");
+            return (idx > 0) ? xff.substring(0, idx).trim() : xff.trim();
+        }
+        return request.getRemoteAddr();
+    }
+
+
+
     /**
      * logout:
      * - refresh 세션 revoke + refresh 쿠키 제거 + SSE 쿠키 제거
@@ -96,9 +150,8 @@ public class AuthTokenService {
      * - accessToken은 Bearer 포함으로 들어올 수 있으니 정리 후 처리
      * - refreshToken이 없더라도 쿠키 삭제/블랙리스트는 가능한 범위에서 진행
      */
-    public void logout(String refreshToken, String accessToken, HttpServletResponse response) {
-
-        // 1) refresh 세션 revoke (refreshToken이 있을 때만)
+    public ApiRespDto<Void> logout(String refreshToken, String accessToken, HttpServletResponse response) {
+        // 1) refresh 세션 revoke
         if (!isBlank(refreshToken)) {
             String sessionId = refreshTokenService.extractSessionId(refreshToken);
             if (!isBlank(sessionId)) {
@@ -106,33 +159,34 @@ public class AuthTokenService {
             }
         }
 
-        // 2) 쿠키 제거 (항상 시도)
+        // 2) 쿠키 제거
         refreshCookieUtils.clearRefreshToken(response, cookieSecure);
         sseCookieUtils.clearSseAccessToken(response);
 
-        // 3) access 블랙리스트 (UserAuthService.logout 로직과 동일한 방식)
-        if (isBlank(accessToken)) return;
-
-        // Bearer 제거
-        if (jwtUtils.isBearer(accessToken)) {
-            accessToken = jwtUtils.removeBearer(accessToken);
-            if (isBlank(accessToken)) return;
-        }
-
-        try {
-            Claims claims = jwtUtils.getClaims(accessToken);
-
-            Date exp = claims.getExpiration();
-            if (exp == null) return;
-
-            long ttlSeconds = (exp.getTime() - System.currentTimeMillis()) / 1000L;
-            if (ttlSeconds > 0) {
-                tokenBlacklistStore.blacklist(accessToken, ttlSeconds);
+        // 3) access 블랙리스트
+        if (!isBlank(accessToken)) {
+            if (jwtUtils.isBearer(accessToken)) {
+                accessToken = jwtUtils.removeBearer(accessToken);
             }
-        } catch (RuntimeException ignore) {
-            // 만료/위조/파싱 실패면 블랙리스트 등록 스킵
+
+            if (!isBlank(accessToken)) {
+                try {
+                    Claims claims = jwtUtils.getClaims(accessToken);
+                    Date exp = claims.getExpiration();
+                    if (exp != null) {
+                        long ttlSeconds = (exp.getTime() - System.currentTimeMillis()) / 1000L;
+                        if (ttlSeconds > 0) {
+                            tokenBlacklistStore.blacklist(accessToken, ttlSeconds);
+                        }
+                    }
+                } catch (RuntimeException ignore) {
+                    // 블랙리스트 스킵
+                }
+            }
         }
+        return new ApiRespDto<>("success", "로그아웃 되었습니다.", null);
     }
+
 
     private boolean isBlank(String s) {
         return s == null || s.trim().isEmpty();
