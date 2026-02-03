@@ -46,11 +46,11 @@
 - 관리자 페이지 실시간 관리
 - 팔로워 팔로잉 / 실시간 알림 기능
 
-- 메인 언어
+- 메인 언어 & 배포
 
 - [![My Skills](https://skillicons.dev/icons?i=js,html,css,react)](https://skillicons.dev)
 
-- [![My Skills](https://skillicons.dev/icons?i=spring,mysql,postman)](https://skillicons.dev)
+- [![My Skills](https://skillicons.dev/icons?i=spring,mysql,postman,swagger)](https://skillicons.dev)
 
 - [![My Skills](https://skillicons.dev/icons?i=github,docker,notion)](https://skillicons.dev)
 ---
