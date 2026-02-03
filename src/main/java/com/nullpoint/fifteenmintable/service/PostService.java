@@ -16,14 +16,20 @@ import com.nullpoint.fifteenmintable.repository.CommentRepository;
 import com.nullpoint.fifteenmintable.repository.PostRepository;
 import com.nullpoint.fifteenmintable.repository.PostImgRepository;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
+@RequiredArgsConstructor
 @Service
 public class PostService {
 
@@ -35,6 +41,8 @@ public class PostService {
 
     @Autowired
     private CommentRepository commentRepository;
+
+    private final StringRedisTemplate redisTemplate;
 
     @Transactional
     public ApiRespDto<Integer> addPost(Integer boardId, AddPostReqDto addPostReqDto, PrincipalUser principalUser) {
@@ -70,11 +78,28 @@ public class PostService {
     }
 
     @Transactional
-    public ApiRespDto<PostDetailRespDto> getPostDetail(Integer boardId, Integer postId) {
+    public ApiRespDto<PostDetailRespDto> getPostDetail(Integer boardId, Integer postId, String userIp) {
         if (boardId == null) throw new BadRequestException("boardId는 필수입니다.");
         if (postId == null) throw new BadRequestException("postId는 필수입니다.");
 
-        postRepository.increaseViewCount(postId);
+        String key = "view_log:" + boardId + ":" + postId + ":" + userIp;
+
+        try {
+            // 1. Redis 확인
+            if (redisTemplate.opsForValue().get(key) == null) {
+                postRepository.increaseViewCount(postId);
+                redisTemplate.opsForValue().set(key, "1", Duration.ofHours(24));
+            }
+        } catch (Exception e) {
+            // 2. Redis 연결 실패 시 -> 로컬 캐시로 Fallback
+            log.warn("Redis 연결 실패! 로컬 캐시로 전환합니다. ({})", e.getMessage());
+
+            // 로컬 캐시에 없으면 카운트 증가 - caffeine 의존성 제거 완료
+//            if (localFallbackCache.getIfPresent(key) == null) {
+//                recipeRepository.increaseViewCount(recipeId); // DB 증가
+//                localFallbackCache.put(key, true); // 로컬에 기록
+//            }
+        }
 
         PostDetailRespDto detail = postRepository.getPostDetail(boardId, postId)
                 .orElseThrow(() -> new NotFoundException("해당 게시글이 존재하지 않습니다."));

@@ -8,16 +8,22 @@ import com.nullpoint.fifteenmintable.dto.post.PostDetailRespDto;
 import com.nullpoint.fifteenmintable.dto.post.PostListRespDto;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import com.nullpoint.fifteenmintable.service.PostService;
+import com.nullpoint.fifteenmintable.util.CommonUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/board/{boardId}/posts")
+@RequiredArgsConstructor
 public class PostController {
 
     @Autowired
     private PostService postService;
+
+    private final CommonUtil commonUtil;
 
     @GetMapping("/list")
     public ApiRespDto<CursorRespDto<PostListRespDto>> getPostList(
@@ -33,9 +39,11 @@ public class PostController {
     @GetMapping("/detail/{postId}")
     public ApiRespDto<PostDetailRespDto> getPostDetail(
             @PathVariable Integer boardId,
-            @PathVariable Integer postId
+            @PathVariable Integer postId,
+            HttpServletRequest request
     ) {
-        return postService.getPostDetail(boardId, postId);
+        String userIp = commonUtil.getClientIp(request);
+        return postService.getPostDetail(boardId, postId, userIp);
     }
 
     @PostMapping("/add")
