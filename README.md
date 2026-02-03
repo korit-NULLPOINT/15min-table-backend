@@ -33,11 +33,6 @@
 - 💰 저비용 재료 중심
 - 🍽️ 자취생 맞춤 집밥
 - 💬 레시피 중심 커뮤니티
-
-- [![My Skills](https://skillicons.dev/icons?i=js,html,css,react)](https://skillicons.dev)
-
-- [![My Skills](https://skillicons.dev/icons?i=spring,mysql,postman,github,docker,notion&perline=3)](https://skillicons.dev)
-
 ---
 
 ## ✨ 핵심 기능
@@ -51,6 +46,12 @@
 - 관리자 페이지 실시간 관리
 - 팔로워 팔로잉 / 실시간 알림 기능
 
+- 메인 언어
+
+- [![My Skills](https://skillicons.dev/icons?i=js,html,css,react)](https://skillicons.dev)
+
+- [![My Skills](https://skillicons.dev/icons?i=spring,mysql,postman,github,docker,notion&perline=3)](https://skillicons.dev)
+  
 ---
 
 ## 👥 팀원 소개
