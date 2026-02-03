@@ -1,4 +1,4 @@
-package com.nullpoint.fifteenmintable.security.jwt;
+package com.nullpoint.fifteenmintable.security.auth.store;
 
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;

@@ -12,7 +12,7 @@ import com.nullpoint.fifteenmintable.exception.UnauthenticatedException;
 import com.nullpoint.fifteenmintable.repository.UserRepository;
 import com.nullpoint.fifteenmintable.repository.UserRoleRepository;
 import com.nullpoint.fifteenmintable.security.jwt.JwtUtils;
-import com.nullpoint.fifteenmintable.security.jwt.TokenBlacklistStore;
+import com.nullpoint.fifteenmintable.security.auth.store.TokenBlacklistStore;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

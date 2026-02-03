@@ -2,7 +2,7 @@ package com.nullpoint.fifteenmintable.security.filter;
 
 import com.nullpoint.fifteenmintable.security.cookie.SseCookieUtils;
 import com.nullpoint.fifteenmintable.security.jwt.JwtUtils;
-import com.nullpoint.fifteenmintable.security.jwt.TokenBlacklistStore;
+import com.nullpoint.fifteenmintable.security.auth.store.TokenBlacklistStore;
 import com.nullpoint.fifteenmintable.service.PrincipalLoaderService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.*;

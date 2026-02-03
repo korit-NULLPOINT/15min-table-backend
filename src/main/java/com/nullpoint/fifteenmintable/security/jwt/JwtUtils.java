@@ -24,7 +24,7 @@ public class JwtUtils {
         return Jwts.builder()
                 .subject("AccessToken")
                 .id(userId)
-                .expiration(new Date(new Date().getTime() + (1000L * 60L * 60L * 24L * 30L)))
+                .expiration(new Date(new Date().getTime() + (1000L * 60L * 15L)))
                 .signWith(KEY)
                 .compact();
     }

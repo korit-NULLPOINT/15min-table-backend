@@ -1,5 +1,6 @@
 package com.nullpoint.fifteenmintable.config;
 import com.nullpoint.fifteenmintable.security.filter.JwtAuthenticationFilter;
+import com.nullpoint.fifteenmintable.security.filter.OriginGuardFilter;
 import com.nullpoint.fifteenmintable.security.handler.OAuth2SuccessHandler;
 import com.nullpoint.fifteenmintable.security.handler.RestAccessDeniedHandler;
 import com.nullpoint.fifteenmintable.security.handler.RestAuthenticationEntryPoint;
@@ -14,9 +15,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 
 @Configuration
@@ -55,6 +59,15 @@ public class SecurityConfig {
     }
 
     @Bean
+    public OriginGuardFilter originGuardFilter() {
+        return new OriginGuardFilter(List.of(
+                "http://localhost:5173", // 프론트
+                "http://localhost:8080" // Swagger
+                // 운영 도메인 생기면 추가: "https://15mintable.com"
+        ));
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(Customizer.withDefaults());
         http.csrf(csrf -> csrf.disable());
@@ -63,6 +76,10 @@ public class SecurityConfig {
         http.logout(logout -> logout.disable());
 
         http.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        http.addFilterBefore(originGuardFilter(), SecurityContextHolderFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -96,6 +113,8 @@ public class SecurityConfig {
             auth.requestMatchers(HttpMethod.GET,
                     "/board/*/recipes/list",
                     "/board/*/recipes/detail/*",
+                    "/board/*/free/list",
+                    "/board/*/free/detail",
                     "/comment/list/*",
                     "/users/profile/*",
                     "/recipes/user/*",
@@ -119,15 +138,15 @@ public class SecurityConfig {
                     "/recipe-hashtag/**",
                     "/notifications/**",
                     "/ai/**"
-            ).hasAnyRole("ADMIN", "USER", "TEMP_USER");   // ✅ 나중에 TEMP_USER 빼면 됨
+            ).hasAnyRole("ADMIN", "USER");
 
             auth.requestMatchers(HttpMethod.PUT,
                     "/board/**"
-            ).hasAnyRole("ADMIN", "USER", "TEMP_USER");   // ✅ 나중에 TEMP_USER 빼면 됨
+            ).hasAnyRole("ADMIN", "USER");
 
             auth.requestMatchers(HttpMethod.DELETE,
                     "/board/**"
-            ).hasAnyRole("ADMIN", "USER", "TEMP_USER");   // ✅ 나중에 TEMP_USER 빼면 됨
+            ).hasAnyRole("ADMIN", "USER");
 
             // 기타 보호
             auth.requestMatchers(
