@@ -53,7 +53,6 @@
 | 심재원 | 팀장 / Backend | https://github.com/S-JaeWon |
 | 배찬익 | Frontend | https://github.com/dgf0020 |
 | 홍해준 | Backend | https://github.com/ |
-| 박명환 | Frontend | https://github.com/ |
 
 ---
 
@@ -73,7 +72,8 @@
   - REST API 설계
   - 인증 / 인가
   - DB 및 비즈니스 로직 구현
-
+- **Desing**
+  - pigma 디자인 구현
 ---
 
 ## 🔍 브랜치 전략
