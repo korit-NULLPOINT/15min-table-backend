@@ -45,7 +45,7 @@
 - JWT 기반 인증 / 인가
 - 관리자 페이지 실시간 관리
 - 팔로워 팔로잉 / 실시간 알림 기능
-- 
+  
 ---
 
 ## 👥 팀원 소개
@@ -226,9 +226,13 @@
 - 배포 및 인프라 환경
 - [![My Skills](https://skillicons.dev/icons?i=github,git,docker,aws,notion)](https://skillicons.dev)
 
+---
+
 ### 🤝 Collaboration & Version Control
 - 협업 및 형상 관리
 - [![My Skills](https://skillicons.dev/icons?i=idea,vscode)](https://skillicons.dev)
+
+---
 
 ### 🛠 Development Tools
 - 개발 도구 및 IDE
