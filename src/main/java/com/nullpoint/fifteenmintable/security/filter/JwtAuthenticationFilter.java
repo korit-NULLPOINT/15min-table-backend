@@ -2,7 +2,7 @@ package com.nullpoint.fifteenmintable.security.filter;
 
 import com.nullpoint.fifteenmintable.security.cookie.SseCookieUtils;
 import com.nullpoint.fifteenmintable.security.jwt.JwtUtils;
-import com.nullpoint.fifteenmintable.security.jwt.TokenBlacklistStore;
+import com.nullpoint.fifteenmintable.security.auth.store.TokenBlacklistStore;
 import com.nullpoint.fifteenmintable.service.PrincipalLoaderService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.*;
@@ -55,6 +55,13 @@ public class JwtAuthenticationFilter implements Filter {
 
         List<String> methods = List.of("POST", "GET", "PUT", "PATCH", "DELETE");
         if (!methods.contains(request.getMethod())) {
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
+
+        // ✅ 추가: 로그아웃/리프레시는 JWT 인증 로직을 타지 않게 스킵
+        String path = request.getRequestURI();
+        if (path.startsWith("/user/auth/logout") || path.startsWith("/user/auth/refresh")) {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }

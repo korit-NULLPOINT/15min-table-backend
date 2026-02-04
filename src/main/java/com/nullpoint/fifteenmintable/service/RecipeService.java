@@ -1,7 +1,6 @@
 package com.nullpoint.fifteenmintable.service;
 
-//import com.github.benmanes.caffeine.cache.Cache;
-//import com.github.benmanes.caffeine.cache.Caffeine;
+
 import com.nullpoint.fifteenmintable.dto.hashtag.HashtagRespDto;
 import com.nullpoint.fifteenmintable.dto.recipe.*;
 import com.nullpoint.fifteenmintable.dto.ApiRespDto;
@@ -23,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.util.List;
-//import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor

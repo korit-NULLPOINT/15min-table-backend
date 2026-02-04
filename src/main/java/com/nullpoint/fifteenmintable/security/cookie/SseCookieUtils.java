@@ -20,7 +20,7 @@ public class SseCookieUtils {
                 .secure(false)          // 로컬: false, https 배포: true
                 .sameSite("Lax")        // 프록시로 같은 오리진이면 Lax로 충분
                 .path("/notifications") // ✅ SSE 엔드포인트 prefix에 맞춰 수정
-                .maxAge(60L * 60L * 24L * 30L)        // 토큰 만료에 맞추는 걸 추천
+                .maxAge(60L * 15L)        // 토큰 만료에 맞추는 걸 추천
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
