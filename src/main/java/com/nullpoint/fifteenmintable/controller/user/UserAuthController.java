@@ -48,14 +48,24 @@ public class UserAuthController {
         return ResponseEntity.ok(respDto);
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiRespDto<String>> refresh(
+            @CookieValue(value = "RT", required = false) String refreshToken,
+            HttpServletResponse response
+    ) {
+        return ResponseEntity.ok(authTokenService.refresh(refreshToken, response));
+    }
+
+
+
 
     @PostMapping("/logout")
     public ResponseEntity<ApiRespDto<Void>> logout(
-            @CookieValue(value = "RT", required = false) String refreshToken,
-            HttpServletRequest request,
+            @CookieValue(name = "RT", required = false) String rt,
+            @RequestHeader(value = "Authorization", required = false) String authorization,
             HttpServletResponse response
     ) {
-        String accessToken = jwtAuthenticationFilter.resolveAccessToken(request);
-        return ResponseEntity.ok(authTokenService.logout(refreshToken, accessToken, response));
+        return ResponseEntity.ok(authTokenService.logout(rt, authorization, response));
     }
+
 }

@@ -49,7 +49,7 @@ public class AuthTokenService {
      * - refresh 쿠키 값(opaque)을 받아서 검증/회전하고
      * - 새 access를 반환 + 쿠키 갱신(refresh + sse)
      */
-    public String refresh(String refreshToken, HttpServletResponse response) {
+    public ApiRespDto<String> refresh(String refreshToken, HttpServletResponse response) {
         if (isBlank(refreshToken)) {
             throw new UnauthenticatedException("리프레시 토큰이 유효하지 않습니다.");
         }
@@ -86,7 +86,7 @@ public class AuthTokenService {
         String newAccess = jwtUtils.generateAccessToken(String.valueOf(session.userId()));
         sseCookieUtils.setSseAccessToken(response, newAccess);
 
-        return newAccess;
+        return new ApiRespDto<>("success", "토큰이 재발급되었습니다.", newAccess);
     }
 
     public void onSigninSuccess(
@@ -129,7 +129,6 @@ public class AuthTokenService {
         refreshCookieUtils.setRefreshToken(response, refreshToken, cookieSecure);
     }
 
-
     private String getClientIpSimple(jakarta.servlet.http.HttpServletRequest request) {
         String xff = request.getHeader("X-Forwarded-For");
         if (xff != null && !xff.isBlank()) {
@@ -139,54 +138,94 @@ public class AuthTokenService {
         return request.getRemoteAddr();
     }
 
-
-
     /**
-     * logout:
-     * - refresh 세션 revoke + refresh 쿠키 제거 + SSE 쿠키 제거
-     * - access 블랙리스트 등록(즉시 무효화)
+     * logout (멱등/상시 200 OK):
+     * - refreshToken 있으면: sessionId 추출 → revoke(best-effort)
+     * - accessToken 있으면: exp 기반 ttl 계산 → 블랙리스트(best-effort)
+     * - 마지막에는 항상 쿠키 삭제(RT, SSE_AT)
      *
-     * 주의:
-     * - accessToken은 Bearer 포함으로 들어올 수 있으니 정리 후 처리
-     * - refreshToken이 없더라도 쿠키 삭제/블랙리스트는 가능한 범위에서 진행
+     * 중요:
+     * - 인증이 없어도(AT/RT 둘 다 없어도) 무조건 success 반환
+     * - Redis/DB 예외가 나도 로그아웃 실패시키지 않음 (특히 Redis down 상황)
      */
     public ApiRespDto<Void> logout(String refreshToken, String accessToken, HttpServletResponse response) {
-        // 1) refresh 세션 revoke
-        if (!isBlank(refreshToken)) {
-            String sessionId = refreshTokenService.extractSessionId(refreshToken);
-            if (!isBlank(sessionId)) {
-                authSessionService.revokeSession(sessionId);
-            }
-        }
 
-        // 2) 쿠키 제거
-        refreshCookieUtils.clearRefreshToken(response, cookieSecure);
-        sseCookieUtils.clearSseAccessToken(response);
+        // 0) 먼저 토큰 문자열 정리 (Bearer 제거 등)
+        String normalizedAccess = normalizeAccessToken(accessToken);
 
-        // 3) access 블랙리스트
-        if (!isBlank(accessToken)) {
-            if (jwtUtils.isBearer(accessToken)) {
-                accessToken = jwtUtils.removeBearer(accessToken);
-            }
-
-            if (!isBlank(accessToken)) {
-                try {
-                    Claims claims = jwtUtils.getClaims(accessToken);
-                    Date exp = claims.getExpiration();
-                    if (exp != null) {
-                        long ttlSeconds = (exp.getTime() - System.currentTimeMillis()) / 1000L;
-                        if (ttlSeconds > 0) {
-                            tokenBlacklistStore.blacklist(accessToken, ttlSeconds);
-                        }
-                    }
-                } catch (RuntimeException ignore) {
-                    // 블랙리스트 스킵
+        // 1) refresh 세션 revoke (best-effort)
+        try {
+            if (!isBlank(refreshToken)) {
+                String sessionId = refreshTokenService.extractSessionId(refreshToken);
+                if (!isBlank(sessionId)) {
+                    authSessionService.revokeSession(sessionId);
                 }
             }
+        } catch (Exception ignore) {
+            // best-effort: revoke 실패해도 로그아웃은 성공 처리
+            // 필요하면 log.warn(...)만 추가
         }
+
+        // 2) access 블랙리스트 등록 (best-effort)
+        try {
+            if (!isBlank(normalizedAccess)) {
+                Date exp = null;
+                try {
+                    Claims claims = jwtUtils.getClaims(normalizedAccess);
+                    exp = claims.getExpiration();
+                } catch (RuntimeException ignore) {
+                    // 파싱 불가면 블랙리스트 스킵
+                    exp = null;
+                }
+
+                if (exp != null) {
+                    long ttlSeconds = (exp.getTime() - System.currentTimeMillis()) / 1000L;
+                    if (ttlSeconds > 0) {
+                        tokenBlacklistStore.blacklist(normalizedAccess, ttlSeconds);
+                    }
+                }
+            }
+        } catch (Exception ignore) {
+            // best-effort: Redis down/timeout 등이어도 로그아웃은 성공 처리
+            // 필요하면 log.warn(...)만 추가
+        }
+
+        // 3) 쿠키 제거는 항상 수행 (절대 실패시키지 않기)
+        try {
+            refreshCookieUtils.clearRefreshToken(response, cookieSecure);
+        } catch (Exception ignore) {
+        }
+        try {
+            sseCookieUtils.clearSseAccessToken(response);
+        } catch (Exception ignore) {
+        }
+
+        // 4) 항상 200 OK
         return new ApiRespDto<>("success", "로그아웃 되었습니다.", null);
     }
 
+    /**
+     * Authorization 헤더 값이 들어오든, 이미 토큰만 들어오든, 최대한 정상화해서 반환.
+     */
+    private String normalizeAccessToken(String accessToken) {
+        if (isBlank(accessToken)) return null;
+
+        String t = accessToken.trim();
+
+        // "Bearer xxx" 형태면 제거
+        try {
+            if (jwtUtils.isBearer(t)) {
+                t = jwtUtils.removeBearer(t);
+            }
+        } catch (Exception ignore) {
+            // jwtUtils 내부에서 예외 나면 그냥 아래 fallback 로직으로 처리
+            if (t.regionMatches(true, 0, "Bearer ", 0, 7)) {
+                t = t.substring(7).trim();
+            }
+        }
+
+        return isBlank(t) ? null : t;
+    }
 
     private boolean isBlank(String s) {
         return s == null || s.trim().isEmpty();

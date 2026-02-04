@@ -59,6 +59,13 @@ public class JwtAuthenticationFilter implements Filter {
             return;
         }
 
+        // ✅ 추가: 로그아웃/리프레시는 JWT 인증 로직을 타지 않게 스킵
+        String path = request.getRequestURI();
+        if (path.startsWith("/user/auth/logout") || path.startsWith("/user/auth/refresh")) {
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
+
         // ✅ 변경: 여기서 공용 메서드 사용
         String accessToken = resolveAccessToken(request);
 

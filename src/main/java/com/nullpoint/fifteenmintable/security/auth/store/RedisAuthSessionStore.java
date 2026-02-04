@@ -19,21 +19,29 @@ public class RedisAuthSessionStore {
     public void save(String sessionId, String value, long ttlSeconds) {
         if (sessionId == null || sessionId.isBlank()) return;
         if (ttlSeconds <= 0) return;
-        redis.opsForValue().set(PREFIX + sessionId, value, Duration.ofSeconds(ttlSeconds));
+        try {
+            redis.opsForValue().set(PREFIX + sessionId, value, Duration.ofSeconds(ttlSeconds));
+        } catch (Exception e) {
+            // fail-open: Redis 장애면 캐시 저장 스킵
+        }
     }
 
     public String get(String sessionId) {
         if (sessionId == null || sessionId.isBlank()) return null;
-        return redis.opsForValue().get(PREFIX + sessionId);
+        try {
+            return redis.opsForValue().get(PREFIX + sessionId);
+        } catch (Exception e) {
+            // fail-open: Redis 장애면 캐시 미스 처리
+            return null;
+        }
     }
 
     public void delete(String sessionId) {
         if (sessionId == null || sessionId.isBlank()) return;
-        redis.delete(PREFIX + sessionId);
-    }
-
-    public boolean exists(String sessionId) {
-        if (sessionId == null || sessionId.isBlank()) return false;
-        return Boolean.TRUE.equals(redis.hasKey(PREFIX + sessionId));
+        try {
+            redis.delete(PREFIX + sessionId);
+        } catch (Exception e) {
+            // fail-open: Redis 장애면 삭제 스킵
+        }
     }
 }
