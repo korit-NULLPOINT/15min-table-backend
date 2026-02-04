@@ -13,7 +13,7 @@
 - [🔍 브랜치 전략](#-브랜치-전략)
 - [⚡ 아키텍처 개요](#-아키텍처-개요)
 - [🧱 기술 스택](#-기술-스택)
-- [⚙ 배포](#-배포)
+- [🚀 배포](#-배포)
 - [🖥 화면 구현](#-화면-구현)
 
 ---
@@ -45,7 +45,7 @@
 - AI 해시태그 자동 추천
 - JWT 기반 인증 / 인가
 - 관리자 페이지 실시간 관리
-- 팔로워 팔로잉 / 실시간 알림 기능
+- 팔로워 / 팔로잉 및 실시간 알림 기능
 
 ---
 
@@ -53,16 +53,15 @@
 
 | 이름 | 역할 | GitHub |
 |---|---|---|
-| 심재원 | 팀장 / Backend & Frontend | https://github.com/S-JaeWon |
-| 배찬익 | 팀원 /Backend & Frontend| https://github.com/dgf0020 |
-| 홍해준 | 팀원 /Backend & Frontend | https://github.com/ |
+| 심재원 | 팀장 / Backend & Frontend | [@S-JaeWon](https://github.com/S-JaeWon) |
+| 배찬익 | 팀원 / Backend & Frontend | [@moon-ray-b](https://github.com/moon-ray-b) |
+| 홍해준 | 팀원 / Backend & Frontend | [@HJ-Hong](https://github.com/HJ.Hong) |
 
 ---
 
 ## 🤝 협업 방식
 
-#### ❇️**역할 분리 기반 협업**
-
+### 역할 분리 기반 협업
 - Notion 기반 요구사항 및 기획 정리
 - GitHub Issue 기반 작업 관리
 - 기능 단위 브랜치 생성 후 개발
@@ -77,8 +76,8 @@
   - REST API 설계
   - 인증 / 인가
   - DB 및 비즈니스 로직 구현
-- **Desing**
-  - pigma 디자인 구현 
+- **Design**
+  - Figma 기반 디자인 구현
 
 ---
 
@@ -87,220 +86,153 @@
 본 프로젝트는 프론트엔드와 백엔드를 분리하여 개발하는 구조로,  
 기능 단위 작업과 안정적인 병합을 위해 명확한 브랜치 전략을 사용하였다.
 
-#### ❇️ 기본 브랜치 구성
+### 기본 브랜치 구성
+- **main**
+  - 항상 배포 가능한 상태를 유지
+  - 모든 기능은 Pull Request를 통해서만 병합
+- **develop (선택)**
+  - 기능 통합 테스트 브랜치
+  - 필요 시 `main` 병합 전 검증 용도로 사용
 
-- `main`
-  - 항상 배포 가능한 상태를 유지하는 기준 브랜치
-  - 모든 기능은 직접 커밋하지 않고 Pull Request를 통해서만 병합
-  - 코드 리뷰가 완료된 작업만 반영하여 안정성을 유지
+### 이슈 기반 브랜치 전략
+- 모든 작업은 GitHub Issue 생성 후 시작
+- 하나의 이슈는 하나의 브랜치에서만 처리
+- 브랜치는 `main` 브랜치에서 분기
+- 프론트엔드 / 백엔드는 동일 이슈 기준으로 분리 작업
 
-- `develop` (선택적 운영)
-  - 여러 기능을 통합하여 테스트하기 위한 브랜치
-  - 프로젝트 진행 상황에 따라 사용 여부를 결정
-  - 필요 시 `main` 병합 전 중간 검증 용도로 활용
+### 브랜치 네이밍 방식
+- 작업 성격과 작업 영역이 드러나도록 구성
+- 브랜치 이름만 보고도 작업 내용을 파악 가능
+- 이슈 번호를 포함하여 추적 용이성 확보
 
----
+### 브랜치 운영 원칙
+- `main` 브랜치 직접 커밋 금지
+- 하나의 브랜치 = 하나의 작업 목적
+- PR 기반 코드 리뷰 필수
 
-#### ❇️ 이슈 기반 브랜치 전략
-
-- 모든 작업은 GitHub Issue 생성 후 시작한다.
-- 하나의 이슈는 하나의 브랜치에서만 처리한다.
-- 브랜치는 반드시 `main` 브랜치에서 분기하여 생성한다.
-- 프론트엔드와 백엔드가 동시에 작업하는 기능의 경우,
-  동일한 이슈를 기준으로 각 영역에서 브랜치를 분리하여 작업하였다.
-- 이를 통해 기능 단위 개발과 병렬 작업 시 충돌을 최소화하였다.
-
----
-
-#### ❇️ 브랜치 네이밍 방식 (설명)
-
-브랜치 이름에는 작업의 성격과 작업 영역이 드러나도록 구성하였다.  
-이를 통해 브랜치 이름만 보고도 어떤 작업인지 쉽게 파악할 수 있도록 하였다.
-
-- 프론트엔드 브랜치
-  - 화면(UI), 사용자 흐름, 관리자 페이지, 대시보드 시각화 등
-    클라이언트 영역의 기능 구현을 담당
-  - 주로 새로운 화면 추가 또는 UI 수정 작업에 사용
-
-- 백엔드 브랜치
-  - API 구현, 비즈니스 로직 처리, 관리자 통계 및 데이터 연산 기능을 담당
-  - 프론트엔드 요구사항을 기반으로 API 구조를 설계하고 기능을 구현
-
-- 브랜치에는 연결된 이슈 번호를 함께 포함하여,
-  작업 내용과 이슈 추적이 자연스럽게 연결되도록 관리하였다.
+### 정기 회의 및 코드 리뷰
+- **월요일**: 주간 진행 상황 공유 및 계획 수립
+- **금요일**: 작업 결과 공유 및 이슈 정리
+- 프론트엔드: UI 시연
+- 백엔드: API 및 기능 구현 리뷰
+- 공통 코드 스타일 및 규칙 지속 개선
 
 ---
 
-#### ❇️ 브랜치 운영 원칙
-
-- `main` 브랜치에는 직접 커밋하지 않는다.
-- 하나의 브랜치에서는 하나의 작업 목적만 수행한다.
-- 작업 완료 후에는 반드시 Pull Request를 생성하여 코드 리뷰를 진행한다.
-- 리뷰가 완료된 코드만 병합하여 코드 품질과 안정성을 유지하였다.
-
----
-
-#### ❇️**정기 회의 및 코드 리뷰**
- - **월요일**: 팀 회의를 통해 진행 상황 공유 및 문제 논의 & 주일간 예정 사항 정리<br>
- - **금요일**: 팀 회의를 통해 진행 상황 공유 및 문제 논의<br>
- - 프론트엔드는 UI를 시연, 백엔드는 API 및 기능 구현 리뷰.<br>
- - **스타일 및 규칙 정리**: 프론트엔드 컴포넌트 구조와 백엔드 레이어 구조를 유지하도록합의 반복되는 문제는 규칙으로 정리하어 이후 작업 반영
-
----
-
-## ⚡아키텍처 개요
+## ⚡ 아키텍처 개요
 
 본 프로젝트는 프론트엔드와 백엔드를 분리한 구조로 설계하여  
 역할 분담이 명확하고 유지보수가 용이하도록 구성하였다.
 
-프론트엔드는 사용자 화면과 관리자 페이지를 담당하며,  
-백엔드는 API 제공 및 비즈니스 로직 처리를 담당한다.  
-양측은 REST API를 통해 통신하며, 각 영역은 독립적으로 개발 및 확장이 가능하다.
+### 전체 구조
+- 프론트엔드: 사용자 화면 및 관리자 페이지
+- 백엔드: REST API 및 비즈니스 로직
+- REST API 기반 JSON 통신
+
+### 프론트엔드 아키텍처
+- React 기반 SPA 구조
+- 페이지 / 컴포넌트 단위 분리
+- API 요청 로직 분리
+- 관리자 페이지 분리 구성
+- 인증 상태 일관성 유지
+
+### 백엔드 아키텍처
+- Spring Boot 기반 REST API 서버
+- Controller / Service / Mapper 계층 구조
+- 관리자 및 통계 기능 분리
+- MyBatis 기반 SQL 관리
 
 ---
 
-#### ❇️ 전체 구조
+## 🧱 기술 스택
 
-사용자 및 관리자는 프론트엔드 애플리케이션을 통해 서비스를 이용하며,  
-프론트엔드는 필요한 데이터를 백엔드 서버에 API 요청 방식으로 전달한다.  
-백엔드는 요청을 처리한 후 JSON 형태의 응답을 반환한다.
+### 🎨 Frontend
+[![Frontend Skills](https://skillicons.dev/icons?i=js,html,react,materialui,vite)](https://skillicons.dev)
 
----
+### ⚙️ Backend
+[![Backend Skills](https://skillicons.dev/icons?i=spring,java,mysql,postman,redis)](https://skillicons.dev)
 
-#### ❇️ 프론트엔드 아키텍처
+### 🚀 Deployment & Infrastructure
+[![Infra Skills](https://skillicons.dev/icons?i=github,git,docker,aws,notion)](https://skillicons.dev)
 
-- React 기반의 SPA 구조로 구성하였다.
-- 페이지 단위와 컴포넌트 단위를 분리하여 역할을 명확히 하였다.
-- API 요청 로직을 별도로 분리하여 화면 로직과 데이터 로직을 분리하였다.
-- 관리자 페이지는 일반 사용자 화면과 분리하여 구성하였다.
-- 상태 관리를 통해 사용자 인증 및 화면 상태를 일관되게 유지하였다.
+### 🤝 Collaboration
+[![Collaboration Skills](https://skillicons.dev/icons?i=idea,vscode)](https://skillicons.dev)
 
----
-
-#### ❇️ 백엔드 아키텍처
-
-- Spring Boot 기반의 REST API 서버로 구성하였다.
-- Controller / Service / Repository(Mapper) 계층 구조를 사용하였다.
-- 비즈니스 로직과 데이터 접근 로직을 분리하여 유지보수성을 확보하였다.
-- 관리자 기능 및 통계 기능은 일반 기능과 분리하여 관리하였다.
-- MyBatis를 사용하여 SQL을 명확하게 관리하였다.
+### 💻 OS
+[![OS](https://skillicons.dev/icons?i=apple,windows)](https://skillicons.dev)
 
 ---
 
-#### ❇️ 프론트엔드 ↔ 백엔드 연동 방식
+## 🚀 배포
 
-- 프론트엔드는 Axios 기반의 HTTP 통신을 통해 백엔드 API를 호출한다.
-- 백엔드는 REST API 형태로 데이터를 제공한다.
-- 기능 단위로 API를 분리하여 프론트엔드와 백엔드 간 책임을 명확히 하였다.
-- 관리자 대시보드와 같은 기능은 통계 전용 API를 통해 데이터를 제공받는다.
+본 프로젝트는 **Docker Compose**를 사용하여  
+백엔드 서버 및 Redis 환경을 컨테이너 기반으로 구성하였다.
 
----
-
-#### ❇️ 아키텍처 설계 의도
-
-- 프론트엔드와 백엔드의 독립적인 개발 및 배포를 고려한 구조
-- 역할 분리를 통해 협업 효율 및 코드 가독성 향상
-- 관리자 기능 확장을 고려한 구조 설계
-- 유지보수와 기능 확장에 유리한 계층 구조 유지
+### 실행 환경
+- Docker
+- Docker Compose
+- Redis
+- RedisInsight
 
 ---
 
-## 🛠 기술 스택
+#### ❇️ 배포 및 실행 방법
 
-본 프로젝트는 프론트엔드와 백엔드를 분리한 구조로 개발되었으며,  
-각 영역에 적합한 기술 스택을 선택하여 협업 효율과 유지보수성을 고려하였다.
+ docker-compose.yml
 
----
+ ✅ 관리용 명령어 모음
+ 1) 실행(백그라운드):          docker compose up -d
+ 2) 상태 확인:                docker compose ps
+ 3) 로그 보기:                docker compose logs -f
+ 4) 특정 서비스만 로그:        docker compose logs -f redis
+ 5) 중지(컨테이너 유지):       docker compose stop
+ 6) 재시작:                   docker compose restart
+ 7) 내리기(컨테이너/네트워크 삭제): docker compose down
+ 8) 내리기 + 볼륨까지 삭제(⚠️ 데이터도 삭제): docker compose down -v
 
-#### ❇️ 프론트엔드
+ ✅ Redis 접속/테스트
+ - Redis CLI 접속:            docker exec -it redis-15mintable redis-cli
+ - ping 테스트:               docker exec -it redis-15mintable redis-cli ping
 
-- **React**
-  - 컴포넌트 기반 구조를 활용하여 UI를 구성
-  - 화면 단위와 공통 컴포넌트를 분리하여 재사용성 확보
-
-- **JavaScript (ES6+)**
-  - 최신 문법을 활용하여 가독성과 유지보수성을 향상
-
-- **Vite**
-  - 빠른 개발 서버 환경 제공
-  - 빌드 및 개발 속도 개선
-
-- **MUI (Material UI)**
-  - 관리자 대시보드 및 통계 화면 구현
-  - 일관된 디자인과 UI 생산성 확보
-
-- **Axios**
-  - 백엔드 API와의 HTTP 통신 처리
-  - 요청/응답 로직을 분리하여 관리
-
-- **CSS / Styled Components**
-  - 컴포넌트 단위 스타일링
-  - UI 구조와 스타일 책임 분리
-
----
-
-#### ❇️ 백엔드
-
-- **Java (JDK 17)**
-  - 안정적인 서버 환경 구성
-  - 객체 지향 기반 비즈니스 로직 구현
-
-- **Spring Boot**
-  - REST API 서버 구축
-  - Controller / Service 계층 분리를 통한 구조화된 개발
-
-- **MyBatis**
-  - SQL을 XML로 관리하여 쿼리 가독성 및 유지보수성 확보
-  - 복잡한 통계 및 관리자 쿼리 처리에 활용
-
-- **Spring Validation / Exception Handling**
-  - 요청 데이터 검증
-  - 공통 예외 처리 구조 적용
-
----
-
-#### ❇️ 데이터베이스
-
-- **MySQL**
-  - 사용자, 레시피, 커뮤니티, 관리자 데이터 저장
-  - 관계형 데이터 구조를 기반으로 안정적인 데이터 관리
-
----
-
-#### ❇️ 협업 및 개발 도구
-
-- **Git & GitHub**
-  - 이슈 기반 브랜치 전략 및 Pull Request 중심 협업
-  - 코드 리뷰를 통한 품질 관리
-
-- **GitHub Issues / Projects**
-  - 작업 단위 관리 및 진행 상황 공유
-
-- **Postman**
-  - API 테스트 및 프론트엔드 연동 전 검증
-
-- **Discord**
-  - 팀 커뮤니케이션 및 코드 리뷰 진행
-
----
-
-#### ❇️ 개발 환경
-
-- **IDE**
-  - IntelliJ IDEA (Backend)
-  - VS Code (Frontend)
-
-- **OS**
-  - macOS / Windows 혼합 환경에서 개발
-
-
+ ✅ RedisInsight 접속(브라우저)
+ - http://localhost:5540
+ - Redis 연결 URL(도커 RedisInsight 기준):
+     방법 A) 컨테이너끼리: redis://redis-15mintable:6379
+     방법 B) 호스트 경유: redis://host.docker.internal:6379
 
 
 
 ## 🖥 화면 구현
 
+---
 
+### ✅ 메인 화면
+<img src="https://github.com/user-attachments/assets/fd62dc60-ed31-4c7e-afed-2e1e37b04a34" width="900" alt="메인 화면" />
 
+---
 
+### ✅ 로그인 & 회원가입
 
+<img src="https://github.com/user-attachments/assets/c2dd4175-0ef6-4fa8-98b7-cc76b85bad83" width="900" alt="로그인 화면" />
 
+<img src="https://github.com/user-attachments/assets/ff04954e-a0e5-4154-b5bd-8da23e51660c" width="900" alt="회원가입 화면" />
+
+---
+
+### ✅ 관리자 페이지
+
+<img src="https://github.com/user-attachments/assets/4f904358-9c52-455f-80dd-fc9a27766c47" width="900" alt="관리자 대시보드" />
+
+<img src="https://github.com/user-attachments/assets/e5dac5e6-8f2b-42d8-b8db-3d7004a620c7" width="900" alt="관리자 통계 화면" />
+
+<img src="https://github.com/user-attachments/assets/c6b9415b-1ea6-4fc5-82ee-8e7e53b5fa51" width="900" alt="관리자 사용자 관리" />
+
+<img src="https://github.com/user-attachments/assets/900059d8-1530-4a2e-aa8c-0a0884235a5c" width="900" alt="관리자 콘텐츠 관리" />
+
+---
+
+### ✅ 게시물 & 커뮤니티 페이지
+
+<img src="https://github.com/user-attachments/assets/a20d39c6-15e8-4796-9091-9fbf85a8f73f" width="900" alt="게시물 목록" />
+
+<img src="https://github.com/user-attachments/assets/903fe87f-4ea1-4917-a531-5538107c54d2" width="900" alt="게시물 상세 및 커뮤니티 화면" />
