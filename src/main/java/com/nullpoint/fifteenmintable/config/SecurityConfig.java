@@ -115,6 +115,7 @@ public class SecurityConfig {
                     "/comment/list/*",
                     "/users/profile/*",
                     "/recipes/user/*",
+                    "/posts/user/*",
                     "/recipe-hashtag/search",
                     "/recipe-hashtag/list/*",
                     "/rating/*/summary"
