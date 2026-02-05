@@ -181,4 +181,47 @@
             pt.create_dt desc, pt.post_id desc
         limit #{sizePlusOne}
     </select>
+
+    <select id="getPostListByUserIdByCursor" resultMap="PostListRespDtoResultMap">
+        select
+            pt.post_id,
+            pt.user_id,
+            ut.username,
+            ut.profile_img_url,
+            pt.title,
+            pit.img_url as thumbnail_img_url,
+            pt.view_count,
+            coalesce(ct.comment_count, 0) as comment_count,
+            pt.create_dt,
+            pt.update_dt
+        from post_tb pt
+        join user_tb ut
+            on ut.user_id = pt.user_id
+        left join post_img_tb pit
+            on pit.post_id = pt.post_id
+        and pit.sort_order = 0
+        left join (
+            select
+                target_id as post_id, count(*) as comment_count
+            from
+                comment_tb
+            where
+                target_type = 'POST'
+            group by
+                target_id
+            ) ct on ct.post_id = pt.post_id
+        where
+            pt.user_id = #{userId}
+
+        <if test="cursorCreateDt != null and cursorPostId != null">
+            and (
+                pt.create_dt &lt; #{cursorCreateDt}
+                or (pt.create_dt = #{cursorCreateDt} and pt.post_id &lt; #{cursorPostId})
+            )
+        </if>
+
+        order by
+            pt.create_dt desc, pt.post_id desc
+        limit #{sizePlusOne}
+    </select>
 </mapper>

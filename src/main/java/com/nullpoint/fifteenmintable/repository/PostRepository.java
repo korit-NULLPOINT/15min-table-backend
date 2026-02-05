@@ -50,4 +50,10 @@ public class PostRepository {
                 cursorPostId, keyword, searchType
         );
     }
+
+    public List<PostListRespDto> getPostListByUserIdByCursor(
+            Integer userId, Integer sizePlusOne, LocalDateTime cursorCreateDt, Integer cursorPostId
+    ) {
+        return postMapper.getPostListByUserIdByCursor(userId, sizePlusOne, cursorCreateDt, cursorPostId);
+    }
 }

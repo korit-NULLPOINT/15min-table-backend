@@ -22,7 +22,7 @@ public interface RecipeMapper {
     );
     List<RecipeListRespDto> getRecipeCardListByUserId(
             @Param("userId") Integer userId,
-            @Param("loginUserId") Integer loginUserId,
+            @Param("loginUserId") Integer loginUserId, // 북마크 유무 확인용 로그인한 userId;
             @Param("offset") Integer offset,
             @Param("limit") Integer limit
     );
