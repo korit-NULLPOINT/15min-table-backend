@@ -38,4 +38,12 @@ public interface PostMapper {
             @Param("keyword") String keyword,
             @Param("searchType") String searchType // TITLE | USERNAME | null이면 ALL
     );
+
+    List<PostListRespDto> getPostListByUserIdByCursor(
+            @Param("userId") Integer userId,
+            @Param("sizePlusOne") Integer sizePlusOne,
+            @Param("cursorCreateDt") LocalDateTime cursorCreateDt,
+            @Param("cursorPostId") Integer cursorPostId
+    );
+
 }

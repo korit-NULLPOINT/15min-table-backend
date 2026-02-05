@@ -245,8 +245,54 @@ public class PostService {
         return postImgs;
     }
 
+    @Transactional
+    public ApiRespDto<CursorRespDto<PostListRespDto>> getPostListByUserIdByCursor(
+            Integer userId,
+            Integer size,
+            String cursor
+    ) {
+        if (userId == null) throw new BadRequestException("userId는 필수입니다.");
+
+        int safeSize = (size == null || size <= 0) ? 20 : Math.min(size, 50);
+        int sizePlusOne = safeSize + 1;
+
+        CursorValue cv = parseCursor(cursor);
+
+        List<PostListRespDto> rows = postRepository.getPostListByUserIdByCursor(
+                userId,
+                sizePlusOne,
+                cv.cursorCreateDt,
+                cv.cursorPostId
+        );
+
+        boolean hasNext = rows.size() > safeSize;
+        List<PostListRespDto> items = hasNext ? rows.subList(0, safeSize) : rows;
+
+        String nextCursor = null;
+        if (hasNext && !items.isEmpty()) {
+            PostListRespDto last = items.get(items.size() - 1);
+            nextCursor = last.getCreateDt() + "|" + last.getPostId();
+        }
+
+        CursorRespDto<PostListRespDto> data = new CursorRespDto<>(items, hasNext, nextCursor);
+        return new ApiRespDto<>("success", "유저 게시글 목록 조회 완료", data);
+    }
+
+    @Transactional
+    public ApiRespDto<CursorRespDto<PostListRespDto>> getMyPostListByCursor(
+            Integer size,
+            String cursor,
+            PrincipalUser principalUser
+    ) {
+        if (principalUser == null) throw new UnauthenticatedException("로그인이 필요합니다.");
+        return getPostListByUserIdByCursor(principalUser.getUserId(), size, cursor);
+    }
+
+
+    // cursor(String: "createDt|postId")를 DB 비교용 값(LocalDateTime, Integer)으로 파싱/검증해서 반환
     private CursorValue parseCursor(String cursor) {
         if (cursor == null || cursor.isBlank()) {
+            // 커서가 없으면 첫 페이지 조회(커서 조건 없이 조회)
             return new CursorValue(null, null);
         }
 
@@ -259,10 +305,12 @@ public class PostService {
 
             return new CursorValue(cursorCreateDt, cursorPostId);
         } catch (Exception e) {
+            // cursor 형식 오류 → 400 BadRequest
             throw new BadRequestException("cursor 형식이 올바르지 않습니다. 예) 2026-01-30T00:12:33|123");
         }
     }
 
+    // 커서 파싱 결과(createDt, postId) 2개 값을 묶어 전달하기 위한 서비스 내부 전용 컨테이너
     private static class CursorValue {
         private final LocalDateTime cursorCreateDt;
         private final Integer cursorPostId;
@@ -272,4 +320,5 @@ public class PostService {
             this.cursorPostId = cursorPostId;
         }
     }
+
 }
