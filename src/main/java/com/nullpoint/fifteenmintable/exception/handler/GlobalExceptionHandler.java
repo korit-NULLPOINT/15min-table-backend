@@ -1,10 +1,7 @@
 package com.nullpoint.fifteenmintable.exception.handler;
 
 import com.nullpoint.fifteenmintable.dto.ApiRespDto;
-import com.nullpoint.fifteenmintable.exception.BadRequestException;
-import com.nullpoint.fifteenmintable.exception.ForbiddenException;
-import com.nullpoint.fifteenmintable.exception.NotFoundException;
-import com.nullpoint.fifteenmintable.exception.UnauthenticatedException;
+import com.nullpoint.fifteenmintable.exception.*;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,6 +50,13 @@ public class GlobalExceptionHandler {
 
 //    Comment comment = commentRepository.getById(commentId)
 //            .orElseThrow(() -> new NotFoundException("댓글을 찾을 수 없습니다."));
+
+    @ExceptionHandler(TooManyRequestsException.class)
+    public ResponseEntity<ApiRespDto<?>> handleTooManyRequests(TooManyRequestsException e) {
+        return ResponseEntity
+                .status(HttpStatus.TOO_MANY_REQUESTS) // 429
+                .body(new ApiRespDto<>("failed", e.getMessage(), null));
+    }
 
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<ApiRespDto<?>> handleDataAccess(DataAccessException e) {

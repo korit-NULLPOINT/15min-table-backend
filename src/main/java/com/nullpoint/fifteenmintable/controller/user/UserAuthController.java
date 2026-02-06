@@ -56,9 +56,6 @@ public class UserAuthController {
         return ResponseEntity.ok(authTokenService.refresh(refreshToken, response));
     }
 
-
-
-
     @PostMapping("/logout")
     public ResponseEntity<ApiRespDto<Void>> logout(
             @CookieValue(name = "RT", required = false) String rt,

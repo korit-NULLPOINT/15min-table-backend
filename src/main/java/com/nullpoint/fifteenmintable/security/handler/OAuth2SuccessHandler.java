@@ -3,6 +3,7 @@ import com.nullpoint.fifteenmintable.entity.OAuth2User;
 import com.nullpoint.fifteenmintable.entity.User;
 import com.nullpoint.fifteenmintable.repository.OAuth2UserRepository;
 import com.nullpoint.fifteenmintable.repository.UserRepository;
+import com.nullpoint.fifteenmintable.security.auth.AuthTokenService;
 import com.nullpoint.fifteenmintable.security.jwt.JwtUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +22,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     @Autowired
     private OAuth2UserRepository oAuth2UserRepository;
+
+    @Autowired
+    private AuthTokenService authTokenService;
 
     @Autowired
     private UserRepository userRepository;
@@ -49,6 +53,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         String accessToken = jwtUtils.generateAccessToken(foundUser.get().getUserId().toString());
 
-        response.sendRedirect("http://localhost:5173/auth/oauth2/signin?accessToken="+accessToken);
+        authTokenService.onSigninSuccess(accessToken, request, response);
+        response.sendRedirect("http://localhost:5173/auth/oauth2/signin");
     }
 }
