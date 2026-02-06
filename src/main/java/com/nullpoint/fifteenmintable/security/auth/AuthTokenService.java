@@ -143,7 +143,6 @@ public class AuthTokenService {
      * - refreshToken 있으면: sessionId 추출 → revoke(best-effort)
      * - accessToken 있으면: exp 기반 ttl 계산 → 블랙리스트(best-effort)
      * - 마지막에는 항상 쿠키 삭제(RT, SSE_AT)
-     *
      * 중요:
      * - 인증이 없어도(AT/RT 둘 다 없어도) 무조건 success 반환
      * - Redis/DB 예외가 나도 로그아웃 실패시키지 않음 (특히 Redis down 상황)
