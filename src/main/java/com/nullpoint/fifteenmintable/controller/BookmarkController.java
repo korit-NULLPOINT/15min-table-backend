@@ -2,6 +2,7 @@ package com.nullpoint.fifteenmintable.controller;
 
 import com.nullpoint.fifteenmintable.dto.ApiRespDto;
 import com.nullpoint.fifteenmintable.dto.bookmark.BookmarkRespDto;
+import com.nullpoint.fifteenmintable.ratelimit.annotation.RateLimit;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import com.nullpoint.fifteenmintable.service.RecipeBookmarkService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ public class BookmarkController {
     private RecipeBookmarkService recipeBookmarkService;
 
     @PostMapping("/{recipeId}")
+    @RateLimit(seconds = 3, scope = RateLimit.Scope.USER, key = "bookmark_action")
     public ResponseEntity<ApiRespDto<Void>> addBookmark(
             @PathVariable Integer recipeId,
             @AuthenticationPrincipal PrincipalUser principalUser
@@ -27,6 +29,7 @@ public class BookmarkController {
     }
 
     @DeleteMapping("/{recipeId}")
+    @RateLimit(seconds = 3, scope = RateLimit.Scope.USER, key = "bookmark_action")
     public ResponseEntity<ApiRespDto<Void>> deleteBookmark (
             @PathVariable Integer recipeId,
             @AuthenticationPrincipal PrincipalUser principalUser

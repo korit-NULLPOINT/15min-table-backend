@@ -2,6 +2,7 @@ package com.nullpoint.fifteenmintable.controller;
 
 import com.nullpoint.fifteenmintable.dto.ApiRespDto;
 import com.nullpoint.fifteenmintable.dto.notification.NotificationRespDto;
+import com.nullpoint.fifteenmintable.ratelimit.annotation.RateLimit;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import com.nullpoint.fifteenmintable.service.NotificationService;
 import com.nullpoint.fifteenmintable.service.NotificationSseService;
@@ -37,6 +38,7 @@ public class NotificationController {
      * - 무한스크롤: /notifications?cursor=123&size=20
      */
     @GetMapping("")
+    @RateLimit(seconds = 1, scope = RateLimit.Scope.USER, key = "noti_list")
     public ResponseEntity<ApiRespDto<List<NotificationRespDto>>> getNotifications(
             @RequestParam(required = false) Integer cursor,
             @RequestParam(required = false) Integer size,
@@ -50,6 +52,7 @@ public class NotificationController {
      * 미읽음 개수(뱃지)
      */
     @GetMapping("/unread-count")
+    @RateLimit(seconds = 1, scope = RateLimit.Scope.USER, key = "noti_unread_count")
     public ResponseEntity<ApiRespDto<Integer>> getUnreadCount(
             @AuthenticationPrincipal PrincipalUser principalUser
     ) {
@@ -60,6 +63,7 @@ public class NotificationController {
      * 단건 읽음 처리
      */
     @PostMapping("/{notificationId}/read")
+    @RateLimit(seconds = 1, scope = RateLimit.Scope.USER, key = "noti_read_one")
     public ResponseEntity<ApiRespDto<Void>> markAsRead(
             @PathVariable Integer notificationId,
             @AuthenticationPrincipal PrincipalUser principalUser
@@ -71,6 +75,7 @@ public class NotificationController {
      * 모두 읽음 처리
      */
     @PostMapping("/read-all")
+    @RateLimit(seconds = 5, scope = RateLimit.Scope.USER, key = "noti_read_all")
     public ResponseEntity<ApiRespDto<Void>> markAllAsRead(
             @AuthenticationPrincipal PrincipalUser principalUser
     ) {

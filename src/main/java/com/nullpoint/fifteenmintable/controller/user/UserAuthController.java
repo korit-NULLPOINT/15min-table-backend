@@ -2,6 +2,7 @@ package com.nullpoint.fifteenmintable.controller.user;
 import com.nullpoint.fifteenmintable.dto.ApiRespDto;
 import com.nullpoint.fifteenmintable.dto.auth.SigninReqDto;
 import com.nullpoint.fifteenmintable.dto.auth.SignupReqDto;
+import com.nullpoint.fifteenmintable.ratelimit.annotation.RateLimit;
 import com.nullpoint.fifteenmintable.security.auth.AuthTokenService;
 import com.nullpoint.fifteenmintable.security.cookie.RefreshCookieUtils;
 import com.nullpoint.fifteenmintable.security.cookie.SseCookieUtils;
@@ -23,18 +24,15 @@ public class UserAuthController {
     @Autowired
     private AuthTokenService authTokenService;
 
-    @Autowired
-    private SseCookieUtils sseCookieUtils;
-
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @PostMapping("/signup")
+    @RateLimit(seconds = 20, scope = RateLimit.Scope.IP, key = "auth_signup")
     public ResponseEntity<ApiRespDto<Void>> signup(@RequestBody SignupReqDto signupReqDto) {
         return ResponseEntity.ok(userAuthService.signup(signupReqDto));
     }
 
     @PostMapping("/signin")
+    @RateLimit(seconds = 3, scope = RateLimit.Scope.IP, key = "auth_signin")
     public ResponseEntity<ApiRespDto<String>> signin(
             @RequestBody SigninReqDto signinReqDto,
             HttpServletRequest request,
@@ -49,6 +47,7 @@ public class UserAuthController {
     }
 
     @PostMapping("/refresh")
+    @RateLimit(seconds = 3, scope = RateLimit.Scope.IP, key = "auth_refresh")
     public ResponseEntity<ApiRespDto<String>> refresh(
             @CookieValue(value = "RT", required = false) String refreshToken,
             HttpServletResponse response
