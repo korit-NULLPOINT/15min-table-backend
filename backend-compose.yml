@@ -1,0 +1,6 @@
+services:
+  backend:
+    image: jaewon4834/backend:latest
+    container_name: backend
+    ports:
+      - "8080:8080"
