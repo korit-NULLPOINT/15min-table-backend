@@ -1,5 +1,6 @@
 package com.nullpoint.fifteenmintable.controller.user;
 import com.nullpoint.fifteenmintable.dto.ApiRespDto;
+import com.nullpoint.fifteenmintable.ratelimit.annotation.RateLimit;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import com.nullpoint.fifteenmintable.service.MailService;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -21,6 +22,7 @@ public class MailController {
 
     @ResponseBody
     @PostMapping("/send")
+    @RateLimit(seconds = 60, scope = RateLimit.Scope.IP, key = "mail_send")
     public ResponseEntity<ApiRespDto<Void>> sendMail(@AuthenticationPrincipal PrincipalUser principalUser) {
         return ResponseEntity.ok(mailService.sendMail(principalUser));
     }

@@ -4,6 +4,7 @@ import com.nullpoint.fifteenmintable.dto.ApiRespDto;
 import com.nullpoint.fifteenmintable.dto.comment.AddCommentReqDto;
 import com.nullpoint.fifteenmintable.dto.comment.CommentRespDto;
 import com.nullpoint.fifteenmintable.entity.Comment;
+import com.nullpoint.fifteenmintable.ratelimit.annotation.RateLimit;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import com.nullpoint.fifteenmintable.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ public class CommentController {
 
     // 레시피 댓글 작성
     @PostMapping("/add/recipe/{recipeId}")
+    @RateLimit(seconds = 3, scope = RateLimit.Scope.USER, key = "comment_add")
     public ResponseEntity<ApiRespDto<Comment>> addRecipeComment(
             @PathVariable Integer recipeId,
             @RequestBody AddCommentReqDto addCommentReqDto,
@@ -33,6 +35,7 @@ public class CommentController {
     }
 
     @PostMapping("/add/post/{postId}")
+    @RateLimit(seconds = 3, scope = RateLimit.Scope.USER, key = "comment_add")
     public ResponseEntity<ApiRespDto<Comment>> addPostComment(
             @PathVariable Integer postId,
             @RequestBody AddCommentReqDto addCommentReqDto,
@@ -65,6 +68,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/delete/{commentId}")
+    @RateLimit(seconds = 2, scope = RateLimit.Scope.USER, key = "comment_delete")
     public ResponseEntity<ApiRespDto<Void>> deleteComment(
             @PathVariable Integer commentId,
             @AuthenticationPrincipal PrincipalUser principalUser

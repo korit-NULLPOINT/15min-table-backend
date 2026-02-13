@@ -4,6 +4,7 @@ import com.nullpoint.fifteenmintable.dto.ApiRespDto;
 import com.nullpoint.fifteenmintable.dto.follow.FollowCountRespDto;
 import com.nullpoint.fifteenmintable.dto.follow.FollowRespDto;
 import com.nullpoint.fifteenmintable.dto.follow.FollowStatusRespDto;
+import com.nullpoint.fifteenmintable.ratelimit.annotation.RateLimit;
 import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import com.nullpoint.fifteenmintable.service.FollowService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ public class FollowController {
     private FollowService followService;
 
     @PostMapping("/{targetUserId}")
+    @RateLimit(seconds = 1, scope = RateLimit.Scope.USER, key = "follow_add")
     public ResponseEntity<ApiRespDto<Void>> follow(
             @PathVariable Integer targetUserId,
             @AuthenticationPrincipal PrincipalUser principalUser
@@ -29,6 +31,7 @@ public class FollowController {
     }
 
     @DeleteMapping("/{targetUserId}")
+    @RateLimit(seconds = 1, scope = RateLimit.Scope.USER, key = "follow_remove")
     public ResponseEntity<ApiRespDto<Void>> unfollow(
             @PathVariable Integer targetUserId,
             @AuthenticationPrincipal PrincipalUser principalUser
