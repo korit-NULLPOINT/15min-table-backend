@@ -1,9 +1,0 @@
-service:
-  frontend:
-    image: jaewon4834/frontend:latest
-    container_name: frontend
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
