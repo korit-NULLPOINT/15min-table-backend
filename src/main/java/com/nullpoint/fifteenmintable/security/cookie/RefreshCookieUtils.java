@@ -15,7 +15,7 @@ public class RefreshCookieUtils {
                 .httpOnly(true)
                 .secure(secure)
                 .sameSite("Lax")
-                .path("/user/auth")        // ✅ refresh/logout prefix (너희 엔드포인트에 맞춤)
+                .path("/")        // ✅ refresh/logout prefix (너희 엔드포인트에 맞춤)
                 .maxAge(60L * 60L * 24L * 30L) // 30일 예시
                 .build();
 
@@ -27,7 +27,7 @@ public class RefreshCookieUtils {
                 .httpOnly(true)
                 .secure(secure)
                 .sameSite("Lax")
-                .path("/user/auth")
+                .path("/")
                 .maxAge(0)
                 .build();
 
