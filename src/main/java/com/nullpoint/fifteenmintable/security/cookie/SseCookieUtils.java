@@ -14,10 +14,10 @@ public class SseCookieUtils {
      * SSE 인증용 AccessToken 쿠키 세팅
      * - HttpOnly라 프론트 JS로 못 읽지만, EventSource 요청에 자동으로 포함됨
      */
-    public void setSseAccessToken(HttpServletResponse response, String accessToken) {
+    public void setSseAccessToken(HttpServletResponse response, String accessToken, boolean secure) {
         ResponseCookie cookie = ResponseCookie.from(SSE_COOKIE_NAME, accessToken)
                 .httpOnly(true)
-                .secure(false)          // 로컬: false, https 배포: true
+                .secure(secure)
                 .sameSite("Lax")        // 프록시로 같은 오리진이면 Lax로 충분
                 .path("/notifications") // ✅ SSE 엔드포인트 prefix에 맞춰 수정
                 .maxAge(60L * 15L)        // 토큰 만료에 맞추는 걸 추천
@@ -30,10 +30,10 @@ public class SseCookieUtils {
      * SSE 인증용 쿠키 제거
      * 로그아웃 API 만들시 추가
      * */
-    public void clearSseAccessToken(HttpServletResponse response) {
+    public void clearSseAccessToken(HttpServletResponse response, boolean secure) {
         ResponseCookie cookie = ResponseCookie.from(SSE_COOKIE_NAME, "")
                 .httpOnly(true)
-                .secure(false)
+                .secure(secure)
                 .sameSite("Lax")
                 .path("/notifications") // set할 때와 동일해야 함
                 .maxAge(0)

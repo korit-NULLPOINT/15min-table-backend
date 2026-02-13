@@ -94,7 +94,7 @@ public class AuthTokenService {
 
         // 4) 새 access 발급 + SSE 쿠키 갱신
         String newAccess = jwtUtils.generateAccessToken(String.valueOf(session.userId()));
-        sseCookieUtils.setSseAccessToken(response, newAccess);
+        sseCookieUtils.setSseAccessToken(response, newAccess, cookieSecure);
 
         return new ApiRespDto<>("success", "토큰이 재발급되었습니다.", newAccess);
     }
@@ -105,7 +105,7 @@ public class AuthTokenService {
         if (isBlank(accessToken)) return;
 
         // 1) SSE 쿠키
-        sseCookieUtils.setSseAccessToken(response, accessToken);
+        sseCookieUtils.setSseAccessToken(response, accessToken, cookieSecure);
 
         // 2) userId 추출
         Integer userId;
@@ -205,7 +205,7 @@ public class AuthTokenService {
         } catch (Exception ignore) {
         }
         try {
-            sseCookieUtils.clearSseAccessToken(response);
+            sseCookieUtils.clearSseAccessToken(response, cookieSecure);
         } catch (Exception ignore) {
         }
 
