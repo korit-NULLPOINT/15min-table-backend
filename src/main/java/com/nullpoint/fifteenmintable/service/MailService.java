@@ -9,6 +9,7 @@ import com.nullpoint.fifteenmintable.security.model.PrincipalUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,9 @@ import java.util.Optional;
 
 @Service
 public class MailService {
+
+    @Value("${app.frontend.url:http://localhost:5173}")
+    private String frontendUrl;
 
     @Autowired
     private JwtUtils jwtUtils;
@@ -46,7 +50,7 @@ public class MailService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(principalUser.getEmail());
         message.setSubject("[ 이메일 인증 ] 이메일 인증을 완료해주세요.");
-        message.setText("이메일 인증 링크입니다. 링크를 눌러 인증을 완료해주세요.\nhttp://localhost:8080/mail/verify?token=" + verifyToken + "\n이메일 인증 완료 후 새로고침을 해주세요.");
+        message.setText("이메일 인증 링크입니다. 링크를 눌러 인증을 완료해주세요.\n" + frontendUrl + "/mail/verify?token=" + verifyToken + "\n이메일 인증 완료 후 새로고침을 해주세요.");
 
         javaMailSender.send(message);
 
