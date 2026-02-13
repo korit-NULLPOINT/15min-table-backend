@@ -7,6 +7,7 @@ import com.nullpoint.fifteenmintable.security.handler.RestAccessDeniedHandler;
 import com.nullpoint.fifteenmintable.security.handler.RestAuthenticationEntryPoint;
 import com.nullpoint.fifteenmintable.service.OAuth2PrincipalService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -25,6 +26,9 @@ import java.util.List;
 
 @Configuration
 public class SecurityConfig {
+
+    @Value("${app.frontend.url:http://localhost:5173}")
+    private String frontendUrl;
 
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -52,6 +56,7 @@ public class SecurityConfig {
         corsConfiguration.addAllowedHeader(CorsConfiguration.ALL);
         corsConfiguration.addAllowedMethod(CorsConfiguration.ALL);
 
+        corsConfiguration.addAllowedOrigin(frontendUrl);
         // 최소 권장(나중에 properties로 빼기)
         corsConfiguration.addAllowedOriginPattern("http://localhost:*");
         corsConfiguration.setAllowCredentials(true);
@@ -64,7 +69,7 @@ public class SecurityConfig {
     @Bean
     public OriginGuardFilter originGuardFilter() {
         return new OriginGuardFilter(List.of(
-                "http://localhost:5173", // 프론트
+                frontendUrl, // 프론트
                 "http://localhost:8080"  // Swagger
         ));
     }

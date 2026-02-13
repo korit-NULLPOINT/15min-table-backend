@@ -11,6 +11,7 @@ import com.nullpoint.fifteenmintable.security.jwt.JwtUtils;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -38,8 +39,17 @@ public class AuthTokenService {
     @Autowired
     private JwtUtils jwtUtils;
 
-    // 로컬이면 false, 배포 HTTPS면 true (나중에 설정값으로 빼면 됨)
-    private final boolean cookieSecure = false;
+    /**
+     * ✅ 쿠키 Secure 플래그
+     * - app 프로퍼티에 있으면 그 값 사용
+     * - 없으면 기본 false
+     *
+     * 예)
+     *   로컬: app.cookie.secure=false
+     *   운영(HTTPS): app.cookie.secure=true
+     */
+    @Value("${app.cookie.secure:false}")
+    private boolean cookieSecure;
 
     // refresh 만료 정책 (예: 30일)
     private final long refreshMaxAgeSeconds = 60L * 60L * 24L * 30L;
@@ -84,7 +94,7 @@ public class AuthTokenService {
 
         // 4) 새 access 발급 + SSE 쿠키 갱신
         String newAccess = jwtUtils.generateAccessToken(String.valueOf(session.userId()));
-        sseCookieUtils.setSseAccessToken(response, newAccess);
+        sseCookieUtils.setSseAccessToken(response, newAccess, cookieSecure);
 
         return new ApiRespDto<>("success", "토큰이 재발급되었습니다.", newAccess);
     }
@@ -95,7 +105,7 @@ public class AuthTokenService {
         if (isBlank(accessToken)) return;
 
         // 1) SSE 쿠키
-        sseCookieUtils.setSseAccessToken(response, accessToken);
+        sseCookieUtils.setSseAccessToken(response, accessToken, cookieSecure);
 
         // 2) userId 추출
         Integer userId;
@@ -195,7 +205,7 @@ public class AuthTokenService {
         } catch (Exception ignore) {
         }
         try {
-            sseCookieUtils.clearSseAccessToken(response);
+            sseCookieUtils.clearSseAccessToken(response, cookieSecure);
         } catch (Exception ignore) {
         }
 

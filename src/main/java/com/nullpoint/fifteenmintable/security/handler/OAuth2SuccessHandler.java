@@ -3,12 +3,12 @@ import com.nullpoint.fifteenmintable.entity.OAuth2User;
 import com.nullpoint.fifteenmintable.entity.User;
 import com.nullpoint.fifteenmintable.repository.OAuth2UserRepository;
 import com.nullpoint.fifteenmintable.repository.UserRepository;
-import com.nullpoint.fifteenmintable.security.auth.AuthTokenService;
 import com.nullpoint.fifteenmintable.security.jwt.JwtUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -19,12 +19,11 @@ import java.util.Optional;
 
 @Component
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
+    @Value("${app.frontend.url:http://localhost:5173}")
+    private String frontendUrl;
 
     @Autowired
     private OAuth2UserRepository oAuth2UserRepository;
-
-    @Autowired
-    private AuthTokenService authTokenService;
 
     @Autowired
     private UserRepository userRepository;
@@ -42,7 +41,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         Optional<OAuth2User> foundOAuth2User = oAuth2UserRepository.getOAuth2UserByProviderAndProviderUserId(provider, providerUserId);
 
         if (foundOAuth2User.isEmpty()) {
-            response.sendRedirect("http://localhost:5173/auth/oauth2?provider="+provider+"&providerUserId="+providerUserId+"&email="+email);
+            response.sendRedirect(frontendUrl + "/auth/oauth2?provider="+provider+"&providerUserId="+providerUserId+"&email="+email);
             return;
         }
 
@@ -53,7 +52,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         String accessToken = jwtUtils.generateAccessToken(foundUser.get().getUserId().toString());
 
-        authTokenService.onSigninSuccess(accessToken, request, response);
-        response.sendRedirect("http://localhost:5173/auth/oauth2/signin");
+        response.sendRedirect(frontendUrl + "/auth/oauth2/signin?accessToken="+accessToken);
     }
 }
