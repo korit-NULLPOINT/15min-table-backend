@@ -200,6 +200,83 @@
      방법 A) 컨테이너끼리: redis://redis-15mintable:6379
      방법 B) 호스트 경유: redis://host.docker.internal:6379
 
+---
+
+#### ❇️ API 명세서
+
+| 이름 | 메서드 | 엔드포인트 | 설명 |
+|---|---:|---|---|
+| signup | POST | /user/auth/signup | 회원가입 |
+| signin | POST | /user/auth/signin | 로그인 |
+| getPrincipal | GET | /user/account/principal | 로그인 사용자(Principal) 정보 조회 |
+| refresh | POST | /user/auth/refresh | Access Token 재발급(Refresh Token 기반) **(추가)** |
+| logout | POST | /user/auth/logout | 로그아웃(세션 revoke + 쿠키 삭제/블랙리스트 처리) **(추가)** |
+| getActivities | GET | /admin/manage/activities | 관리자 활동/로그/이벤트 목록 조회 **(추가)** |
+| getAdminPosts | GET | /admin/manage/posts | 관리자용 게시글 관리 목록 조회 **(추가)** |
+| getAdminRecipes | GET | /admin/manage/recipes | 관리자용 레시피 관리 목록 조회 **(추가)** |
+| getStats | GET | /admin/manage/stats | 관리자 대시보드 통계 요약 조회 **(추가)** |
+| getStatsTimeseries | GET | /admin/manage/stats/timeseries | 통계 시계열 데이터 조회 **(추가)** |
+| banUser | POST | /admin/manage/user/{userId}/ban | 특정 유저 제재/차단 처리 **(추가)** |
+| restoreUser | POST | /admin/manage/user/{userId}/restore | 특정 유저 제재 해제/복구 처리 **(추가)** |
+| changePassword | POST | /user/account/change/password | 비밀번호 변경 |
+| changeUsername | POST | /user/account/change/username | 닉네임(유저명) 변경 |
+| changeProfileImg | POST | /user/account/change/profileImg | 프로필 이미지 변경(업로드) |
+| withdraw | POST | /user/account/withdraw | 회원 탈퇴 처리 |
+| 이메일 인증 메일 발송 | POST | /mail/send | 이메일 인증 링크 메일 발송 |
+| 이메일 인증 링크 처리 | GET | /mail/verify?token={token} | 이메일 인증 토큰 검증 및 인증 완료 처리 |
+| OAuth2 로그인 시작 | GET | /oauth2/authorization/{provider} | OAuth2(provider) 로그인/인증 플로우 시작 |
+| OAuth2 signup | POST | /oauth2/signup | OAuth2 신규 회원가입 처리 |
+| OAuth2 merge | POST | /oauth2/merge | OAuth2 계정과 기존 계정 연동(병합) |
+| getUserList | GET | /admin/manage/user/list | 관리자용 유저 목록 조회 |
+| getUserByUsername | GET | /admin/manage/user/{username} | 관리자용 유저 상세 조회(username 기준) |
+| addBoard | POST | /board | 게시판 생성 |
+| getBoardList | GET | /board | 게시판 목록 조회 |
+| removeBoard | DELETE | /board/{boardId} | 게시판 삭제 |
+| addRecipe | POST | /board/{boardId}/recipes/add | 레시피 등록 |
+| getRecipeDetail | GET | /board/{boardId}/recipes/detail/{recipeId} | 레시피 상세 조회 |
+| getRecipeList | GET | /board/{boardId}/recipes/list | 레시피 목록 조회(게시판별) |
+| getRecipeListFiltered | GET | /board/{boardId}/recipes/list/filtered | 레시피 목록 필터링 조회(검색/카테고리/정렬 등) **(추가)** |
+| modifyRecipe | PUT | /board/{boardId}/recipes/modify/{recipeId} | 레시피 수정 |
+| removeRecipe | DELETE | /board/{boardId}/recipes/remove/{recipeId} | 레시피 삭제 |
+| generateHashtags | POST | /ai/hashtags | AI 해시태그 추천 생성 |
+| searchHashtags | GET | /recipe-hashtag/search | 해시태그 검색 |
+| getHashtagsByRecipeId | GET | /recipe-hashtag/list/{recipeId} | 레시피 해시태그 목록 조회 |
+| addRecipeHashtags | POST | /recipe-hashtag/add | 레시피 해시태그 연결(추가) |
+| getSummary | GET | /rating/{recipeId}/summary | 레시피 평점 요약 조회 |
+| deleteRating | POST | /rating/delete/{recipeId} | 평점 삭제 |
+| upsertRating | POST | /rating/upsert | 평점 등록/수정(업서트) |
+| addBookmark | POST | /bookmark/{recipeId} | 북마크(찜) 추가 |
+| existsByRecipeId | GET | /bookmark/{recipeId} | 북마크 여부 조회 |
+| deleteBookmark | DELETE | /bookmark/{recipeId} | 북마크(찜) 삭제 |
+| addPost | POST | /board/{boardId}/posts/add | 게시글(포스트) 등록 **(추가)** |
+| getPostDetail | GET | /board/{boardId}/posts/detail/{postId} | 게시글(포스트) 상세 조회 **(추가)** |
+| getPostList | GET | /board/{boardId}/posts/list | 게시글(포스트) 목록 조회(게시판별) **(추가)** |
+| modifyPost | PUT | /board/{boardId}/posts/modify/{postId} | 게시글(포스트) 수정 **(추가)** |
+| removePost | DELETE | /board/{boardId}/posts/remove/{postId} | 게시글(포스트) 삭제 **(추가)** |
+| getRecipeCommentListByRecipeId | GET | /comment/list/recipe/{recipeId} | 레시피 댓글 목록 조회 |
+| addRecipeComment | POST | /comment/add/recipe/{recipeId} | 레시피 댓글 등록 |
+| addPostComment | POST | /comment/add/post/{postId} | 게시글(포스트) 댓글 등록 **(추가)** |
+| getPostCommentListByPostId | GET | /comment/list/post/{postId} | 게시글(포스트) 댓글 목록 조회 **(추가)** |
+| deleteComment | POST | /comment/delete/{commentId} | 댓글 삭제 |
+| getMyRecipeList | GET | /recipes/my | 내 레시피 목록 조회 |
+| getMyPostList | GET | /posts/my | 내 게시글(포스트) 목록 조회 **(추가)** |
+| getRating | GET | /rating/{recipeId}/get | 내 레시피 평점 조회 |
+| getBookmarkListByUserId | GET | /bookmark/my | 내 북마크(찜) 목록 조회 |
+| getMyCommentList | GET | /comment/my/list | 내가 작성한 댓글 목록 조회 |
+| getFollowers | GET | /follow/followers | 내 팔로워 목록 조회 |
+| getFollowings | GET | /follow/followings | 내 팔로잉 목록 조회 |
+| getFollowCount | GET | /follow/count/{userId} | 팔로잉 / 팔로워 수 조회 |
+| subscribe | GET | /notifications/subscribe | 알림 SSE 구독 |
+| getUnreadCount | GET | /notifications/unread-count | 미읽음 알림 개수 조회 |
+| markAllAsRead | POST | /notifications/read-all | 알림 전체 읽음 처리 |
+| markAsRead | POST | /notifications/{notificationId}/read | 특정 알림 읽음 처리 |
+| getNotifications | GET | /notifications | 알림 목록 조회 |
+| follow | POST | /follow/{targetUserId} | 팔로우 처리 |
+| unfollow | DELETE | /follow/{targetUserId} | 언팔로우 처리 |
+| getFollowStatus | GET | /follow/status/{targetUserId} | 특정 유저 팔로우 상태 조회 |
+| getUserProfile | GET | /users/profile/{userId} | 특정 유저의 프로필 정보 조회 |
+| getRecipeListByUserId | GET | /recipes/user/{userId} | 특정 유저 레시피 목록 조회 |
+| getPostListByUserId | GET | /posts/user/{userId} | 특정 유저 게시글(포스트) 목록 조회 **(추가)** |
 
 
 ## 🖥 화면 구현
