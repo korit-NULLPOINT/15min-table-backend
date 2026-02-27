@@ -7,7 +7,7 @@ import java.lang.annotation.*;
 @Documented
 public @interface RateLimit {
 
-    int seconds();
+    long millis();
 
     Scope scope() default Scope.USER;
 

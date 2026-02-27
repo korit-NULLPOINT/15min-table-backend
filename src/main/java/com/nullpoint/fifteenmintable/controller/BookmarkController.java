@@ -20,7 +20,7 @@ public class BookmarkController {
     private RecipeBookmarkService recipeBookmarkService;
 
     @PostMapping("/{recipeId}")
-    @RateLimit(seconds = 3, scope = RateLimit.Scope.USER, key = "bookmark_action")
+    @RateLimit(millis = 300, scope = RateLimit.Scope.USER, key = "bookmark_action")
     public ResponseEntity<ApiRespDto<Void>> addBookmark(
             @PathVariable Integer recipeId,
             @AuthenticationPrincipal PrincipalUser principalUser
@@ -29,8 +29,8 @@ public class BookmarkController {
     }
 
     @DeleteMapping("/{recipeId}")
-    @RateLimit(seconds = 3, scope = RateLimit.Scope.USER, key = "bookmark_action")
-    public ResponseEntity<ApiRespDto<Void>> deleteBookmark (
+    @RateLimit(millis = 300, scope = RateLimit.Scope.USER, key = "bookmark_action")
+    public ResponseEntity<ApiRespDto<Void>> deleteBookmark(
             @PathVariable Integer recipeId,
             @AuthenticationPrincipal PrincipalUser principalUser
     ) {

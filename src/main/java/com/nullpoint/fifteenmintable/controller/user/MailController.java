@@ -22,7 +22,7 @@ public class MailController {
 
     @ResponseBody
     @PostMapping("/send")
-    @RateLimit(seconds = 60, scope = RateLimit.Scope.IP, key = "mail_send")
+    @RateLimit(millis = 60_000, scope = RateLimit.Scope.IP, key = "mail_send")
     public ResponseEntity<ApiRespDto<Void>> sendMail(@AuthenticationPrincipal PrincipalUser principalUser) {
         return ResponseEntity.ok(mailService.sendMail(principalUser));
     }

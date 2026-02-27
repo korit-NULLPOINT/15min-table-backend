@@ -23,7 +23,7 @@ public class CommentController {
 
     // 레시피 댓글 작성
     @PostMapping("/add/recipe/{recipeId}")
-    @RateLimit(seconds = 3, scope = RateLimit.Scope.USER, key = "comment_add")
+    @RateLimit(millis = 500, scope = RateLimit.Scope.USER, key = "comment_add")
     public ResponseEntity<ApiRespDto<Comment>> addRecipeComment(
             @PathVariable Integer recipeId,
             @RequestBody AddCommentReqDto addCommentReqDto,
@@ -35,7 +35,7 @@ public class CommentController {
     }
 
     @PostMapping("/add/post/{postId}")
-    @RateLimit(seconds = 3, scope = RateLimit.Scope.USER, key = "comment_add")
+    @RateLimit(millis = 500, scope = RateLimit.Scope.USER, key = "comment_add")
     public ResponseEntity<ApiRespDto<Comment>> addPostComment(
             @PathVariable Integer postId,
             @RequestBody AddCommentReqDto addCommentReqDto,
@@ -68,7 +68,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/delete/{commentId}")
-    @RateLimit(seconds = 2, scope = RateLimit.Scope.USER, key = "comment_delete")
+    @RateLimit(millis = 500, scope = RateLimit.Scope.USER, key = "comment_delete")
     public ResponseEntity<ApiRespDto<Void>> deleteComment(
             @PathVariable Integer commentId,
             @AuthenticationPrincipal PrincipalUser principalUser

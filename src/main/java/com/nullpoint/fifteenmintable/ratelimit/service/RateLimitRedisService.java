@@ -22,37 +22,32 @@ public class RateLimitRedisService {
     private StringRedisTemplate stringRedisTemplate;
 
     /**
-     * 쿨다운 획득 시도
+     * 쿨다운 획득 시도 (ms)
      *
-     * @param key     redis key
-     * @param seconds cooldown seconds (>0)
-     * @return true if acquired, false if already exists
+     * @param key    redis key
+     * @param millis cooldown millis (>0)
      */
-    public boolean tryAcquireCooldown(String key, int seconds) {
+    public boolean tryAcquireCooldownMs(String key, long millis) {
         if (key == null || key.isBlank()) throw new IllegalArgumentException("rate limit key is blank");
-        if (seconds <= 0) throw new IllegalArgumentException("rate limit seconds must be > 0");
+        if (millis <= 0) throw new IllegalArgumentException("rate limit millis must be > 0");
 
-        // SET key "1" NX EX seconds
         Boolean ok = stringRedisTemplate.opsForValue()
-                .setIfAbsent(key, "1", Duration.ofSeconds(seconds));
+                .setIfAbsent(key, "1", Duration.ofMillis(millis));
 
-        // setIfAbsent may return null in some edge cases -> treat as not acquired
         return Boolean.TRUE.equals(ok);
     }
 
     /**
-     * 남은 TTL(초) 조회
-     * - 키가 없으면 -2, 만료가 없으면 -1 같은 값이 나올 수 있음(드라이버/설정에 따라)
+     * 남은 TTL(ms) 조회
      */
-    public long getTtlSeconds(String key) {
+    public long getTtlMillis(String key) {
         if (key == null || key.isBlank()) return -2L;
-        Long ttl = stringRedisTemplate.getExpire(key);
+
+        // getExpire(key, unit) 오버로드 사용 (ms로 받기)
+        Long ttl = stringRedisTemplate.getExpire(key, java.util.concurrent.TimeUnit.MILLISECONDS);
         return ttl == null ? -2L : ttl;
     }
 
-    /**
-     * 키 삭제 (선택적으로 사용)
-     */
     public void deleteKey(String key) {
         if (key == null || key.isBlank()) return;
         stringRedisTemplate.delete(key);
