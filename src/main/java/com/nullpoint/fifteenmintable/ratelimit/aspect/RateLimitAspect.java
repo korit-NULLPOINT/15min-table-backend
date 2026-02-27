@@ -23,12 +23,19 @@ public class RateLimitAspect {
     public Object around(ProceedingJoinPoint pjp, RateLimit rateLimit) throws Throwable {
         String key = buildKey(pjp, rateLimit);
 
-        boolean acquired = redis.tryAcquireCooldown(key, rateLimit.seconds());
+        boolean acquired = redis.tryAcquireCooldownMs(key, rateLimit.millis());
         if (!acquired) {
-            long ttl = redis.getTtlSeconds(key);
-            // ttl이 0~양수면 "n초 후" 안내 가능
-            if (ttl > 0) {
-                throw new TooManyRequestsException("너무 잦은 요청입니다. " + ttl + "초 후 다시 시도해주세요.");
+            long ttlMs = redis.getTtlMillis(key);
+
+            // ttlMs가 양수면 "n초" 또는 "n.ms" 안내
+            if (ttlMs > 0) {
+                // 사람이 읽기 좋게: 1000ms 이상이면 초로, 아니면 ms로
+                if (ttlMs >= 1000) {
+                    long sec = (ttlMs + 999) / 1000; // 올림
+                    throw new TooManyRequestsException("너무 잦은 요청입니다. " + sec + "초 후 다시 시도해주세요.");
+                } else {
+                    throw new TooManyRequestsException("너무 잦은 요청입니다. " + ttlMs + "ms 후 다시 시도해주세요.");
+                }
             }
             throw new TooManyRequestsException("너무 잦은 요청입니다. 잠시 후 다시 시도해주세요.");
         }

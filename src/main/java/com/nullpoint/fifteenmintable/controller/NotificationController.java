@@ -26,10 +26,9 @@ public class NotificationController {
     @Autowired
     private NotificationSseService notificationSseService;
 
-    @Hidden // orval 에서 제외
+    @Hidden
     @GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter subscribe(@AuthenticationPrincipal PrincipalUser principalUser) {
-        // 로그인 안 되면 시큐리티/엔트리포인트에서 컷
         return notificationSseService.subscribe(principalUser.getUserId());
     }
 
@@ -38,7 +37,7 @@ public class NotificationController {
      * - 무한스크롤: /notifications?cursor=123&size=20
      */
     @GetMapping("")
-    @RateLimit(seconds = 1, scope = RateLimit.Scope.USER, key = "noti_list")
+    @RateLimit(millis = 300, scope = RateLimit.Scope.USER, key = "noti_list")
     public ResponseEntity<ApiRespDto<List<NotificationRespDto>>> getNotifications(
             @RequestParam(required = false) Integer cursor,
             @RequestParam(required = false) Integer size,
@@ -52,7 +51,7 @@ public class NotificationController {
      * 미읽음 개수(뱃지)
      */
     @GetMapping("/unread-count")
-    @RateLimit(seconds = 1, scope = RateLimit.Scope.USER, key = "noti_unread_count")
+    @RateLimit(millis = 300, scope = RateLimit.Scope.USER, key = "noti_unread_count")
     public ResponseEntity<ApiRespDto<Integer>> getUnreadCount(
             @AuthenticationPrincipal PrincipalUser principalUser
     ) {
@@ -63,7 +62,7 @@ public class NotificationController {
      * 단건 읽음 처리
      */
     @PostMapping("/{notificationId}/read")
-    @RateLimit(seconds = 1, scope = RateLimit.Scope.USER, key = "noti_read_one")
+    @RateLimit(millis = 300, scope = RateLimit.Scope.USER, key = "noti_read_one")
     public ResponseEntity<ApiRespDto<Void>> markAsRead(
             @PathVariable Integer notificationId,
             @AuthenticationPrincipal PrincipalUser principalUser
@@ -75,7 +74,7 @@ public class NotificationController {
      * 모두 읽음 처리
      */
     @PostMapping("/read-all")
-    @RateLimit(seconds = 5, scope = RateLimit.Scope.USER, key = "noti_read_all")
+    @RateLimit(millis = 1_000, scope = RateLimit.Scope.USER, key = "noti_read_all")
     public ResponseEntity<ApiRespDto<Void>> markAllAsRead(
             @AuthenticationPrincipal PrincipalUser principalUser
     ) {

@@ -26,13 +26,13 @@ public class UserAuthController {
 
 
     @PostMapping("/signup")
-    @RateLimit(seconds = 20, scope = RateLimit.Scope.IP, key = "auth_signup")
+    @RateLimit(millis = 30_000, scope = RateLimit.Scope.IP, key = "auth_signup")
     public ResponseEntity<ApiRespDto<Void>> signup(@RequestBody SignupReqDto signupReqDto) {
         return ResponseEntity.ok(userAuthService.signup(signupReqDto));
     }
 
     @PostMapping("/signin")
-    @RateLimit(seconds = 3, scope = RateLimit.Scope.IP, key = "auth_signin")
+    @RateLimit(millis = 1_000, scope = RateLimit.Scope.IP, key = "auth_signin")
     public ResponseEntity<ApiRespDto<String>> signin(
             @RequestBody SigninReqDto signinReqDto,
             HttpServletRequest request,
@@ -47,7 +47,7 @@ public class UserAuthController {
     }
 
     @PostMapping("/refresh")
-    @RateLimit(seconds = 3, scope = RateLimit.Scope.IP, key = "auth_refresh")
+    @RateLimit(millis = 1_000, scope = RateLimit.Scope.IP, key = "auth_refresh")
     public ResponseEntity<ApiRespDto<String>> refresh(
             @CookieValue(value = "RT", required = false) String refreshToken,
             HttpServletResponse response
