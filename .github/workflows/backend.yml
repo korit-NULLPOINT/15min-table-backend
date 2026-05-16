@@ -52,9 +52,8 @@ jobs:
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
             set -e
-            sudo docker compose -f backend-compose.yml pull
-            sudo docker compose -f backend-compose.yml down
-            sudo docker compose -f backend-compose.yml up -d
+            sudo docker-compose -f ~/backend-compose.yml pull
+            sudo docker-compose -f ~/backend-compose.yml up -d
 
 
   
