@@ -50,6 +50,7 @@ jobs:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.VM_SSH_KEY }}
+          command_timeout: 20m
           script: |
             set -e
             docker-compose -f ~/backend-compose.yml pull
