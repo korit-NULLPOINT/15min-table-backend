@@ -54,7 +54,7 @@ jobs:
           script: |
             set -e
             docker-compose -f ~/backend-compose.yml pull
-            docker rm -f backend || true
+            docker ps -a --format '{{.Names}}' | grep -E '(^backend$|_backend$)' | xargs -r docker rm -f
             docker-compose -f ~/backend-compose.yml up -d
 
 
