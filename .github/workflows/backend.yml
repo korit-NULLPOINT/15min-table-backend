@@ -11,7 +11,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        env: [15mintableback-sjw, cicd-backend-hjhong, 15mintable-back-chan]
+        # 팀원별 배포 환경
+        # 필요 시 아래 배열에 환경명을 다시 추가하면 각자 VM으로 동시 배포 가능
+        # env: [15mintableback-sjw, cicd-backend-hjhong, 15mintable-back-chan]
+        env: [15mintableback-sjw]
 
     environment: ${{ matrix.env }}
     
