@@ -54,6 +54,7 @@ jobs:
           script: |
             set -e
             docker-compose -f ~/backend-compose.yml pull
+            docker rm -f backend || true
             docker-compose -f ~/backend-compose.yml up -d
 
 
