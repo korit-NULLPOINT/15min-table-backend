@@ -33,14 +33,19 @@ jobs:
         with:
           java-version: "17"
           distribution: "temurin"
-            
-      - name: create_properties_and_buils_push
+
+      - name: create_properties_test_build_push
         shell: bash
         run: |
           set -euo pipefail
 
           echo "${{ secrets.APPLICATION_PROPERTIES }}" | base64 --decode > ./src/main/resources/application.properties
           chmod +x ./mvnw
+
+          # 배포 전 백엔드 자동화 테스트
+          # Spring Context 테스트, Service 단위 테스트, Controller 응답 테스트 실행
+          # 테스트가 실패하면 Docker build / push / VM 배포 단계는 실행되지 않음
+          ./mvnw test
 
           ./mvnw clean package -DskipTests
 
@@ -59,6 +64,3 @@ jobs:
             docker-compose -f ~/backend-compose.yml pull
             docker ps -a --format '{{.Names}}' | grep -E '(^backend$|_backend$)' | xargs -r docker rm -f
             docker-compose -f ~/backend-compose.yml up -d
-
-
-  
