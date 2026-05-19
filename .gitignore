@@ -32,3 +32,15 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Python AI Agent ###
+.venv/
+ai-agent-server/.venv/
+ai-agent-server/.env
+ai-agent-server/__pycache__/
+ai-agent-server/**/__pycache__/
+ai-agent-server/*.pyc
+ai-agent-server/**/*.pyc
+ai-agent-server/.pytest_cache/
+ai-agent-server/.mypy_cache/
+ai-agent-server/.ruff_cache/
